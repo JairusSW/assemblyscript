@@ -3,7 +3,7 @@
     "--enable", "multi-value"
   ],
   "stderr": [
-    "AS100: Not implemented: Tuple types",
-    "20 compile error(s)"
+    "TS2322: Type 'tuple' is not assignable to type 'non-tuple'.",
+    "17 compile error(s)"
   ]
 }

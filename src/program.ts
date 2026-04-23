@@ -1996,6 +1996,11 @@ export class Program extends DiagnosticEmitter {
     } else {
       let signatureReference = type.getSignature();
       if (signatureReference) {
+        if (signatureReference.numReturnTypes > 1) {
+          if (!this.checkFeatureEnabled(Feature.MultiValue, reportNode)) {
+            return false;
+          }
+        }
         let thisType = signatureReference.thisType;
         if (thisType) {
           if (!this.checkTypeSupported(thisType, reportNode)) {
@@ -2008,9 +2013,11 @@ export class Program extends DiagnosticEmitter {
             return false;
           }
         }
-        let returnType = signatureReference.returnType;
-        if (!this.checkTypeSupported(returnType, reportNode)) {
-          return false;
+        let returnTypes = signatureReference.returnTypes;
+        for (let i = 0, k = returnTypes.length; i < k; ++i) {
+          if (!this.checkTypeSupported(returnTypes[i], reportNode)) {
+            return false;
+          }
         }
       }
     }

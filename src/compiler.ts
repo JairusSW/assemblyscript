@@ -177,6 +177,7 @@ import {
 
   TypeNode,
   NamedTypeNode,
+  TupleTypeNode,
 
   findDecorator,
   isTypeOmitted,
@@ -190,7 +191,9 @@ import {
   TypeKind,
   TypeFlags,
   Signature,
-  typesToRefs
+  typesToRefs,
+  returnTypesEqual,
+  returnTypesToString
 } from "./types";
 
 import {
@@ -375,7 +378,9 @@ export const enum Constraints {
   /** Indicates that static data is preferred. */
   PreferStatic = 1 << 4,
   /** Indicates that the value will become `this` of a property access or instance call. */
-  IsThis = 1 << 5
+  IsThis = 1 << 5,
+  /** Indicates that a multi-value call result is allowed at this call site. */
+  AllowMultiValueResult = 1 << 6
 }
 
 /** Runtime features to be activated by the compiler. */
@@ -954,6 +959,17 @@ export class Compiler extends DiagnosticEmitter {
         let functionInstance = <Function>element;
         if (!functionInstance.hasDecorator(DecoratorFlags.Builtin)) {
           let signature = functionInstance.signature;
+          if (
+            this.options.bindingsHint &&
+            signature.numReturnTypes > 1
+          ) {
+            this.error(
+              DiagnosticCode.Not_implemented_0,
+              functionInstance.identifierNode.range,
+              "Exported multi-value functions are not yet supported with --bindings"
+            );
+            return;
+          }
           if (signature.requiredParameters < signature.parameterTypes.length) {
             // utilize varargs stub to fill in omitted arguments
             functionInstance = this.ensureVarargsStub(functionInstance);
@@ -973,7 +989,7 @@ export class Compiler extends DiagnosticEmitter {
                 let thisType = signature.thisType;
                 if (
                   thisType && lowerRequiresExportRuntime(thisType) ||
-                  liftRequiresExportRuntime(signature.returnType)
+                  signature.numReturnTypes == 1 && liftRequiresExportRuntime(signature.returnType)
                 ) {
                   this.desiresExportRuntime = true;
                 } else {
@@ -986,7 +1002,7 @@ export class Compiler extends DiagnosticEmitter {
                   }
                 }
               }
-              if (functionInstance.signature.returnType.kind == TypeKind.Func) this.module.setClosedWorld(false);
+              if (signature.numReturnTypes == 1 && signature.returnType.kind == TypeKind.Func) this.module.setClosedWorld(false);
             }
             return;
           }
@@ -1666,7 +1682,7 @@ export class Compiler extends DiagnosticEmitter {
         signature.paramRefs,
         signature.resultRefs,
         typesToRefs(instance.getNonParameterLocalTypes()),
-        module.flatten(stmts, instance.signature.returnType.toRef())
+        module.flatten(stmts, signature.resultRefs)
       );
 
     // imported function
@@ -1685,7 +1701,7 @@ export class Compiler extends DiagnosticEmitter {
         let thisType = signature.thisType;
         if (
           thisType && liftRequiresExportRuntime(thisType) ||
-          lowerRequiresExportRuntime(signature.returnType)
+          signature.numReturnTypes == 1 && lowerRequiresExportRuntime(signature.returnType)
         ) {
           this.desiresExportRuntime = true;
         } else {
@@ -1738,7 +1754,7 @@ export class Compiler extends DiagnosticEmitter {
       if (hasVectorValueOperands) {
         let range: Range;
         let fnTypeNode = instance.prototype.functionTypeNode;
-        if (signature.returnType == Type.v128) {
+        if (signature.returnTypes.includes(Type.v128)) {
           range = fnTypeNode.returnType.range;
         } else {
           let firstIndex = signature.getVectorValueOperandIndices()[0];
@@ -1767,6 +1783,7 @@ export class Compiler extends DiagnosticEmitter {
     let module = this.module;
     let bodyNode = assert(instance.prototype.bodyNode);
     let returnType = instance.signature.returnType;
+    let numReturnTypes = instance.signature.numReturnTypes;
     let flow = this.currentFlow;
     let thisLocal = instance.signature.thisType
       ? assert(flow.lookupLocal(CommonNames.this_))
@@ -1786,16 +1803,27 @@ export class Compiler extends DiagnosticEmitter {
       // none of the following can be an arrow function
       assert(!instance.isAny(CommonFlags.Constructor | CommonFlags.Get | CommonFlags.Set));
 
-      let expr = this.compileExpression((<ExpressionStatement>bodyNode).expression, returnType, Constraints.ConvImplicit);
-      if (!flow.canOverflow(expr, returnType)) flow.set(FlowFlags.ReturnsWrapped);
-      if (flow.isNonnull(expr, returnType)) flow.set(FlowFlags.ReturnsNonNull);
+      let expr: ExpressionRef;
+      if (numReturnTypes > 1) {
+        this.error(
+          DiagnosticCode.Not_implemented_0,
+          bodyNode.range, "Expression bodies with multi-value returns"
+        );
+        expr = module.unreachable();
+      } else {
+        expr = this.compileExpression((<ExpressionStatement>bodyNode).expression, returnType, Constraints.ConvImplicit);
+        if (!flow.canOverflow(expr, returnType)) flow.set(FlowFlags.ReturnsWrapped);
+        if (flow.isNonnull(expr, returnType)) flow.set(FlowFlags.ReturnsNonNull);
+      }
 
       if (!stmts) stmts = [ expr ];
       else stmts.push(expr);
 
       if (!flow.is(FlowFlags.Terminates)) {
-        if (!flow.canOverflow(expr, returnType)) flow.set(FlowFlags.ReturnsWrapped);
-        if (flow.isNonnull(expr, returnType)) flow.set(FlowFlags.ReturnsNonNull);
+        if (numReturnTypes <= 1) {
+          if (!flow.canOverflow(expr, returnType)) flow.set(FlowFlags.ReturnsWrapped);
+          if (flow.isNonnull(expr, returnType)) flow.set(FlowFlags.ReturnsNonNull);
+        }
         flow.set(FlowFlags.Returns | FlowFlags.Terminates);
       }
     }
@@ -1860,7 +1888,7 @@ export class Compiler extends DiagnosticEmitter {
       }
 
     // if this is a normal function, make sure that all branches terminate
-    } else if (returnType != Type.void && !flow.is(FlowFlags.Terminates)) {
+    } else if (numReturnTypes > 0 && !flow.is(FlowFlags.Terminates)) {
       this.error(
         DiagnosticCode.A_function_whose_declared_type_is_not_void_must_return_a_value,
         instance.prototype.functionTypeNode.returnType.range
@@ -2819,23 +2847,94 @@ export class Compiler extends DiagnosticEmitter {
     let module = this.module;
     let expr: ExpressionRef = 0;
     let flow = this.currentFlow;
+    let signature = flow.sourceFunction.signature;
+    let returnTypes = signature.returnTypes;
+    let numReturnTypes = returnTypes.length;
     let returnType = flow.returnType;
 
     let valueExpression = statement.value;
-    if (valueExpression) {
-      let constraints = Constraints.ConvImplicit;
-      if (flow.sourceFunction.is(CommonFlags.ModuleExport)) constraints |= Constraints.MustWrap;
+    if (numReturnTypes <= 1) {
+      if (valueExpression) {
+        let constraints = Constraints.ConvImplicit;
+        if (flow.sourceFunction.is(CommonFlags.ModuleExport)) constraints |= Constraints.MustWrap;
 
-      expr = this.compileExpression(valueExpression, returnType, constraints);
-      if (!flow.canOverflow(expr, returnType)) flow.set(FlowFlags.ReturnsWrapped);
-      if (flow.isNonnull(expr, returnType)) flow.set(FlowFlags.ReturnsNonNull);
-      if (flow.sourceFunction.is(CommonFlags.Constructor) && valueExpression.kind != NodeKind.This) {
-        flow.set(FlowFlags.MayReturnNonThis);
+        expr = this.compileExpression(valueExpression, returnType, constraints);
+        if (!flow.canOverflow(expr, returnType)) flow.set(FlowFlags.ReturnsWrapped);
+        if (flow.isNonnull(expr, returnType)) flow.set(FlowFlags.ReturnsNonNull);
+        if (flow.sourceFunction.is(CommonFlags.Constructor) && valueExpression.kind != NodeKind.This) {
+          flow.set(FlowFlags.MayReturnNonThis);
+        }
+      } else if (returnType != Type.void) {
+        this.error(
+          DiagnosticCode.Type_0_is_not_assignable_to_type_1,
+          statement.range, "void", returnType.toString()
+        );
+        this.currentType = returnType;
+        return module.unreachable();
       }
-    } else if (returnType != Type.void) {
+    } else if (valueExpression) {
+      if (
+        valueExpression.kind == NodeKind.Literal &&
+        (<LiteralExpression>valueExpression).literalKind == LiteralKind.Array
+      ) {
+        let elements = (<ArrayLiteralExpression>valueExpression).elementExpressions;
+        let numElements = elements.length;
+        if (numElements != numReturnTypes) {
+          this.error(
+            DiagnosticCode.Type_0_is_not_assignable_to_type_1,
+            valueExpression.range,
+            `[${numElements.toString()} values]`,
+            returnTypesToString(returnTypes)
+          );
+          this.currentType = returnType;
+          return module.unreachable();
+        }
+        let tupleOperands = new Array<ExpressionRef>(numReturnTypes);
+        for (let i = 0; i < numReturnTypes; ++i) {
+          tupleOperands[i] = this.compileExpression(elements[i], returnTypes[i], Constraints.ConvImplicit);
+        }
+        expr = module.tuple_make(tupleOperands);
+      } else if (valueExpression.kind == NodeKind.Call) {
+        let returnCall = <CallExpression>valueExpression;
+        let target = this.resolver.lookupExpression(returnCall.expression, flow);
+        let callSignature: Signature | null = null;
+        if (target) {
+          if (target.kind == ElementKind.FunctionPrototype) {
+            let fn = this.resolver.maybeInferCall(returnCall, <FunctionPrototype>target, flow);
+            if (fn) callSignature = fn.signature;
+          } else if (target.kind == ElementKind.Function) {
+            callSignature = (<Function>target).signature;
+          }
+        }
+        if (!callSignature || !returnTypesEqual(callSignature.returnTypes, returnTypes)) {
+          this.error(
+            DiagnosticCode.Type_0_is_not_assignable_to_type_1,
+            valueExpression.range,
+            callSignature ? returnTypesToString(callSignature.returnTypes) : "unknown",
+            returnTypesToString(returnTypes)
+          );
+          this.currentType = returnType;
+          return module.unreachable();
+        }
+        expr = this.compileExpression(
+          valueExpression,
+          returnType,
+          Constraints.ConvImplicit | Constraints.AllowMultiValueResult
+        );
+      } else {
+        this.error(
+          DiagnosticCode.Type_0_is_not_assignable_to_type_1,
+          valueExpression.range,
+          "expression",
+          returnTypesToString(returnTypes)
+        );
+        this.currentType = returnType;
+        return module.unreachable();
+      }
+    } else {
       this.error(
         DiagnosticCode.Type_0_is_not_assignable_to_type_1,
-        statement.range, "void", returnType.toString()
+        statement.range, "void", returnTypesToString(returnTypes)
       );
       this.currentType = returnType;
       return module.unreachable();
@@ -6165,7 +6264,8 @@ export class Compiler extends DiagnosticEmitter {
         expression.args,
         expression,
         0,
-        contextualType == Type.void
+        contextualType == Type.void,
+        constraints
       );
     }
     this.error(
@@ -6439,7 +6539,13 @@ export class Compiler extends DiagnosticEmitter {
       operands[index] = paramExpr;
     }
     assert(index == numArgumentsInclThis);
-    return this.makeCallDirect(instance, operands, reportNode, (constraints & Constraints.WillDrop) != 0);
+    return this.makeCallDirect(
+      instance,
+      operands,
+      reportNode,
+      (constraints & Constraints.WillDrop) != 0,
+      constraints
+    );
   }
 
   makeCallInline(
@@ -6522,7 +6628,7 @@ export class Compiler extends DiagnosticEmitter {
 
     // Create an outer block that we can break to when returning a value out of order
     this.currentType = returnType;
-    return module.block(flow.inlineReturnLabel, body, returnType.toRef());
+    return module.block(flow.inlineReturnLabel, body, flow.sourceFunction.signature.resultRefs);
   }
 
   /** Makes sure that the arguments length helper global is present. */
@@ -6548,7 +6654,6 @@ export class Compiler extends DiagnosticEmitter {
     let originalSignature = original.signature;
     let originalParameterTypes = originalSignature.parameterTypes;
     let originalParameterDeclarations = original.prototype.functionTypeNode.parameters;
-    let returnType = originalSignature.returnType;
     let isInstance = original.is(CommonFlags.Instance);
 
     // arguments excl. `this`, operands incl. `this`
@@ -6661,7 +6766,7 @@ export class Compiler extends DiagnosticEmitter {
       stub.signature.paramRefs,
       stub.signature.resultRefs,
       typesToRefs(stub.getNonParameterLocalTypes()),
-      module.flatten(stmts, returnType.toRef())
+      module.flatten(stmts, stub.signature.resultRefs)
     );
     stub.set(CommonFlags.Compiled);
     stub.finalize(module, funcRef);
@@ -6754,7 +6859,7 @@ export class Compiler extends DiagnosticEmitter {
         let calledName = needsVarargsStub
           ? this.ensureVarargsStub(overrideInstance).internalName
           : overrideInstance.internalName;
-        let returnTypeRef = overrideSignature.returnType.toRef();
+        let returnTypeRef = overrideSignature.resultRefs;
         let stmts = new Array<ExpressionRef>();
         if (needsVarargsStub) {
           // Safe to prepend since paramExprs are local.get's
@@ -6809,7 +6914,7 @@ export class Compiler extends DiagnosticEmitter {
       for (let i = 0, k = parameterTypes.length; i < k; ++i) {
         paramExprs[1 + i] = module.local_get(1 + i, parameterTypes[i].toRef());
       }
-      body = module.call(instance.internalName, paramExprs, returnType.toRef());
+      body = module.call(instance.internalName, paramExprs, stub.signature.resultRefs);
 
     // Otherwise trap
     } else {
@@ -6827,7 +6932,7 @@ export class Compiler extends DiagnosticEmitter {
       module.block(null, [
         builder.render(tempIndex),
         body
-      ], returnType.toRef())
+      ], stub.signature.resultRefs)
     );
     stub.set(CommonFlags.Compiled);
   }
@@ -6883,8 +6988,21 @@ export class Compiler extends DiagnosticEmitter {
     instance: Function,
     operands: ExpressionRef[] | null,
     reportNode: Node,
-    immediatelyDropped: bool = false
+    immediatelyDropped: bool = false,
+    constraints: Constraints = Constraints.None
   ): ExpressionRef {
+    if (
+      instance.signature.numReturnTypes > 1 &&
+      this.options.hasFeature(Feature.MultiValue) &&
+      !(constraints & Constraints.AllowMultiValueResult)
+    ) {
+      this.error(
+        DiagnosticCode.Not_implemented_0,
+        reportNode.range, "Using multi-value call results outside of direct return forwarding"
+      );
+      this.currentType = Type.void;
+      return this.module.unreachable();
+    }
     if (instance.hasDecorator(DecoratorFlags.Inline)) {
       if (!instance.is(CommonFlags.Overridden)) {
         assert(!instance.is(CommonFlags.Stub)); // doesn't make sense
@@ -6931,6 +7049,8 @@ export class Compiler extends DiagnosticEmitter {
 
     if (!this.compileFunction(instance)) return module.unreachable();
     let returnType = instance.signature.returnType;
+    let resultRefs = instance.signature.resultRefs;
+    let hasMultipleReturns = instance.signature.numReturnTypes > 1;
 
     // fill up omitted arguments with their initializers, if constant, otherwise with zeroes.
     if (numOperands < maxOperands) {
@@ -6971,7 +7091,7 @@ export class Compiler extends DiagnosticEmitter {
         instance = this.ensureVarargsStub(instance);
         if (!this.compileFunction(instance)) return module.unreachable();
         instance.flow.flags = original.flow.flags;
-        let returnTypeRef = returnType.toRef();
+        let returnTypeRef = instance.signature.resultRefs;
         // We know the last operand is optional and omitted, so inject setting
         // ~argumentsLength into that operand, which is always safe.
         let lastOperand = operands[maxOperands - 1];
@@ -6983,7 +7103,7 @@ export class Compiler extends DiagnosticEmitter {
         ], lastOperandType.toRef());
         this.operandsTostack(instance.signature, operands);
         let expr = module.call(instance.internalName, operands, returnTypeRef);
-        if (returnType != Type.void && immediatelyDropped) {
+        if (!hasMultipleReturns && returnType != Type.void && immediatelyDropped) {
           expr = module.drop(expr);
           this.currentType = Type.void;
         } else {
@@ -6999,7 +7119,7 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     if (operands) this.operandsTostack(instance.signature, operands);
-    let expr = module.call(instance.internalName, operands, returnType.toRef());
+    let expr = module.call(instance.internalName, operands, resultRefs);
     this.currentType = returnType;
     return expr;
   }
@@ -7011,7 +7131,8 @@ export class Compiler extends DiagnosticEmitter {
     argumentExpressions: Expression[],
     reportNode: Node,
     thisArg: ExpressionRef = 0,
-    immediatelyDropped: bool = false
+    immediatelyDropped: bool = false,
+    constraints: Constraints = Constraints.None
   ): ExpressionRef {
     let numArguments = argumentExpressions.length;
 
@@ -7041,7 +7162,7 @@ export class Compiler extends DiagnosticEmitter {
       );
     }
     assert(index == numArgumentsInclThis);
-    return this.makeCallIndirect(signature, functionArg, reportNode, operands, immediatelyDropped);
+    return this.makeCallIndirect(signature, functionArg, reportNode, operands, immediatelyDropped, constraints);
   }
 
   /** Creates an indirect call to a first-class function. */
@@ -7051,6 +7172,7 @@ export class Compiler extends DiagnosticEmitter {
     reportNode: Node,
     operands: ExpressionRef[] | null = null,
     immediatelyDropped: bool = false,
+    constraints: Constraints = Constraints.None
   ): ExpressionRef {
     let module = this.module;
     let numOperands = operands ? operands.length : 0;
@@ -7059,6 +7181,7 @@ export class Compiler extends DiagnosticEmitter {
     let minOperands = minArguments;
     let parameterTypes = signature.parameterTypes;
     let returnType = signature.returnType;
+    let hasMultipleReturns = signature.numReturnTypes > 1;
     let maxArguments = parameterTypes.length;
     let maxOperands = maxArguments;
     if (signature.thisType) {
@@ -7067,6 +7190,18 @@ export class Compiler extends DiagnosticEmitter {
       --numArguments;
     }
     assert(numOperands >= minOperands);
+    if (
+      hasMultipleReturns &&
+      this.options.hasFeature(Feature.MultiValue) &&
+      !(constraints & Constraints.AllowMultiValueResult)
+    ) {
+      this.error(
+        DiagnosticCode.Not_implemented_0,
+        reportNode.range, "Using multi-value call results outside of direct return forwarding"
+      );
+      this.currentType = Type.void;
+      return module.unreachable();
+    }
 
     // fill up omitted arguments with zeroes
     if (numOperands < maxOperands) {
@@ -10054,8 +10189,34 @@ export class Compiler extends DiagnosticEmitter {
         supported = false;
       }
     }
-    if (!this.program.checkTypeSupported(signature.returnType, reportNode.returnType)) {
-      supported = false;
+    let returnTypes = signature.returnTypes;
+    let numReturnTypes = returnTypes.length;
+    let returnTypeNode = reportNode.returnType;
+    if (returnTypeNode.kind == NodeKind.TupleType) {
+      if (!this.program.checkFeatureEnabled(Feature.MultiValue, returnTypeNode)) {
+        supported = false;
+      }
+    }
+    if (numReturnTypes > 1) {
+      if (returnTypeNode.kind == NodeKind.TupleType) {
+        let elements = (<TupleTypeNode>returnTypeNode).elements;
+        for (let i = 0; i < numReturnTypes; ++i) {
+          let elementNode = i < elements.length ? elements[i] : returnTypeNode;
+          if (!this.program.checkTypeSupported(returnTypes[i], elementNode)) {
+            supported = false;
+          }
+        }
+      } else {
+        for (let i = 0; i < numReturnTypes; ++i) {
+          if (!this.program.checkTypeSupported(returnTypes[i], returnTypeNode)) {
+            supported = false;
+          }
+        }
+      }
+    } else if (numReturnTypes == 1) {
+      if (!this.program.checkTypeSupported(returnTypes[0], reportNode.returnType)) {
+        supported = false;
+      }
     }
     return supported;
   }

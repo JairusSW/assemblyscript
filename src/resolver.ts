@@ -90,7 +90,8 @@ import {
 
 import {
   CommonFlags,
-  CommonNames
+  CommonNames,
+  Feature
 } from "./common";
 
 import {
@@ -173,7 +174,12 @@ export class Resolver extends DiagnosticEmitter {
         break;
       }
       case NodeKind.TupleType: {
-        resolved = this.resolveTupleType(<TupleTypeNode>node, flow, ctxElement, ctxTypes, reportMode);
+        if (reportMode == ReportMode.Report) {
+          this.error(
+            DiagnosticCode.Type_0_is_not_assignable_to_type_1,
+            node.range, "tuple", "non-tuple"
+          );
+        }
         break;
       }
       default: assert(false);
@@ -434,7 +440,7 @@ export class Resolver extends DiagnosticEmitter {
       parameterTypes[i] = parameterType;
     }
     let returnTypeNode = node.returnType;
-    let returnType: Type | null;
+    let returnTypes: Type[] | null;
     if (isTypeOmitted(returnTypeNode)) {
       if (reportMode == ReportMode.Report) {
         this.error(
@@ -442,45 +448,65 @@ export class Resolver extends DiagnosticEmitter {
           returnTypeNode.range
         );
       }
-      returnType = Type.void;
+      returnTypes = [];
     } else {
-      returnType = this.resolveType(
+      returnTypes = this.resolveReturnTypes(
         returnTypeNode,
         flow,
         ctxElement,
         ctxTypes,
         reportMode
       );
-      if (!returnType) return null;
+      if (!returnTypes) return null;
     }
-    let signature = Signature.create(this.program, parameterTypes, returnType, thisType, requiredParameters, hasRest);
+    let signature = Signature.createMulti(this.program, parameterTypes, returnTypes, thisType, requiredParameters, hasRest);
     return node.isNullable ? signature.type.asNullable() : signature.type;
   }
 
-  /** Resolves a {@link TupleTypeNode}. */
-  private resolveTupleType(
-    /** The type to resolve. */
-    node: TupleTypeNode,
-    /** The flow */
+  private resolveReturnTypes(
+    node: TypeNode,
     flow: Flow | null,
-    /** Contextual element. */
     ctxElement: Element,
-    /** Contextual types, i.e. `T`. */
     ctxTypes: Map<string,Type> | null = null,
-    /** How to proceed with eventual diagnostics. */
     reportMode: ReportMode = ReportMode.Report
-  ): Type | null {
-    let elements = node.elements;
-    for (let i = 0, k = elements.length; i < k; ++i) {
-      if (!this.resolveType(elements[i], flow, ctxElement, ctxTypes, reportMode)) return null;
+  ): Type[] | null {
+    if (node.kind == NodeKind.TupleType) {
+      if (!this.program.options.hasFeature(Feature.MultiValue)) {
+        if (reportMode == ReportMode.Report) {
+          this.program.checkFeatureEnabled(Feature.MultiValue, node);
+        }
+        return null;
+      }
+      let tuple = <TupleTypeNode>node;
+      let elementNodes = tuple.elements;
+      let numElements = elementNodes.length;
+      let returnTypes = new Array<Type>(numElements);
+      for (let i = 0; i < numElements; ++i) {
+        let elementNode = elementNodes[i];
+        let elementType = this.resolveType(elementNode, flow, ctxElement, ctxTypes, reportMode);
+        if (!elementType) return null;
+        if (elementType == Type.void) {
+          if (reportMode == ReportMode.Report) {
+            this.error(
+              DiagnosticCode.Type_0_is_illegal_in_this_context,
+              elementNode.range, elementType.toString()
+            );
+          }
+          return null;
+        }
+        returnTypes[i] = elementType;
+      }
+      return returnTypes;
     }
-    if (reportMode == ReportMode.Report) {
-      this.error(
-        DiagnosticCode.Not_implemented_0,
-        node.range, "Tuple types"
-      );
-    }
-    return null;
+    let returnType = this.resolveType(
+      node,
+      flow,
+      ctxElement,
+      ctxTypes,
+      reportMode
+    );
+    if (!returnType) return null;
+    return returnType == Type.void ? [] : [ returnType ];
   }
 
   private resolveBuiltinNotNullableType(
@@ -2891,11 +2917,11 @@ export class Resolver extends DiagnosticEmitter {
     }
 
     // resolve return type
-    let returnType: Type;
+    let returnTypes: Type[];
     if (prototype.is(CommonFlags.Set)) {
-      returnType = Type.void; // not annotated
+      returnTypes = []; // not annotated
     } else if (prototype.is(CommonFlags.Constructor)) {
-      returnType = classInstance!.type; // not annotated
+      returnTypes = [ classInstance!.type ]; // not annotated
     } else {
       let typeNode = signatureNode.returnType;
       if (isTypeOmitted(typeNode)) {
@@ -2907,18 +2933,18 @@ export class Resolver extends DiagnosticEmitter {
         }
         return null;
       }
-      let type = this.resolveType(
+      let types = this.resolveReturnTypes(
         typeNode,
         null,
         prototype.parent, // relative to function
         ctxTypes,
         reportMode
       );
-      if (!type) return null;
-      returnType = type;
+      if (!types) return null;
+      returnTypes = types;
     }
 
-    let signature = Signature.create(this.program, parameterTypes, returnType, thisType, requiredParameters, hasRest);
+    let signature = Signature.createMulti(this.program, parameterTypes, returnTypes, thisType, requiredParameters, hasRest);
 
     let nameInclTypeParameters = prototype.name;
     if (instanceKey.length) nameInclTypeParameters += `<${instanceKey}>`;

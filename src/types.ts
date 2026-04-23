@@ -930,6 +930,23 @@ export function typesToString(types: Type[]): string {
   return sb.join(",");
 }
 
+/** Compares two return type lists for exact equality. */
+export function returnTypesEqual(left: Type[], right: Type[]): bool {
+  if (left.length != right.length) return false;
+  for (let i = 0, k = left.length; i < k; ++i) {
+    if (!left[i].equals(right[i])) return false;
+  }
+  return true;
+}
+
+/** Formats return types as a user-facing type string. */
+export function returnTypesToString(returnTypes: Type[]): string {
+  let numReturnTypes = returnTypes.length;
+  if (!numReturnTypes) return Type.void.toString();
+  if (numReturnTypes == 1) return returnTypes[0].toString();
+  return `[${typesToString(returnTypes)}]`;
+}
+
 /** Represents a fully resolved function signature. */
 export class Signature {
   /** Construct a new signature. */
@@ -947,6 +964,38 @@ export class Signature {
     /** Whether the last parameter is a rest parameter. */
     hasRest: bool = false,
   ): Signature {
+    if (returnType != Type.void) {
+      return Signature.createInternal(program, parameterTypes, [ returnType ], thisType, requiredParameters, hasRest);
+    }
+    return Signature.createInternal(program, parameterTypes, [], thisType, requiredParameters, hasRest);
+  }
+
+  /** Construct a new signature with one or more return types. */
+  public static createMulti(
+    /** The program that created this signature. */
+    program: Program,
+    /** Parameter types, if any, excluding `this`. */
+    parameterTypes: Type[] = [],
+    /** Return types. */
+    returnTypes: Type[] = [],
+    /** This type, if an instance signature. */
+    thisType: Type | null = null,
+    /** Number of required parameters excluding `this`. Other parameters are considered optional. */
+    requiredParameters: i32 = parameterTypes ? parameterTypes.length : 0,
+    /** Whether the last parameter is a rest parameter. */
+    hasRest: bool = false,
+  ): Signature {
+    return Signature.createInternal(program, parameterTypes, returnTypes, thisType, requiredParameters, hasRest);
+  }
+
+  private static createInternal(
+    program: Program,
+    parameterTypes: Type[],
+    returnTypes: Type[],
+    thisType: Type | null,
+    requiredParameters: i32,
+    hasRest: bool
+  ): Signature {
     // get the usize type, and the type of the signature
     let usizeType = program.options.usizeType;
     let type = new Type(
@@ -958,9 +1007,9 @@ export class Signature {
     // calculate the properties
     let signatureTypes = program.uniqueSignatures;
     let nextId = program.nextSignatureId;
-    
+
     // construct the signature and calculate it's unique key
-    let signature = new Signature(program, parameterTypes, returnType, thisType, requiredParameters, hasRest, nextId, type);
+    let signature = new Signature(program, parameterTypes, returnTypes, thisType, requiredParameters, hasRest, nextId, type);
     let uniqueKey = signature.toString();
 
     // check if it exists, and return it
@@ -983,8 +1032,8 @@ export class Signature {
     public readonly program: Program,
     /** Parameter types, if any, excluding `this`. */
     public readonly parameterTypes: Type[],
-    /** Return type. */
-    public readonly returnType: Type,
+    /** Return types. */
+    public readonly returnTypes: Type[],
     /** This type, if an instance signature. */
     public readonly thisType: Type | null,
     /** Number of required parameters excluding `this`. Other parameters are considered optional. */
@@ -996,6 +1045,17 @@ export class Signature {
     /** Respective function type. */
     public readonly type: Type,
   ) {}
+
+  /** Number of return values. */
+  get numReturnTypes(): i32 {
+    return this.returnTypes.length;
+  }
+
+  /** Primary return type for compatibility with single-result call sites. */
+  get returnType(): Type {
+    let returnTypes = this.returnTypes;
+    return returnTypes.length ? unchecked(returnTypes[0]) : Type.void;
+  }
 
   get paramRefs(): TypeRef {
     let thisType = this.thisType;
@@ -1016,7 +1076,7 @@ export class Signature {
   }
 
   get resultRefs(): TypeRef {
-    return this.returnType.toRef();
+    return createType(typesToRefs(this.returnTypes));
   }
 
   /** Tests if this signature equals the specified. */
@@ -1034,8 +1094,14 @@ export class Signature {
     // check rest parameter
     if (this.hasRest != other.hasRest) return false;
 
-    // check return type
-    if (!this.returnType.equals(other.returnType)) return false;
+    // check return types
+    let thisReturnTypes = this.returnTypes;
+    let otherReturnTypes = other.returnTypes;
+    let numReturnTypes = thisReturnTypes.length;
+    if (numReturnTypes != otherReturnTypes.length) return false;
+    for (let i = 0; i < numReturnTypes; ++i) {
+      if (!unchecked(thisReturnTypes[i]).equals(unchecked(otherReturnTypes[i]))) return false;
+    }
 
     // check parameter types
     let selfParameterTypes = this.parameterTypes;
@@ -1057,10 +1123,10 @@ export class Signature {
     let targetThisType = target.thisType;
 
     if (thisThisType && targetThisType) {
-      const compatibleThisType = checkCompatibleOverride 
+      const compatibleThisType = checkCompatibleOverride
         ? thisThisType.canExtendOrImplement(targetThisType)
         : targetThisType.isAssignableTo(thisThisType);
-      if (!compatibleThisType) return false; 
+      if (!compatibleThisType) return false;
     } else if (thisThisType || targetThisType) {
       return false;
     }
@@ -1069,10 +1135,16 @@ export class Signature {
     if (this.hasRest != target.hasRest) return false; // TODO
 
     // check return type (covariant)
-    let thisReturnType = this.returnType;
-    let targetReturnType = target.returnType;
-    if (!(thisReturnType == targetReturnType || thisReturnType.isAssignableTo(targetReturnType))) {
-      return false;
+    let thisReturnTypes = this.returnTypes;
+    let targetReturnTypes = target.returnTypes;
+    let numReturnTypes = thisReturnTypes.length;
+    if (numReturnTypes != targetReturnTypes.length) return false;
+    for (let i = 0; i < numReturnTypes; ++i) {
+      let thisReturnType = unchecked(thisReturnTypes[i]);
+      let targetReturnType = unchecked(targetReturnTypes[i]);
+      if (!(thisReturnType == targetReturnType || thisReturnType.isAssignableTo(targetReturnType))) {
+        return false;
+      }
     }
     // check parameter types (invariant)
     let thisParameterTypes = this.parameterTypes;
@@ -1176,7 +1248,20 @@ export class Signature {
       }
     }
     sb.push(validWat ? "%29=>" : ") => ");
-    sb.push(this.returnType.toString(validWat));
+    let returnTypes = this.returnTypes;
+    let numReturnTypes = returnTypes.length;
+    if (!numReturnTypes) {
+      sb.push(Type.void.toString(validWat));
+    } else if (numReturnTypes == 1) {
+      sb.push(returnTypes[0].toString(validWat));
+    } else {
+      sb.push(validWat ? "%5B" : "[");
+      for (let i = 0; i < numReturnTypes; ++i) {
+        if (i) sb.push(validWat ? "%2C" : ", ");
+        sb.push(returnTypes[i].toString(validWat));
+      }
+      sb.push(validWat ? "%5D" : "]");
+    }
     return sb.join("");
   }
 
@@ -1188,10 +1273,10 @@ export class Signature {
     for (let i = 0; i < numParameterTypes; ++i) {
       unchecked(cloneParameterTypes[i] = parameterTypes[i]);
     }
-    return Signature.create(
+    return Signature.createMulti(
       this.program,
       cloneParameterTypes,
-      this.returnType,
+      this.returnTypes,
       this.thisType,
       requiredParameters,
       hasRest
