@@ -6749,7 +6749,6 @@ export class Compiler extends DiagnosticEmitter {
     let originalSignature = original.signature;
     let originalParameterTypes = originalSignature.parameterTypes;
     let originalParameterDeclarations = original.prototype.functionTypeNode.parameters;
-    let returnType = originalSignature.returnType;
     let isInstance = original.is(CommonFlags.Instance);
 
     // arguments excl. `this`, operands incl. `this`
