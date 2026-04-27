@@ -1017,10 +1017,11 @@ export class Compiler extends DiagnosticEmitter {
             this.runtimeFeatures |= RuntimeFeatures.setArgumentsLength;
             signature = functionInstance.signature;
           }
+          let signatureReturnTypes = signature.returnTypes;
           if (
             this.options.bindingsHint &&
-            signature.returnTypes &&
-            signature.returnTypes.length > 1
+            signatureReturnTypes != null &&
+            signatureReturnTypes.length > 1
           ) {
             this.error(
               DiagnosticCode.Not_implemented_0,
@@ -2923,11 +2924,12 @@ export class Compiler extends DiagnosticEmitter {
 
     let expr = this.compileExpression(expression, Type.auto);
     if (!this.typesEqual(this.currentReturnTypes, returnTypes)) {
+      let currentReturnTypes = this.currentReturnTypes;
       this.error(
         DiagnosticCode.Type_0_is_not_assignable_to_type_1,
         expression.range,
-        this.currentReturnTypes
-          ? this.returnTypesToString(this.currentReturnTypes)
+        currentReturnTypes
+          ? this.returnTypesToString(currentReturnTypes)
           : this.currentType.toString(),
         this.returnTypesToString(returnTypes)
       );
