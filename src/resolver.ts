@@ -447,34 +447,14 @@ export class Resolver extends DiagnosticEmitter {
     } else {
       if (returnTypeNode.kind == NodeKind.TupleType && (<TupleTypeNode>returnTypeNode).isReadonly) {
         returnType = Type.void;
-        returnTypes = this.resolveMultiValueReturnTypes(
-          <TupleTypeNode>returnTypeNode,
-          flow,
-          ctxElement,
-          ctxTypes,
-          reportMode
-        );
+        returnTypes = this.resolveMultiValueReturnTypes(<TupleTypeNode>returnTypeNode, flow, ctxElement, ctxTypes, reportMode);
         if (!returnTypes) return null;
       } else {
-        returnType = this.resolveType(
-          returnTypeNode,
-          flow,
-          ctxElement,
-          ctxTypes,
-          reportMode
-        );
+        returnType = this.resolveType(returnTypeNode, flow, ctxElement, ctxTypes, reportMode);
       }
       if (!returnType) return null;
     }
-    let signature = Signature.create(
-      this.program,
-      parameterTypes,
-      returnType,
-      thisType,
-      requiredParameters,
-      hasRest,
-      returnTypes
-    );
+    let signature = Signature.create(this.program, parameterTypes, returnType, thisType, requiredParameters, hasRest, returnTypes);
     return node.isNullable ? signature.type.asNullable() : signature.type;
   }
 
@@ -2998,36 +2978,16 @@ export class Resolver extends DiagnosticEmitter {
       }
       if (typeNode.kind == NodeKind.TupleType && (<TupleTypeNode>typeNode).isReadonly) {
         returnType = Type.void;
-        returnTypes = this.resolveMultiValueReturnTypes(
-          <TupleTypeNode>typeNode,
-          null,
-          prototype.parent,
-          ctxTypes,
-          reportMode
-        );
+        returnTypes = this.resolveMultiValueReturnTypes(<TupleTypeNode>typeNode, null, prototype.parent, ctxTypes, reportMode);
         if (!returnTypes) return null;
       } else {
-        let type = this.resolveType(
-          typeNode,
-          null,
-          prototype.parent, // relative to function
-          ctxTypes,
-          reportMode
-        );
+        let type = this.resolveType(typeNode, null, prototype.parent, ctxTypes, reportMode);
         if (!type) return null;
         returnType = type;
       }
     }
 
-    let signature = Signature.create(
-      this.program,
-      parameterTypes,
-      returnType,
-      thisType,
-      requiredParameters,
-      hasRest,
-      returnTypes
-    );
+    let signature = Signature.create(this.program, parameterTypes, returnType, thisType, requiredParameters, hasRest, returnTypes);
 
     let nameInclTypeParameters = prototype.name;
     if (instanceKey.length) nameInclTypeParameters += `<${instanceKey}>`;

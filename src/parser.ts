@@ -610,13 +610,7 @@ export class Parser extends DiagnosticEmitter {
           return null;
         }
       }
-      type = Node.createTupleType(
-        elements,
-        hasElementNames ? elementNames : null,
-        false,
-        tn.range(startPos, tn.pos),
-        false
-      );
+      type = Node.createTupleType(elements, hasElementNames ? elementNames : null, false, tn.range(startPos, tn.pos), false);
 
     // 'void'
     } else if (token == Token.Void) {

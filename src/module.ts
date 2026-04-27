@@ -3976,17 +3976,19 @@ function prepareType(builder: binaryen.TypeBuilderRef, seen: Map<Type,HeapTypeRe
         if (DEBUG_TYPEBUILDER) {
           console.log(`  field ${fieldType.toString()}`);
         }
-        fieldTypes.push(
-          fieldType.is(TypeFlags.Nullable)
-            ? binaryen._TypeBuilderGetTempRefType(
-                builder,
-                binaryen._BinaryenTypeGetHeapType(
-                  prepareType(builder, seen, fieldType.nonNullableType)
-                ),
-                true
-              )
-            : prepareType(builder, seen, fieldType)
-        );
+        if (fieldType.is(TypeFlags.Nullable)) {
+          fieldTypes.push(
+            binaryen._TypeBuilderGetTempRefType(
+              builder,
+              binaryen._BinaryenTypeGetHeapType(
+                prepareType(builder, seen, fieldType.nonNullableType)
+              ),
+              true
+            )
+          );
+        } else {
+          fieldTypes.push(prepareType(builder, seen, fieldType));
+        }
         packedTypes.push(determinePackedType(fieldType));
         fieldMutables.push(1);
       }

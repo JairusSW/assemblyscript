@@ -962,17 +962,7 @@ export class Signature {
     let nextId = program.nextSignatureId;
     
     // construct the signature and calculate it's unique key
-    let signature = new Signature(
-      program,
-      parameterTypes,
-      returnType,
-      thisType,
-      requiredParameters,
-      hasRest,
-      nextId,
-      type,
-      returnTypes
-    );
+    let signature = new Signature(program, parameterTypes, returnType, thisType, requiredParameters, hasRest, nextId, type, returnTypes );
     let uniqueKey = signature.toString();
 
     // check if it exists, and return it
