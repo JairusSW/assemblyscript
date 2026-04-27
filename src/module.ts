@@ -3916,6 +3916,23 @@ function determinePackedType(type: Type): PackedType {
   return PackedType.NotPacked;
 }
 
+/** Prepares a type, preserving nullable reference types. */
+function prepareTypeWithNullability(
+  builder: binaryen.TypeBuilderRef,
+  seen: Map<Type,HeapTypeRef>,
+  type: Type
+): TypeRef {
+  return type.is(TypeFlags.Nullable)
+    ? binaryen._TypeBuilderGetTempRefType(
+        builder,
+        binaryen._BinaryenTypeGetHeapType(
+          prepareType(builder, seen, type.nonNullableType)
+        ),
+        true
+      )
+    : prepareType(builder, seen, type);
+}
+
 /** Recursively prepares the given GC type, potentially returning a temporary type. */
 function prepareType(builder: binaryen.TypeBuilderRef, seen: Map<Type,HeapTypeRef>, type: Type): TypeRef {
   // Obtain basic type if applicable
@@ -3976,19 +3993,7 @@ function prepareType(builder: binaryen.TypeBuilderRef, seen: Map<Type,HeapTypeRe
         if (DEBUG_TYPEBUILDER) {
           console.log(`  field ${fieldType.toString()}`);
         }
-        if (fieldType.is(TypeFlags.Nullable)) {
-          fieldTypes.push(
-            binaryen._TypeBuilderGetTempRefType(
-              builder,
-              binaryen._BinaryenTypeGetHeapType(
-                prepareType(builder, seen, fieldType.nonNullableType)
-              ),
-              true
-            )
-          );
-        } else {
-          fieldTypes.push(prepareType(builder, seen, fieldType));
-        }
+        fieldTypes.push(prepareTypeWithNullability(builder, seen, fieldType));
         packedTypes.push(determinePackedType(fieldType));
         fieldMutables.push(1);
       }
@@ -4030,35 +4035,18 @@ function prepareType(builder: binaryen.TypeBuilderRef, seen: Map<Type,HeapTypeRe
     let resultTypes = new Array<TypeRef>();
     let parameterTypes = signatureReference.parameterTypes;
     for (let i = 0, k = parameterTypes.length; i < k; ++i) {
-      let paramType = parameterTypes[i];
-      if (paramType.is(TypeFlags.Nullable)) {
-        paramTypes.push(
-          binaryen._TypeBuilderGetTempRefType(
-            builder,
-            binaryen._BinaryenTypeGetHeapType(
-              prepareType(builder, seen, paramType.nonNullableType)
-            ),
-            true
-          )
-        );
-      } else {
-        paramTypes.push(prepareType(builder, seen, paramType));
-      }
+      paramTypes.push(prepareTypeWithNullability(builder, seen, parameterTypes[i]));
     }
-    let returnType = signatureReference.returnType;
-    resultTypes.push(
-      returnType == Type.void
-        ? TypeRef.None
-        : returnType.is(TypeFlags.Nullable)
-          ? binaryen._TypeBuilderGetTempRefType(
-              builder,
-              binaryen._BinaryenTypeGetHeapType(
-                prepareType(builder, seen, returnType.nonNullableType)
-              ),
-              true
-            )
-          : prepareType(builder, seen, returnType)
-    );
+    let returnTypes = signatureReference.returnTypes;
+    if (returnTypes) {
+      for (let i = 0, k = returnTypes.length; i < k; ++i) {
+        resultTypes.push(prepareTypeWithNullability(builder, seen, returnTypes[i]));
+      }
+    } else if (signatureReference.returnType == Type.void) {
+      resultTypes.push(TypeRef.None);
+    } else {
+      resultTypes.push(prepareTypeWithNullability(builder, seen, signatureReference.returnType));
+    }
     let tempParamType: TypeRef;
     if (paramTypes.length > 1) {
       let cArrPT = allocPtrArray(paramTypes);

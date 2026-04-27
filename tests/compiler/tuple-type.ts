@@ -1,1 +1,15 @@
-// nothing yet just getting the parser working first
+export function pair(a: i32, b: i64): readonly [i32, i64] {
+  return [a, b];
+}
+
+export function floats(a: f32, b: f64): readonly [f32, f64] {
+  return [a, b];
+}
+
+export function forward(a: i32, b: i64): readonly [i32, i64] {
+  return pair(a, b);
+}
+
+export function named(a: i32, b: i64): readonly [lo: i32, hi: i64] {
+  return [a, b];
+}
