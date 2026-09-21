@@ -171,8 +171,11 @@ import { DIGITS, MAX_DOUBLE_LENGTH } from "./number";
 // then the per-power fixup bit subtracted off the low limb.
 // @ts-ignore: decorator
 @inline function computePow10(i: i32): u64 {
-  let m = load<u64>(POW10_MINOR + (<usize>((i + 10) % 28) << 3));
-  let hoff = POW10_MAJOR + (<usize>((i + 10) / 28) << 4);
+  let j = i + 10;
+  let major = (j * 293) >>> 13; // exact j / 28 for j in [10,627]
+  let minor = j - major * 28;
+  let m = load<u64>(POW10_MINOR + (<usize>minor << 3));
+  let hoff = POW10_MAJOR + (<usize>major << 4);
   let hHi = load<u64>(hoff);
   let hLo = load<u64>(hoff, 8);
 
@@ -197,7 +200,8 @@ import { DIGITS, MAX_DOUBLE_LENGTH } from "./number";
 
 // value < 1e8 -> 8 packed BCD digits (SWAR: split by divide-by-constant
 // reciprocals, halving the digits-per-lane each step).
-function toBcd8(value: u64): i32 {
+// @ts-ignore: decorator
+@inline function toBcd8Digits(value: u64): u64 {
   // 12345678 -> two 4-digit groups, one per 32-bit lane: [1234][5678]
   let quads = value + NEG10K * ((value * DIV10K_SIG) >> DIV10K_EXP);
   // four 2-digit groups, one per 16-bit lane: [12][34][56][78]
@@ -208,29 +212,23 @@ function toBcd8(value: u64): i32 {
     pairs + NEG10 * (((pairs * DIV10_SIG) >> DIV10_EXP) & 0xf000f000f000f);
   // bswap to big-endian so the most-significant digit lands in the high byte
   gBcdValue = bswap<u64>(singles);
-  const BCD_LENGTH_BIAS = 70; // 64 bits, one sentinel bit, and a six-bit rounding offset
-  return <i32>((BCD_LENGTH_BIAS - clz<u64>((singles << 1) | 1)) / 8);
+  return singles;
 }
 
-// Unsigned 16-bit multiply-high across all 8 lanes (= _mm_mulhi_epu16).
-// @ts-ignore: decorator
-@inline function mulhiU16(a: v128, b: v128): v128 {
-  let lo = i32x4.shr_u(i32x4.extmul_low_i16x8_u(a, b), 16);
-  let hi = i32x4.shr_u(i32x4.extmul_high_i16x8_u(a, b), 16);
-  return i16x8.narrow_i32x4_u(lo, hi);
+function toBcd8(value: u64): i32 {
+  let singles = toBcd8Digits(value);
+  const BCD_LENGTH_BIAS = 70; // 64 bits, one sentinel bit, and a six-bit rounding offset
+  return <i32>((BCD_LENGTH_BIAS - clz<u64>((singles << 1) | 1)) / 8);
 }
 
 // Four 4-digit lanes -> 16 BCD bytes (byte i = 10**i digit).
 // @ts-ignore: decorator
 @inline function toBcd4x4(y: v128): v128 {
-  let div100 = i32x4.splat(<i32>DIV100_SIG);
-  let div10 = i16x8.splat(6554); // (1 << 16) / 10 + 1
-  let neg100 = i32x4.splat(65436); // (1 << 16) - 100
-  let neg10 = i16x8.splat(246); // (1 << 8) - 10
-
-  let t = i32x4.shr_u(mulhiU16(y, div100), 3);
-  let z = i32x4.add(y, i32x4.mul(neg100, t));
-  return i16x8.add(z, i16x8.mul(neg10, mulhiU16(z, div10)));
+  // Products fit in their lanes because y <= 9999 and each pair <= 99.
+  let hundreds = i32x4.shr_u(i32x4.mul(y, i32x4.splat(5243)), 19);
+  let pairs = i32x4.add(y, i32x4.mul(hundreds, i32x4.splat(65436)));
+  let tens = i16x8.shr_u(i16x8.mul(pairs, i16x8.splat(103)), 10);
+  return i16x8.add(pairs, i16x8.mul(tens, i16x8.splat(246)));
 }
 
 // Pack the low 32 bits of each i64 lane into adjacent i32 lanes 0,1 (zero the
@@ -245,7 +243,7 @@ function toBcd8(value: u64): i32 {
 
 // SIMD version of toDigits64: builds all 16 ASCII digits in one pass.
 // @ts-ignore: decorator
-@inline function toDigits64Simd(value: u64): void {
+@inline function toDigits64Simd(value: u64, countDigits: bool = true): void {
   let revOrder = i8x16(15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
 
   let hi = value / 100000000;
@@ -262,8 +260,10 @@ function toBcd8(value: u64): i32 {
 
   let bcd = toBcd4x4(y);
 
-  let mask = i8x16.bitmask(i8x16.gt_s(bcd, i8x16.splat(0)));
-  gDigits = 32 - clz(mask); // mask is never 0 (significand >= 1)
+  if (countDigits) {
+    let mask = i8x16.bitmask(i8x16.gt_s(bcd, i8x16.splat(0)));
+    gDigits = 32 - clz(mask); // mask is never 0 (significand >= 1)
+  }
 
   let ascii = v128.or(
     v128.swizzle(bcd, revOrder),
@@ -275,9 +275,18 @@ function toBcd8(value: u64): i32 {
 
 // SWAR version of toDigits64: two register-parallel to_bcd8 passes over u64.
 // @ts-ignore: decorator
-@inline function toDigits64Swar(value: u64): void {
+@inline function toDigits64Swar(value: u64, fixed16: bool = false): void {
   let hi = value / 100000000;
   let lo = value - hi * 100000000;
+
+  if (fixed16) {
+    toBcd8Digits(hi);
+    let hiBcd = gBcdValue;
+    toBcd8Digits(lo);
+    gDigHi = hiBcd + BCD_ZEROS;
+    gDigLo = gBcdValue + BCD_ZEROS;
+    return;
+  }
 
   let hiLen = toBcd8(hi);
 
@@ -304,6 +313,13 @@ function toBcd8(value: u64): i32 {
   } else {
     toDigits64Swar(value);
   }
+}
+
+// The f64 formatter has normalized its significand to exactly 16 digits.
+// @ts-ignore: decorator
+@inline function toDigits64Fixed16(value: u64): void {
+  if (ASC_FEATURE_SIMD) toDigits64Simd(value, false);
+  else toDigits64Swar(value, true);
 }
 
 // Eight packed ASCII digits in a u64 -> 8 UTF-16 code units (16 bytes) at
@@ -357,6 +373,13 @@ function toBcd8(value: u64): i32 {
 // f64 fixed-notation layout: a full 16-digit block (gDigHi:gDigLo) plus a 17th
 // digit (always, so no leading-'0' fold or bcdSize param like the f32 path).
 // @ts-ignore: decorator
+@inline function packedTrailingZeros16(high: u64, low: u64): i32 {
+  let count = <i32>(clz<u64>(low ^ BCD_ZEROS) >> 3);
+  if (count == 8) count += <i32>(clz<u64>(high ^ BCD_ZEROS) >> 3);
+  return count;
+}
+
+// @ts-ignore: decorator
 @inline export function writeFixed(
   buf: usize,
   start: usize,
@@ -366,7 +389,7 @@ function toBcd8(value: u64): i32 {
 ): usize {
   if (decExp < 0) writeUnpacked8(start, BCD_ZEROS);
   let lastDigitChar = <u64>(CharCode._0 + (hasLastDigit ? gLastDigit : 0));
-  let numDigits = hasLastDigit ? 16 : gDigits - 1;
+  let numDigits = hasLastDigit ? 16 : 15;
   let dHi = gDigHi;
   let dLo = gDigLo;
 
@@ -425,9 +448,7 @@ function toBcd8(value: u64): i32 {
 
   let end = buf + (endPos << 1);
   if (decExp >= 0 && endPos == decExp + 1) return finishInteger(end, dotZero);
-  while (end > start + 2 && load<u16>(end - 2) == CharCode._0) {
-    end -= 2;
-  }
+  if (!hasLastDigit) end -= <usize>packedTrailingZeros16(dHi, dLo) << 1;
   if (load<u16>(end - 2) == CharCode.DOT) {
     if (dotZero) {
       store<u16>(end, CharCode._0);
@@ -454,10 +475,8 @@ function toBcd8(value: u64): i32 {
   writeUnpacked8(buf, gDigHi);
   if (bcdSize == 16) writeUnpacked8(buf, gDigLo, 16);
   store<u16>(buf + (bcdSize << 1), <u32>(CharCode._0 + gLastDigit));
-  buf += (hasLastDigit ? bcdSize + 1 : gDigits) << 1;
-  while (buf > start + 4 && load<u16>(buf - 2) == CharCode._0) {
-    buf -= 2;
-  }
+  buf += (bcdSize + i32(hasLastDigit)) << 1;
+  if (!hasLastDigit) buf -= <usize>packedTrailingZeros16(gDigHi, gDigLo) << 1;
   // Move the lead digit to pos 0, drop '.' at pos 1.
   let lead: u32 = <u32>load<u16>(start, 2);
   store<u16>(start, lead);
@@ -742,13 +761,12 @@ function toBcd8(value: u64): i32 {
   if (<u64>gSig < threshold) normalizeDoubleShortest();
 
   let hasLastDigit = gHasLastDigit;
-  let hasExtraDigit = <u64>gSig >= threshold;
-  let decExp = gExp + DOUBLE_MAX_DIGITS10 - 2 + i32(hasExtraDigit);
+  let decExp = gExp + 16;
   let start = buf;
-  toDigits64(<u64>gSig);
+  toDigits64Fixed16(<u64>gSig);
   if (decExp >= MIN_FIXED_DEC_EXP && decExp <= MAX_FIXED_DEC_EXP)
     return writeFixed(buf, start, decExp, hasLastDigit, dotZero);
-  return writeExpNotation(buf, start, decExp, hasLastDigit, hasExtraDigit, 16);
+  return writeExpNotation(buf, start, decExp, hasLastDigit, true, 16);
 }
 
 // @ts-ignore: decorator

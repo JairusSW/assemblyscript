@@ -1,5 +1,5 @@
 import {
-  toDigits32, toDigits64, gDigits, gDigHi, gDigLo,
+  toDigits32, toDigits64, writeUnpacked8, gDigits, gDigHi, gDigLo, gSig,
 } from "~lib/util/dtoa";
 import { dtoa as numberDtoa, dtoa_buffered as numberBuffered } from "util/number";
 
@@ -27,11 +27,28 @@ assert(gDigits == 16);
 assert(gDigHi == 0x3837363534333231); // "12345678"
 assert(gDigLo == 0x3635343332313039); // "90123456"
 
+// Exercise every four-digit group in every SIMD lane (and the scalar path).
+const packed = memory.data(32);
+for (let lane = 0; lane < 4; ++lane) {
+  let scale: u64 = lane == 0 ? 1000000000000 : lane == 1 ? 100000000 : lane == 2 ? 10000 : 1;
+  let original: u64 = lane == 0 ? 1234 : lane == 1 ? 0 : lane == 2 ? 5678 : 1;
+  let base = <u64>1234000056780001 - original * scale;
+  for (let group: u64 = 0; group < 10000; ++group) {
+    let value = base + group * scale;
+    toDigits64(value);
+    writeUnpacked8(packed, gDigHi);
+    writeUnpacked8(packed + 16, gDigLo);
+    let expected = value.toString().padStart(16, "0");
+    for (let i = 0; i < 16; ++i)
+      assert(load<u16>(packed + (<usize>i << 1)) == expected.charCodeAt(i));
+  }
+}
+
 // Writers may store complete digit blocks beyond the logical end. Keep the
 // canary after the documented 32-code-unit capacity.
 const guarded = memory.data(68);
 
-function check64(value: f64, expected: string): void {
+function check64(value: f64, expected: string, normalized: bool = false): void {
   store<u16>(guarded, 0x5a5a);
   store<u16>(guarded + 66, 0x6b6b);
   let count = numberBuffered<f64>(guarded + 2, value);
@@ -40,6 +57,7 @@ function check64(value: f64, expected: string): void {
     assert(load<u16>(guarded + 2 + (<usize>i << 1)) == expected.charCodeAt(i));
   assert(load<u16>(guarded) == 0x5a5a);
   assert(load<u16>(guarded + 66) == 0x6b6b);
+  if (normalized) assert(gSig >= 1000000000000000 && gSig < 10000000000000000);
 }
 
 function check32(value: f32, expected: string): void {
@@ -53,14 +71,14 @@ function check32(value: f32, expected: string): void {
   assert(load<u16>(guarded + 66) == 0x6b6b);
 }
 
-check64(0.1 + 0.2, "0.30000000000000004");
-check64(1e-6, "0.000001");
-check64(1e-7, "1e-7");
+check64(0.1 + 0.2, "0.30000000000000004", true);
+check64(1e-6, "0.000001", true);
+check64(1e-7, "1e-7", true);
 check64(1e20, "100000000000000000000.0");
 check64(1e21, "1e+21");
-check64(f64.MIN_VALUE, "5e-324");
-check64(reinterpret<f64>(0x0010000000000000), "2.2250738585072014e-308");
-check64(reinterpret<f64>(0x3ff0000000000001), "1.0000000000000002");
+check64(f64.MIN_VALUE, "5e-324", true);
+check64(reinterpret<f64>(0x0010000000000000), "2.2250738585072014e-308", true);
+check64(reinterpret<f64>(0x3ff0000000000001), "1.0000000000000002", true);
 check32(<f32>1, "1.0");
 check32(<f32>1234, "1234.0");
 check32(<f32>16777215, "16777215.0");

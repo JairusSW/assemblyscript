@@ -346,7 +346,7 @@
      end
     end
    end
-   block $__inlined_func$~lib/util/string/compareImpl$79
+   block $__inlined_func$~lib/util/string/compareImpl$81
     loop $while-continue|1
      local.get $0
      local.tee $3
@@ -366,7 +366,7 @@
       local.get $4
       local.get $5
       i32.ne
-      br_if $__inlined_func$~lib/util/string/compareImpl$79
+      br_if $__inlined_func$~lib/util/string/compareImpl$81
       local.get $2
       i32.const 2
       i32.add
@@ -654,7 +654,7 @@
     local.get $0
     global.set $~lib/rt/itcms/iter
    end
-   block $__inlined_func$~lib/rt/itcms/Object#unlink$164
+   block $__inlined_func$~lib/rt/itcms/Object#unlink$166
     local.get $1
     i32.load offset=4
     i32.const -4
@@ -678,7 +678,7 @@
       call $~lib/builtins/abort
       unreachable
      end
-     br $__inlined_func$~lib/rt/itcms/Object#unlink$164
+     br $__inlined_func$~lib/rt/itcms/Object#unlink$166
     end
     local.get $1
     i32.load offset=8

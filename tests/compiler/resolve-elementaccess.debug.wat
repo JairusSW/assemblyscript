@@ -2449,52 +2449,61 @@
   return
  )
  (func $~lib/util/dtoa/toBcd8 (param $value i64) (result i32)
+  (local $value|1 i64)
   (local $quads i64)
   (local $pairs i64)
   (local $singles i64)
-  local.get $value
-  i64.const 4294957296
-  local.get $value
-  global.get $~lib/util/dtoa/DIV10K_SIG
-  i64.mul
-  i32.const 40
-  i64.extend_i32_s
-  i64.shr_u
-  i64.mul
-  i64.add
-  local.set $quads
-  local.get $quads
-  i64.const 65436
-  local.get $quads
-  global.get $~lib/util/dtoa/DIV100_SIG
-  i64.mul
-  i32.const 19
-  i64.extend_i32_s
-  i64.shr_u
-  i64.const 545460846719
-  i64.and
-  i64.mul
-  i64.add
-  local.set $pairs
-  local.get $pairs
-  i64.const 246
-  local.get $pairs
-  global.get $~lib/util/dtoa/DIV10_SIG
-  i64.mul
-  i32.const 10
-  i64.extend_i32_s
-  i64.shr_u
-  i64.const 4222189076152335
-  i64.and
-  i64.mul
-  i64.add
-  local.set $singles
-  local.get $singles
-  call $~lib/polyfills/bswap<u64>
-  global.set $~lib/util/dtoa/gBcdValue
+  (local $singles|5 i64)
+  block $~lib/util/dtoa/toBcd8Digits|inlined.0 (result i64)
+   local.get $value
+   local.set $value|1
+   local.get $value|1
+   i64.const 4294957296
+   local.get $value|1
+   global.get $~lib/util/dtoa/DIV10K_SIG
+   i64.mul
+   i32.const 40
+   i64.extend_i32_s
+   i64.shr_u
+   i64.mul
+   i64.add
+   local.set $quads
+   local.get $quads
+   i64.const 65436
+   local.get $quads
+   global.get $~lib/util/dtoa/DIV100_SIG
+   i64.mul
+   i32.const 19
+   i64.extend_i32_s
+   i64.shr_u
+   i64.const 545460846719
+   i64.and
+   i64.mul
+   i64.add
+   local.set $pairs
+   local.get $pairs
+   i64.const 246
+   local.get $pairs
+   global.get $~lib/util/dtoa/DIV10_SIG
+   i64.mul
+   i32.const 10
+   i64.extend_i32_s
+   i64.shr_u
+   i64.const 4222189076152335
+   i64.and
+   i64.mul
+   i64.add
+   local.set $singles
+   local.get $singles
+   call $~lib/polyfills/bswap<u64>
+   global.set $~lib/util/dtoa/gBcdValue
+   local.get $singles
+   br $~lib/util/dtoa/toBcd8Digits|inlined.0
+  end
+  local.set $singles|5
   i32.const 70
   i64.extend_i32_s
-  local.get $singles
+  local.get $singles|5
   i64.const 1
   i64.shl
   i64.const 1

@@ -2282,7 +2282,7 @@
      end
     end
    end
-   block $__inlined_func$~lib/util/string/compareImpl$712
+   block $__inlined_func$~lib/util/string/compareImpl$714
     loop $while-continue|1
      local.get $0
      local.tee $3
@@ -2302,7 +2302,7 @@
       local.get $4
       local.get $5
       i32.ne
-      br_if $__inlined_func$~lib/util/string/compareImpl$712
+      br_if $__inlined_func$~lib/util/string/compareImpl$714
       local.get $2
       i32.const 2
       i32.add
@@ -7958,7 +7958,7 @@
   i32.lt_s
   select
   local.set $0
-  block $__inlined_func$~lib/util/bytes/FILL<u32>$200
+  block $__inlined_func$~lib/util/bytes/FILL<u32>$202
    local.get $1
    i32.eqz
    local.get $1
@@ -7983,7 +7983,7 @@
      i32.shl
      memory.fill
     end
-    br $__inlined_func$~lib/util/bytes/FILL<u32>$200
+    br $__inlined_func$~lib/util/bytes/FILL<u32>$202
    end
    loop $for-loop|0
     local.get $0
@@ -10904,6 +10904,7 @@
     i64.const 68719476735
     i64.and
     local.set $4
+    local.get $11
     i64.const 1
     local.get $8
     i64.const 1
@@ -10916,7 +10917,6 @@
     i64.shr_u
     i64.add
     local.tee $7
-    local.get $11
     i64.add
     i64.const 36
     i64.shr_u
@@ -11082,6 +11082,7 @@
     i64.const 68719476735
     i64.and
     local.set $10
+    local.get $8
     i64.const 1
     local.get $7
     i64.const 1
@@ -11092,7 +11093,6 @@
     i64.shr_u
     i64.add
     local.tee $4
-    local.get $8
     i64.add
     i64.const 36
     i64.shr_u
@@ -11213,6 +11213,7 @@
    local.get $4
    i64.add
    local.tee $4
+   local.get $4
    i64.const 5243
    i64.mul
    i64.const 19
@@ -11221,9 +11222,9 @@
    i64.and
    i64.const 65436
    i64.mul
-   local.get $4
    i64.add
    local.tee $4
+   local.get $4
    i64.const 103
    i64.mul
    i64.const 10
@@ -11232,7 +11233,6 @@
    i64.and
    i64.const 246
    i64.mul
-   local.get $4
    i64.add
    local.tee $4
    i64.const 8
@@ -11335,16 +11335,16 @@
       i64.const 4294967295
       i64.and
       local.tee $8
+      local.get $8
       i64.const 16
       i64.shl
-      local.get $8
       i64.or
       i64.const 281470681808895
       i64.and
       local.tee $8
+      local.get $8
       i64.const 8
       i64.shl
-      local.get $8
       i64.or
       i64.const 71777214294589695
       i64.and
@@ -11354,16 +11354,16 @@
       i64.const 32
       i64.shr_u
       local.tee $4
+      local.get $4
       i64.const 16
       i64.shl
-      local.get $4
       i64.or
       i64.const 281470681808895
       i64.and
       local.tee $4
+      local.get $4
       i64.const 8
       i64.shl
-      local.get $4
       i64.or
       i64.const 71777214294589695
       i64.and
@@ -11458,16 +11458,16 @@
      i64.const 4294967295
      i64.and
      local.tee $8
+     local.get $8
      i64.const 16
      i64.shl
-     local.get $8
      i64.or
      i64.const 281470681808895
      i64.and
      local.tee $8
+     local.get $8
      i64.const 8
      i64.shl
-     local.get $8
      i64.or
      i64.const 71777214294589695
      i64.and
@@ -11477,16 +11477,16 @@
      i64.const 32
      i64.shr_u
      local.tee $8
+     local.get $8
      i64.const 16
      i64.shl
-     local.get $8
      i64.or
      i64.const 281470681808895
      i64.and
      local.tee $8
+     local.get $8
      i64.const 8
      i64.shl
-     local.get $8
      i64.or
      i64.const 71777214294589695
      i64.and
@@ -11541,16 +11541,16 @@
       i64.const 4294967295
       i64.and
       local.tee $4
+      local.get $4
       i64.const 16
       i64.shl
-      local.get $4
       i64.or
       i64.const 281470681808895
       i64.and
       local.tee $4
+      local.get $4
       i64.const 8
       i64.shl
-      local.get $4
       i64.or
       i64.const 71777214294589695
       i64.and
@@ -11560,16 +11560,16 @@
       i64.const 32
       i64.shr_u
       local.tee $4
+      local.get $4
       i64.const 16
       i64.shl
-      local.get $4
       i64.or
       i64.const 281470681808895
       i64.and
       local.tee $4
+      local.get $4
       i64.const 8
       i64.shl
-      local.get $4
       i64.or
       i64.const 71777214294589695
       i64.and
@@ -11668,16 +11668,16 @@
    i64.const 4294967295
    i64.and
    local.tee $7
+   local.get $7
    i64.const 16
    i64.shl
-   local.get $7
    i64.or
    i64.const 281470681808895
    i64.and
    local.tee $7
+   local.get $7
    i64.const 8
    i64.shl
-   local.get $7
    i64.or
    i64.const 71777214294589695
    i64.and
@@ -11687,16 +11687,16 @@
    i64.const 32
    i64.shr_u
    local.tee $4
+   local.get $4
    i64.const 16
    i64.shl
-   local.get $4
    i64.or
    i64.const 281470681808895
    i64.and
    local.tee $4
+   local.get $4
    i64.const 8
    i64.shl
-   local.get $4
    i64.or
    i64.const 71777214294589695
    i64.and
@@ -11853,16 +11853,17 @@
   (local $7 i32)
   (local $8 i32)
   (local $9 i32)
-  (local $10 i64)
-  (local $11 i64)
+  (local $10 i32)
+  (local $11 i32)
   (local $12 i64)
   (local $13 i64)
   (local $14 i64)
-  (local $15 i32)
-  (local $16 i32)
-  (local $17 i64)
-  (local $18 i64)
+  (local $15 i64)
+  (local $16 i64)
+  (local $17 i32)
+  (local $18 i32)
   (local $19 i64)
+  (local $20 i64)
   local.get $1
   i64.reinterpret_f64
   local.tee $2
@@ -12355,62 +12356,66 @@
       i32.const 10
       i32.add
       local.tee $9
+      i32.const 293
+      i32.mul
+      i32.const 13
+      i32.shr_u
+      local.tee $10
+      i32.const 4
+      i32.shl
+      i32.const 10848
+      i32.add
+      local.tee $11
+      i64.load
+      local.set $2
+      local.get $11
+      i64.load offset=8
+      local.tee $4
+      i64.const 4294967295
+      i64.and
+      local.set $5
+      local.get $4
+      i64.const 32
+      i64.shr_u
+      local.tee $4
+      local.get $9
+      local.get $10
       i32.const 28
-      i32.rem_s
+      i32.mul
+      i32.sub
       i32.const 3
       i32.shl
       i32.const 10624
       i32.add
       i64.load
-      local.set $2
-      local.get $9
-      i32.const 28
-      i32.div_s
-      i32.const 4
-      i32.shl
-      i32.const 10848
-      i32.add
-      local.tee $9
-      i64.load
-      local.set $4
-      local.get $9
-      i64.load offset=8
-      local.tee $5
+      local.tee $12
       i64.const 4294967295
       i64.and
-      local.set $10
+      local.tee $13
+      i64.mul
+      local.get $5
+      local.get $13
+      i64.mul
+      i64.const 32
+      i64.shr_u
+      i64.add
+      local.set $14
+      local.get $13
+      local.get $2
+      i64.const 32
+      i64.shr_u
+      local.tee $15
+      i64.mul
       local.get $2
       i64.const 4294967295
       i64.and
-      local.tee $11
-      local.get $5
-      i64.const 32
-      i64.shr_u
-      local.tee $5
-      i64.mul
-      local.get $10
-      local.get $11
+      local.tee $16
+      local.get $13
       i64.mul
       i64.const 32
       i64.shr_u
       i64.add
-      local.set $12
-      local.get $4
-      i64.const 32
-      i64.shr_u
-      local.tee $13
-      local.get $11
-      i64.mul
-      local.get $4
-      i64.const 4294967295
-      i64.and
-      local.tee $14
-      local.get $11
-      i64.mul
-      i64.const 32
-      i64.shr_u
-      i64.add
-      local.set $11
+      local.set $13
       local.get $7
       i32.const 5
       i32.shr_s
@@ -12420,46 +12425,46 @@
       i32.add
       i64.load32_u
       drop
-      local.get $2
       local.get $4
-      i64.mul
-      local.get $2
+      local.get $12
       i64.const 32
       i64.shr_u
-      local.tee $2
+      local.tee $4
+      i64.mul
+      local.get $14
+      i64.const 32
+      i64.shr_u
+      i64.add
+      local.get $4
       local.get $5
       i64.mul
-      local.get $12
-      i64.const 32
-      i64.shr_u
-      i64.add
-      local.get $2
-      local.get $10
-      i64.mul
-      local.get $12
+      local.get $14
       i64.const 4294967295
       i64.and
       i64.add
       i64.const 32
       i64.shr_u
-      i64.add
-      local.tee $4
       i64.add
       local.tee $5
-      local.get $4
+      local.get $2
+      local.get $12
+      i64.mul
+      i64.add
+      local.tee $2
+      local.get $5
       i64.lt_u
       i64.extend_i32_u
-      local.get $2
-      local.get $13
+      local.get $4
+      local.get $15
       i64.mul
-      local.get $11
+      local.get $13
       i64.const 32
       i64.shr_u
       i64.add
-      local.get $2
-      local.get $14
+      local.get $4
+      local.get $16
       i64.mul
-      local.get $11
+      local.get $13
       i64.const 4294967295
       i64.and
       i64.add
@@ -12467,20 +12472,20 @@
       i64.shr_u
       i64.add
       i64.add
-      local.tee $2
+      local.tee $4
       i64.const 63
       i64.shr_u
       i64.eqz
       if (result i64)
-       local.get $2
+       local.get $4
        i64.const 1
        i64.shl
-       local.get $5
+       local.get $2
        i64.const 63
        i64.shr_u
        i64.or
       else
-       local.get $2
+       local.get $4
       end
       global.set $~lib/util/dtoa/gPow10Hi
       global.get $~lib/util/dtoa/gPow10Hi
@@ -12498,20 +12503,20 @@
       local.get $4
       i64.const 53
       i64.add
-      local.tee $10
+      local.tee $12
       i64.shl
-      local.tee $11
+      local.tee $13
       i64.const 54
       i64.shr_u
       i64.const 5
       i64.mul
-      local.tee $12
+      local.tee $14
       i64.const 9
       i64.shr_u
       i64.const 1
       i64.add
-      local.get $11
-      local.get $10
+      local.get $13
+      local.get $12
       i64.shr_u
       i64.const 5
       i64.mul
@@ -12536,12 +12541,12 @@
       i64.shr_u
       i64.const 5
       i64.mul
-      local.get $12
+      local.get $14
       i64.const 511
       i64.and
       i64.lt_u
       select
-      local.get $11
+      local.get $13
       i64.const 4611686018427387904
       i64.eq
       select
@@ -12549,12 +12554,12 @@
       local.get $2
       i64.const 1
       i64.shr_u
-      local.get $11
+      local.get $13
       i64.le_u
       select
       local.get $2
       i64.const -1
-      local.get $11
+      local.get $13
       i64.sub
       i64.gt_u
       select
@@ -12594,10 +12599,6 @@
       global.set $~lib/util/dtoa/gExp
       br $~lib/util/dtoa/toDecimalDoubleNormal|inlined.0
      end
-     local.get $5
-     i64.const 4503599627370496
-     i64.or
-     local.set $5
      local.get $7
      i32.const -1
      local.get $6
@@ -12607,125 +12608,125 @@
      i32.mul
      i32.const 18
      i32.shr_s
-     local.tee $6
+     local.tee $8
      i32.sub
-     local.tee $7
+     local.tee $9
      i32.const 217707
      i32.mul
      i32.const 16
      i32.shr_s
      i32.add
-     local.tee $8
+     local.tee $10
      i32.const 7
      i32.add
-     local.set $9
-     local.get $7
+     local.set $7
+     local.get $9
      i32.const 293
      i32.add
-     local.tee $15
+     local.tee $11
      i32.const 10
      i32.add
-     local.tee $16
+     local.tee $17
+     i32.const 293
+     i32.mul
+     i32.const 13
+     i32.shr_u
+     local.tee $18
+     i32.const 4
+     i32.shl
+     i32.const 10848
+     i32.add
+     local.tee $6
+     i64.load
+     local.set $2
+     local.get $6
+     i64.load offset=8
+     local.tee $4
+     i64.const 4294967295
+     i64.and
+     local.set $12
+     local.get $4
+     i64.const 32
+     i64.shr_u
+     local.tee $13
+     local.get $17
+     local.get $18
      i32.const 28
-     i32.rem_s
+     i32.mul
+     i32.sub
      i32.const 3
      i32.shl
      i32.const 10624
      i32.add
      i64.load
-     local.set $4
-     local.get $16
-     i32.const 28
-     i32.div_s
-     i32.const 4
-     i32.shl
-     i32.const 10848
-     i32.add
-     local.tee $16
-     i64.load
-     local.set $10
-     local.get $16
-     i64.load offset=8
-     local.tee $2
+     local.tee $14
      i64.const 4294967295
      i64.and
-     local.set $11
-     local.get $4
-     i64.const 4294967295
-     i64.and
-     local.tee $12
+     local.tee $15
+     i64.mul
+     local.get $12
+     local.get $15
+     i64.mul
+     i64.const 32
+     i64.shr_u
+     i64.add
+     local.set $16
+     local.get $15
      local.get $2
+     i64.const 32
+     i64.shr_u
+     local.tee $19
+     i64.mul
+     local.get $2
+     i64.const 4294967295
+     i64.and
+     local.tee $20
+     local.get $15
+     i64.mul
+     i64.const 32
+     i64.shr_u
+     i64.add
+     local.set $15
+     local.get $13
+     local.get $14
      i64.const 32
      i64.shr_u
      local.tee $13
      i64.mul
-     local.get $11
-     local.get $12
-     i64.mul
+     local.get $16
      i64.const 32
      i64.shr_u
      i64.add
-     local.set $14
-     local.get $2
-     local.get $4
-     i64.mul
-     local.set $17
-     local.get $10
-     i64.const 32
-     i64.shr_u
-     local.tee $18
      local.get $12
-     i64.mul
-     local.get $10
-     i64.const 4294967295
-     i64.and
-     local.tee $19
-     local.get $12
-     i64.mul
-     i64.const 32
-     i64.shr_u
-     i64.add
-     local.set $12
-     local.get $4
-     i64.const 32
-     i64.shr_u
-     local.tee $2
      local.get $13
      i64.mul
-     local.get $14
-     i64.const 32
-     i64.shr_u
-     i64.add
-     local.get $2
-     local.get $11
-     i64.mul
-     local.get $14
+     local.get $16
      i64.const 4294967295
      i64.and
      i64.add
      i64.const 32
      i64.shr_u
      i64.add
-     local.tee $11
-     local.get $4
-     local.get $10
+     local.tee $12
+     local.get $2
+     local.get $14
      i64.mul
      i64.add
-     local.tee $10
-     local.get $11
+     local.tee $16
+     local.get $12
      i64.lt_u
      i64.extend_i32_u
-     local.get $2
-     local.get $18
+     local.get $13
+     local.get $19
      i64.mul
-     local.get $12
+     local.get $15
      i64.const 32
      i64.shr_u
      i64.add
-     local.get $2
-     local.get $19
+     local.get $13
+     local.get $20
      i64.mul
-     local.get $12
+     local.get $15
      i64.const 4294967295
      i64.and
      i64.add
@@ -12733,30 +12734,32 @@
      i64.shr_u
      i64.add
      i64.add
-     local.tee $4
+     local.tee $2
      i64.const 63
      i64.shr_u
      i64.eqz
      if (result i64)
-      local.get $4
+      local.get $2
       i64.const 1
       i64.shl
-      local.get $10
+      local.get $16
       i64.const 63
       i64.shr_u
       i64.or
-      local.set $4
-      local.get $10
+      local.set $2
+      local.get $16
       i64.const 1
       i64.shl
-      local.get $17
+      local.get $4
+      local.get $14
+      i64.mul
       i64.const 63
       i64.shr_u
       i64.or
      else
-      local.get $10
+      local.get $16
      end
-     local.get $15
+     local.get $11
      i32.const 5
      i32.shr_s
      i32.const 2
@@ -12764,7 +12767,7 @@
      i32.const 11216
      i32.add
      i64.load32_u
-     local.get $15
+     local.get $11
      i32.const 31
      i32.and
      i64.extend_i32_s
@@ -12772,95 +12775,100 @@
      i64.const 1
      i64.and
      i64.sub
-     local.set $2
-     local.get $4
+     local.set $4
+     local.get $2
      global.set $~lib/util/dtoa/gPow10Hi
      global.get $~lib/util/dtoa/gPow10Hi
-     local.tee $4
+     local.tee $2
      local.get $5
-     local.get $9
+     i64.const 4503599627370496
+     i64.or
+     local.tee $5
+     local.get $7
      i64.extend_i32_s
      i64.shl
-     local.tee $10
-     i64.mul
-     local.tee $11
-     local.get $10
-     i64.const 32
-     i64.shr_u
      local.tee $12
-     local.get $7
+     i64.mul
+     local.set $13
+     local.get $9
      i32.const 0
      i32.lt_s
      i64.extend_i32_u
-     local.get $2
+     local.get $4
      i64.add
-     local.tee $2
+     local.tee $4
      i64.const 32
      i64.shr_u
-     local.tee $13
-     i64.mul
-     local.get $10
+     local.tee $14
+     local.get $12
      i64.const 4294967295
      i64.and
-     local.tee $10
+     local.tee $15
+     i64.mul
+     local.get $4
+     i64.const 4294967295
+     i64.and
+     local.tee $4
+     local.get $15
+     i64.mul
+     i64.const 32
+     i64.shr_u
+     i64.add
+     local.set $16
+     local.get $2
+     i64.const 32
+     i64.shr_u
+     local.tee $19
+     local.get $15
+     i64.mul
+     local.get $2
+     i64.const 4294967295
+     i64.and
+     local.tee $20
+     local.get $15
+     i64.mul
+     i64.const 32
+     i64.shr_u
+     i64.add
+     local.set $15
+     i64.const 10
      local.get $13
+     local.get $14
+     local.get $12
+     i64.const 32
+     i64.shr_u
+     local.tee $12
      i64.mul
-     local.get $2
-     i64.const 4294967295
-     i64.and
-     local.tee $2
-     local.get $10
-     i64.mul
+     local.get $16
      i64.const 32
      i64.shr_u
      i64.add
-     local.tee $13
-     i64.const 32
-     i64.shr_u
-     i64.add
-     local.get $2
+     local.get $4
      local.get $12
      i64.mul
+     local.get $16
+     i64.const 4294967295
+     i64.and
+     i64.add
+     i64.const 32
+     i64.shr_u
+     i64.add
+     i64.add
+     local.tee $4
      local.get $13
-     i64.const 4294967295
-     i64.and
-     i64.add
-     i64.const 32
-     i64.shr_u
-     i64.add
-     i64.add
-     local.set $2
-     local.get $4
-     i64.const 32
-     i64.shr_u
-     local.tee $13
-     local.get $10
-     i64.mul
-     local.get $4
-     i64.const 4294967295
-     i64.and
-     local.tee $14
-     local.get $10
-     i64.mul
-     i64.const 32
-     i64.shr_u
-     i64.add
-     local.set $10
-     local.get $2
-     local.get $11
      i64.lt_u
      i64.extend_i32_u
      local.get $12
-     local.get $13
+     local.get $19
      i64.mul
-     local.get $10
+     local.get $15
      i64.const 32
      i64.shr_u
      i64.add
      local.get $12
-     local.get $14
+     local.get $20
      i64.mul
-     local.get $10
+     local.get $15
      i64.const 4294967295
      i64.and
      i64.add
@@ -12868,39 +12876,33 @@
      i64.shr_u
      i64.add
      i64.add
-     local.tee $10
+     local.tee $12
      i64.const 58
      i64.shl
-     local.get $2
+     local.get $4
      i64.const 6
      i64.shr_u
      i64.or
-     local.tee $2
+     local.tee $4
      i64.const 10
      i64.mul
-     local.set $11
-     local.get $10
-     i64.const 6
-     i64.shr_u
-     local.set $10
-     i64.const 10
-     local.get $11
-     local.get $11
+     local.tee $13
+     local.get $13
      i64.const -9223372036854775802
      i64.const 0
-     local.get $2
+     local.get $4
      i64.const 4611686018427387904
      i64.ne
      select
      i64.add
      i64.gt_u
      i64.extend_i32_u
-     local.get $2
+     local.get $4
      i64.const 32
      i64.shr_u
      i64.const 10
      i64.mul
-     local.get $2
+     local.get $4
      i64.const 4294967295
      i64.and
      i64.const 10
@@ -12917,28 +12919,33 @@
      i64.const 1
      i64.and
      i64.sub
-     local.get $4
+     local.get $2
      i32.const 0
-     local.get $8
+     local.get $10
      i32.sub
      i64.extend_i32_s
      i64.shr_u
      i64.add
-     local.tee $4
-     local.get $2
+     local.tee $2
+     local.get $4
      i64.le_u
      select
      i64.const -1
-     local.get $2
-     i64.sub
      local.get $4
+     i64.sub
+     local.get $2
      i64.lt_u
      select
-     local.tee $2
+     local.set $2
+     local.get $12
+     i64.const 6
+     i64.shr_u
+     local.set $4
+     local.get $2
      i64.const 10
      i64.eq
      if
-      local.get $10
+      local.get $4
       i64.const 1
       i64.add
       global.set $~lib/util/dtoa/gSig
@@ -12950,14 +12957,14 @@
       local.get $2
       i64.eqz
       if
-       local.get $10
+       local.get $4
        global.set $~lib/util/dtoa/gSig
        i32.const 0
        global.set $~lib/util/dtoa/gLastDigit
        i32.const 0
        global.set $~lib/util/dtoa/gHasLastDigit
       else
-       local.get $10
+       local.get $4
        global.set $~lib/util/dtoa/gSig
        local.get $2
        i32.wrap_i64
@@ -12966,125 +12973,123 @@
        global.set $~lib/util/dtoa/gHasLastDigit
       end
      end
-     local.get $6
+     local.get $8
      global.set $~lib/util/dtoa/gExp
     end
    else
     i32.const 11208
     i64.load
-    local.tee $2
+    local.tee $4
     i64.const 4294967295
     i64.and
-    local.set $4
+    local.set $2
+    local.get $4
+    i64.const 32
+    i64.shr_u
+    local.tee $12
     i32.const 10704
     i64.load
-    local.tee $10
+    local.tee $13
     i64.const 4294967295
     i64.and
-    local.tee $11
-    local.get $2
-    i64.const 32
-    i64.shr_u
-    local.tee $12
-    i64.mul
-    local.get $4
-    local.get $11
-    i64.mul
-    i64.const 32
-    i64.shr_u
-    i64.add
-    local.set $13
-    local.get $2
-    local.get $10
-    i64.mul
-    local.set $2
-    i32.const 11200
-    i64.load
     local.tee $14
-    i64.const 32
-    i64.shr_u
-    local.set $17
-    local.get $12
-    local.get $10
-    i64.const 32
-    i64.shr_u
-    local.tee $12
     i64.mul
-    local.get $13
-    i64.const 32
-    i64.shr_u
-    i64.add
-    local.get $4
-    local.get $12
-    i64.mul
-    local.get $13
-    i64.const 4294967295
-    i64.and
-    i64.add
-    i64.const 32
-    i64.shr_u
-    i64.add
-    local.tee $4
-    local.get $10
+    local.get $2
     local.get $14
     i64.mul
+    i64.const 32
+    i64.shr_u
     i64.add
-    local.tee $10
-    local.get $4
+    local.set $15
+    local.get $14
+    i32.const 11200
+    i64.load
+    local.tee $16
+    i64.const 32
+    i64.shr_u
+    local.tee $19
+    i64.mul
+    local.get $16
+    i64.const 4294967295
+    i64.and
+    local.tee $20
+    local.get $14
+    i64.mul
+    i64.const 32
+    i64.shr_u
+    i64.add
+    local.set $14
+    local.get $12
+    local.get $13
+    i64.const 32
+    i64.shr_u
+    local.tee $12
+    i64.mul
+    local.get $15
+    i64.const 32
+    i64.shr_u
+    i64.add
+    local.get $2
+    local.get $12
+    i64.mul
+    local.get $15
+    i64.const 4294967295
+    i64.and
+    i64.add
+    i64.const 32
+    i64.shr_u
+    i64.add
+    local.tee $2
+    local.get $13
+    local.get $16
+    i64.mul
+    i64.add
+    local.tee $15
+    local.get $2
     i64.lt_u
     i64.extend_i32_u
     local.get $12
-    local.get $17
+    local.get $19
     i64.mul
-    local.get $11
-    local.get $17
+    local.get $14
+    i64.const 32
+    i64.shr_u
+    i64.add
+    local.get $12
+    local.get $20
     i64.mul
     local.get $14
     i64.const 4294967295
     i64.and
-    local.tee $4
-    local.get $11
-    i64.mul
-    i64.const 32
-    i64.shr_u
-    i64.add
-    local.tee $11
-    i64.const 32
-    i64.shr_u
-    i64.add
-    local.get $4
-    local.get $12
-    i64.mul
-    local.get $11
-    i64.const 4294967295
-    i64.and
     i64.add
     i64.const 32
     i64.shr_u
     i64.add
     i64.add
-    local.tee $4
+    local.tee $2
     i64.const 63
     i64.shr_u
     i64.eqz
     if (result i64)
-     local.get $4
+     local.get $2
      i64.const 1
      i64.shl
-     local.get $10
+     local.get $15
      i64.const 63
      i64.shr_u
      i64.or
-     local.set $4
-     local.get $10
+     local.set $2
+     local.get $15
      i64.const 1
      i64.shl
-     local.get $2
+     local.get $4
+     local.get $13
+     i64.mul
      i64.const 63
      i64.shr_u
      i64.or
     else
-     local.get $10
+     local.get $15
     end
     i32.const 11292
     i64.load32_u
@@ -13093,68 +13098,68 @@
     i64.const 1
     i64.and
     i64.sub
-    local.set $2
-    local.get $4
+    local.set $4
+    local.get $2
     global.set $~lib/util/dtoa/gPow10Hi
     global.get $~lib/util/dtoa/gPow10Hi
-    local.tee $4
+    local.tee $2
     local.get $5
     i64.const 5
     i64.shl
-    local.tee $10
+    local.tee $12
     i64.mul
-    local.set $11
+    local.set $13
+    local.get $12
+    i64.const 4294967295
+    i64.and
+    local.tee $14
+    local.get $4
+    i64.const 32
+    i64.shr_u
+    local.tee $15
+    i64.mul
+    local.get $4
+    i64.const 4294967295
+    i64.and
+    local.tee $4
+    local.get $14
+    i64.mul
+    i64.const 32
+    i64.shr_u
+    i64.add
+    local.set $16
     local.get $2
     i64.const 32
     i64.shr_u
-    local.tee $12
-    local.get $10
-    i64.const 4294967295
-    i64.and
-    local.tee $13
+    local.tee $19
+    local.get $14
     i64.mul
     local.get $2
     i64.const 4294967295
     i64.and
-    local.tee $2
-    local.get $13
+    local.tee $20
+    local.get $14
     i64.mul
     i64.const 32
     i64.shr_u
     i64.add
     local.set $14
-    local.get $4
-    i64.const 32
-    i64.shr_u
-    local.tee $17
-    local.get $13
-    i64.mul
-    local.get $4
-    i64.const 4294967295
-    i64.and
-    local.tee $18
-    local.get $13
-    i64.mul
-    i64.const 32
-    i64.shr_u
-    i64.add
-    local.set $13
     i64.const 10
-    local.get $11
+    local.get $13
+    local.get $15
     local.get $12
-    local.get $10
     i64.const 32
     i64.shr_u
-    local.tee $10
+    local.tee $12
     i64.mul
-    local.get $14
+    local.get $16
     i64.const 32
     i64.shr_u
     i64.add
-    local.get $2
-    local.get $10
+    local.get $4
+    local.get $12
     i64.mul
-    local.get $14
+    local.get $16
     i64.const 4294967295
     i64.and
     i64.add
@@ -13162,21 +13167,21 @@
     i64.shr_u
     i64.add
     i64.add
-    local.tee $2
-    local.get $11
+    local.tee $4
+    local.get $13
     i64.lt_u
     i64.extend_i32_u
-    local.get $10
-    local.get $17
+    local.get $12
+    local.get $19
     i64.mul
-    local.get $13
+    local.get $14
     i64.const 32
     i64.shr_u
     i64.add
-    local.get $10
-    local.get $18
+    local.get $12
+    local.get $20
     i64.mul
-    local.get $13
+    local.get $14
     i64.const 4294967295
     i64.and
     i64.add
@@ -13184,28 +13189,28 @@
     i64.shr_u
     i64.add
     i64.add
-    local.tee $10
+    local.tee $12
     i64.const 58
     i64.shl
-    local.get $2
+    local.get $4
     i64.const 6
     i64.shr_u
     i64.or
-    local.tee $2
+    local.tee $4
     i64.const 10
     i64.mul
-    local.tee $11
-    local.get $11
+    local.tee $13
     i64.const 9223372036854775802
     i64.sub
-    i64.gt_u
+    local.get $13
+    i64.lt_u
     i64.extend_i32_u
-    local.get $2
+    local.get $4
     i64.const 32
     i64.shr_u
     i64.const 10
     i64.mul
-    local.get $2
+    local.get $4
     i64.const 4294967295
     i64.and
     i64.const 10
@@ -13222,22 +13227,22 @@
     i64.const 1
     i64.and
     i64.sub
-    local.get $4
+    local.get $2
     i64.const 2
     i64.shr_u
     i64.add
-    local.tee $4
-    local.get $2
+    local.tee $2
+    local.get $4
     i64.le_u
     select
     i64.const -1
-    local.get $2
-    i64.sub
     local.get $4
+    i64.sub
+    local.get $2
     i64.lt_u
     select
     local.set $2
-    local.get $10
+    local.get $12
     i64.const 6
     i64.shr_u
     local.set $4
@@ -13403,16 +13408,7 @@
     global.set $~lib/util/dtoa/gHasLastDigit
    end
    global.get $~lib/util/dtoa/gHasLastDigit
-   local.set $6
-   global.get $~lib/util/dtoa/gSig
-   i64.const 1000000000000000
-   i64.ge_u
-   local.tee $7
-   global.get $~lib/util/dtoa/gExp
-   i32.const 15
-   i32.add
-   i32.add
-   local.set $8
+   local.set $7
    global.get $~lib/util/dtoa/gSig
    local.tee $2
    i64.const 100000000
@@ -13427,6 +13423,7 @@
    local.get $4
    i64.add
    local.tee $5
+   local.get $5
    i64.const 5243
    i64.mul
    i64.const 19
@@ -13435,9 +13432,9 @@
    i64.and
    i64.const 65436
    i64.mul
-   local.get $5
    i64.add
    local.tee $5
+   local.get $5
    i64.const 103
    i64.mul
    i64.const 10
@@ -13446,7 +13443,6 @@
    i64.and
    i64.const 246
    i64.mul
-   local.get $5
    i64.add
    local.tee $5
    i64.const 8
@@ -13459,12 +13455,12 @@
    i64.const 8
    i64.shl
    i64.or
-   local.tee $10
+   local.tee $5
    i64.const 16
    i64.shr_u
    i64.const 281470681808895
    i64.and
-   local.get $10
+   local.get $5
    i64.const 281470681808895
    i64.and
    i64.const 16
@@ -13473,125 +13469,79 @@
    i64.const 32
    i64.rotr
    global.set $~lib/util/dtoa/gBcdValue
-   i64.const 70
-   local.get $5
-   i64.const 1
-   i64.shl
-   i64.const 1
-   i64.or
-   i64.clz
-   i64.sub
-   i64.const 3
-   i64.shr_u
-   i32.wrap_i64
-   local.set $9
    global.get $~lib/util/dtoa/gBcdValue
-   local.set $5
-   block $~lib/util/dtoa/toDigits64Swar|inlined.0
-    local.get $2
-    local.get $4
-    i64.const 100000000
-    i64.mul
-    i64.sub
-    local.tee $2
-    i64.eqz
-    if
-     local.get $5
-     i64.const 3472328296227680304
-     i64.add
-     global.set $~lib/util/dtoa/gDigHi
-     i64.const 3472328296227680304
-     global.set $~lib/util/dtoa/gDigLo
-     local.get $9
-     i32.const 8
-     i32.add
-     global.set $~lib/util/dtoa/gDigits
-     br $~lib/util/dtoa/toDigits64Swar|inlined.0
-    end
-    local.get $2
-    local.get $2
-    i64.const 109951163
-    i64.mul
-    i64.const 40
-    i64.shr_u
-    i64.const 4294957296
-    i64.mul
-    i64.add
-    local.tee $2
-    i64.const 5243
-    i64.mul
-    i64.const 19
-    i64.shr_u
-    i64.const 545460846719
-    i64.and
-    i64.const 65436
-    i64.mul
-    local.get $2
-    i64.add
-    local.tee $2
-    i64.const 103
-    i64.mul
-    i64.const 10
-    i64.shr_u
-    i64.const 4222189076152335
-    i64.and
-    i64.const 246
-    i64.mul
-    local.get $2
-    i64.add
-    local.tee $2
-    i64.const 8
-    i64.shr_u
-    i64.const 71777214294589695
-    i64.and
-    local.get $2
-    i64.const 71777214294589695
-    i64.and
-    i64.const 8
-    i64.shl
-    i64.or
-    local.tee $10
-    i64.const 16
-    i64.shr_u
-    i64.const 281470681808895
-    i64.and
-    local.get $10
-    i64.const 281470681808895
-    i64.and
-    i64.const 16
-    i64.shl
-    i64.or
-    i64.const 32
-    i64.rotr
-    global.set $~lib/util/dtoa/gBcdValue
-    local.get $5
-    i64.const 3472328296227680304
-    i64.add
-    global.set $~lib/util/dtoa/gDigHi
-    global.get $~lib/util/dtoa/gBcdValue
-    i64.const 3472328296227680304
-    i64.add
-    global.set $~lib/util/dtoa/gDigLo
-    i64.const 70
-    local.get $2
-    i64.const 1
-    i64.shl
-    i64.const 1
-    i64.or
-    i64.clz
-    i64.sub
-    i64.const 3
-    i64.shr_u
-    i32.wrap_i64
-    local.get $9
-    i32.const 8
-    i32.add
-    local.get $4
-    i64.eqz
-    select
-    global.set $~lib/util/dtoa/gDigits
-   end
-   local.get $8
+   local.get $2
+   local.get $4
+   i64.const 100000000
+   i64.mul
+   i64.sub
+   local.tee $2
+   i64.const 109951163
+   i64.mul
+   i64.const 40
+   i64.shr_u
+   i64.const 4294957296
+   i64.mul
+   local.get $2
+   i64.add
+   local.tee $2
+   local.get $2
+   i64.const 5243
+   i64.mul
+   i64.const 19
+   i64.shr_u
+   i64.const 545460846719
+   i64.and
+   i64.const 65436
+   i64.mul
+   i64.add
+   local.tee $2
+   local.get $2
+   i64.const 103
+   i64.mul
+   i64.const 10
+   i64.shr_u
+   i64.const 4222189076152335
+   i64.and
+   i64.const 246
+   i64.mul
+   i64.add
+   local.tee $2
+   i64.const 8
+   i64.shr_u
+   i64.const 71777214294589695
+   i64.and
+   local.get $2
+   i64.const 71777214294589695
+   i64.and
+   i64.const 8
+   i64.shl
+   i64.or
+   local.tee $2
+   i64.const 16
+   i64.shr_u
+   i64.const 281470681808895
+   i64.and
+   local.get $2
+   i64.const 281470681808895
+   i64.and
+   i64.const 16
+   i64.shl
+   i64.or
+   i64.const 32
+   i64.rotr
+   global.set $~lib/util/dtoa/gBcdValue
+   i64.const 3472328296227680304
+   i64.add
+   global.set $~lib/util/dtoa/gDigHi
+   global.get $~lib/util/dtoa/gBcdValue
+   i64.const 3472328296227680304
+   i64.add
+   global.set $~lib/util/dtoa/gDigLo
+   global.get $~lib/util/dtoa/gExp
+   i32.const 16
+   i32.add
+   local.tee $8
    i32.const 20
    i32.le_s
    local.get $8
@@ -13612,21 +13562,19 @@
     end
     global.get $~lib/util/dtoa/gLastDigit
     i32.const 0
-    local.get $6
+    local.get $7
     select
     i32.const 48
     i32.add
     i64.extend_i32_s
     local.set $4
     i32.const 16
-    global.get $~lib/util/dtoa/gDigits
-    i32.const 1
-    i32.sub
-    local.get $6
+    i32.const 15
+    local.get $7
     select
     local.set $6
     global.get $~lib/util/dtoa/gDigHi
-    local.set $2
+    local.set $12
     global.get $~lib/util/dtoa/gDigLo
     local.set $5
     block $~lib/util/dtoa/writeFixed|inlined.0 (result i32)
@@ -13635,77 +13583,79 @@
      i32.ge_s
      if
       local.get $3
-      local.get $2
+      local.get $12
       i64.const 4294967295
       i64.and
-      local.tee $10
+      local.tee $2
+      local.get $2
       i64.const 16
       i64.shl
-      local.get $10
       i64.or
       i64.const 281470681808895
       i64.and
-      local.tee $10
+      local.tee $2
+      local.get $2
       i64.const 8
       i64.shl
-      local.get $10
       i64.or
       i64.const 71777214294589695
       i64.and
       i64.store
       local.get $3
-      local.get $2
+      local.get $12
       i64.const 32
       i64.shr_u
       local.tee $2
+      local.get $2
       i64.const 16
       i64.shl
-      local.get $2
       i64.or
       i64.const 281470681808895
       i64.and
       local.tee $2
+      local.get $2
       i64.const 8
       i64.shl
-      local.get $2
       i64.or
       i64.const 71777214294589695
       i64.and
       i64.store offset=8
       local.get $3
+      i32.const 16
+      i32.add
       local.get $5
       i64.const 4294967295
       i64.and
       local.tee $2
+      local.get $2
       i64.const 16
       i64.shl
-      local.get $2
       i64.or
       i64.const 281470681808895
       i64.and
       local.tee $2
+      local.get $2
       i64.const 8
       i64.shl
-      local.get $2
       i64.or
       i64.const 71777214294589695
       i64.and
-      i64.store offset=16
+      i64.store
       local.get $3
       local.get $5
       i64.const 32
       i64.shr_u
       local.tee $2
+      local.get $2
       i64.const 16
       i64.shl
-      local.get $2
       i64.or
       i64.const 281470681808895
       i64.and
       local.tee $2
+      local.get $2
       i64.const 8
       i64.shl
-      local.get $2
       i64.or
       i64.const 71777214294589695
       i64.and
@@ -13766,7 +13716,7 @@
      i32.ge_s
      local.tee $6
      select
-     local.set $7
+     local.set $9
      local.get $3
      i32.const 1
      local.get $8
@@ -13778,83 +13728,85 @@
      i32.const 1
      i32.shl
      i32.add
-     local.tee $9
-     local.get $2
+     local.tee $10
+     local.get $12
      i64.const 4294967295
      i64.and
-     local.tee $10
+     local.tee $2
+     local.get $2
      i64.const 16
      i64.shl
-     local.get $10
      i64.or
      i64.const 281470681808895
      i64.and
-     local.tee $10
+     local.tee $2
+     local.get $2
      i64.const 8
      i64.shl
-     local.get $10
      i64.or
      i64.const 71777214294589695
      i64.and
      i64.store
-     local.get $9
-     local.get $2
+     local.get $10
+     local.get $12
      i64.const 32
      i64.shr_u
-     local.tee $10
+     local.tee $2
+     local.get $2
      i64.const 16
      i64.shl
-     local.get $10
      i64.or
      i64.const 281470681808895
      i64.and
-     local.tee $10
+     local.tee $2
+     local.get $2
      i64.const 8
      i64.shl
-     local.get $10
      i64.or
      i64.const 71777214294589695
      i64.and
      i64.store offset=8
-     local.get $9
+     local.get $10
+     i32.const 16
+     i32.add
      local.get $5
      i64.const 4294967295
      i64.and
-     local.tee $10
+     local.tee $2
+     local.get $2
      i64.const 16
      i64.shl
-     local.get $10
      i64.or
      i64.const 281470681808895
      i64.and
-     local.tee $10
+     local.tee $2
+     local.get $2
      i64.const 8
      i64.shl
-     local.get $10
      i64.or
      i64.const 71777214294589695
      i64.and
-     i64.store offset=16
-     local.get $9
+     i64.store
+     local.get $10
      local.get $5
      i64.const 32
      i64.shr_u
-     local.tee $10
+     local.tee $2
+     local.get $2
      i64.const 16
      i64.shl
-     local.get $10
      i64.or
      i64.const 281470681808895
      i64.and
-     local.tee $10
+     local.tee $2
+     local.get $2
      i64.const 8
      i64.shl
-     local.get $10
      i64.or
      i64.const 71777214294589695
      i64.and
      i64.store offset=24
-     local.get $9
+     local.get $10
      local.get $4
      i64.store16 offset=32
      local.get $6
@@ -13862,62 +13814,64 @@
       local.get $8
       i32.const 1
       i32.add
-      local.tee $6
+      local.tee $3
       i32.const 3
       i32.shl
-      local.tee $15
+      local.tee $6
       i32.const 64
       i32.lt_s
       if
        local.get $5
        i64.const 64
-       local.get $15
+       local.get $6
        i64.extend_i32_s
-       local.tee $10
+       local.tee $13
        i64.sub
-       local.tee $11
+       local.tee $14
        i64.shl
-       local.get $2
-       local.get $10
+       local.get $12
+       local.get $13
        i64.shr_u
        i64.or
        local.set $2
        local.get $4
-       local.get $11
+       local.get $14
        i64.shl
        local.get $5
-       local.get $10
+       local.get $13
        i64.shr_u
        i64.or
        local.set $4
       else
-       local.get $15
+       local.get $6
        i32.const 64
        i32.eq
        if
         local.get $5
         local.set $2
        else
-        local.get $15
+        local.get $6
         i32.const 128
         i32.lt_s
         if (result i64)
-         local.get $4
-         i64.const 64
-         local.get $15
+         local.get $6
          i32.const -64
          i32.add
          i64.extend_i32_s
-         local.tee $10
+         local.tee $2
+         local.set $13
+         local.get $4
+         i64.const 64
+         local.get $2
          i64.sub
          i64.shl
          local.get $5
-         local.get $10
+         local.get $13
          i64.shr_u
          i64.or
          local.set $2
          local.get $4
-         local.get $10
+         local.get $13
          i64.shr_u
         else
          local.get $4
@@ -13927,104 +13881,104 @@
         local.set $4
        end
       end
-      local.get $6
+      local.get $3
       i32.const 1
       i32.add
       i32.const 1
       i32.shl
-      local.get $9
+      local.get $10
       i32.add
-      local.tee $15
+      local.tee $6
       local.get $2
       i64.const 4294967295
       i64.and
-      local.tee $5
+      local.tee $13
+      local.get $13
       i64.const 16
       i64.shl
-      local.get $5
       i64.or
       i64.const 281470681808895
       i64.and
-      local.tee $5
+      local.tee $13
+      local.get $13
       i64.const 8
       i64.shl
-      local.get $5
       i64.or
       i64.const 71777214294589695
       i64.and
       i64.store
-      local.get $15
+      local.get $6
       local.get $2
       i64.const 32
       i64.shr_u
       local.tee $2
+      local.get $2
       i64.const 16
       i64.shl
-      local.get $2
       i64.or
       i64.const 281470681808895
       i64.and
       local.tee $2
+      local.get $2
       i64.const 8
       i64.shl
-      local.get $2
       i64.or
       i64.const 71777214294589695
       i64.and
       i64.store offset=8
-      local.get $6
+      local.get $3
       i32.const 9
       i32.add
-      local.tee $15
-      local.get $7
+      local.tee $6
+      local.get $9
       i32.lt_s
       if
-       local.get $15
+       local.get $6
        i32.const 1
        i32.shl
-       local.get $9
+       local.get $10
        i32.add
-       local.tee $15
+       local.tee $6
        local.get $4
        i64.const 4294967295
        i64.and
        local.tee $2
+       local.get $2
        i64.const 16
        i64.shl
-       local.get $2
        i64.or
        i64.const 281470681808895
        i64.and
        local.tee $2
+       local.get $2
        i64.const 8
        i64.shl
-       local.get $2
        i64.or
        i64.const 71777214294589695
        i64.and
        i64.store
-       local.get $15
+       local.get $6
        local.get $4
        i64.const 32
        i64.shr_u
        local.tee $2
+       local.get $2
        i64.const 16
        i64.shl
-       local.get $2
        i64.or
        i64.const 281470681808895
        i64.and
        local.tee $2
+       local.get $2
        i64.const 8
        i64.shl
-       local.get $2
        i64.or
        i64.const 71777214294589695
        i64.and
        i64.store offset=8
       end
-      local.get $9
-      local.get $6
+      local.get $10
+      local.get $3
       i32.const 1
       i32.shl
       i32.add
@@ -14035,13 +13989,13 @@
       i32.const 46
       i32.store16 offset=2
      end
+     local.get $10
      local.get $9
-     local.get $7
      i32.const 1
      i32.shl
      i32.add
-     local.set $6
-     local.get $7
+     local.set $3
+     local.get $9
      local.get $8
      i32.const 1
      i32.add
@@ -14051,181 +14005,164 @@
      i32.ge_s
      i32.and
      if
-      local.get $6
+      local.get $3
       i32.const 46
       i32.store16
-      local.get $6
+      local.get $3
       i32.const 48
       i32.store16 offset=2
-      local.get $6
+      local.get $3
       i32.const 4
       i32.add
       br $~lib/util/dtoa/writeFixed|inlined.0
      end
-     loop $while-continue|1
-      local.get $6
+     local.get $7
+     i32.eqz
+     if
       local.get $3
-      i32.const 2
-      i32.add
-      i32.gt_u
+      local.get $5
+      i64.const 3472328296227680304
+      i64.xor
+      i64.clz
+      i64.const 3
+      i64.shr_u
+      i32.wrap_i64
+      local.tee $3
+      i32.const 8
+      i32.eq
       if (result i32)
-       local.get $6
-       i32.const 2
-       i32.sub
-       i32.load16_u
-       i32.const 48
-       i32.eq
+       local.get $3
+       local.get $12
+       i64.const 3472328296227680304
+       i64.xor
+       i64.clz
+       i64.const 3
+       i64.shr_u
+       i32.wrap_i64
+       i32.add
       else
-       i32.const 0
+       local.get $3
       end
-      if
-       local.get $6
-       i32.const 2
-       i32.sub
-       local.set $6
-       br $while-continue|1
-      end
+      i32.const 1
+      i32.shl
+      i32.sub
+      local.set $3
      end
-     local.get $6
+     local.get $3
      i32.const 2
      i32.sub
      i32.load16_u
      i32.const 46
      i32.eq
      if (result i32)
-      local.get $6
+      local.get $3
       i32.const 48
       i32.store16
-      local.get $6
+      local.get $3
       i32.const 2
       i32.add
      else
-      local.get $6
+      local.get $3
      end
     end
     br $~lib/util/dtoa/formatDecodedDouble|inlined.0
    end
    local.get $3
-   local.get $7
-   i32.const 1
-   i32.shl
+   i32.const 2
    i32.add
-   local.tee $7
+   local.tee $6
    global.get $~lib/util/dtoa/gDigHi
    local.tee $2
    i64.const 4294967295
    i64.and
    local.tee $4
+   local.get $4
    i64.const 16
    i64.shl
-   local.get $4
    i64.or
    i64.const 281470681808895
    i64.and
    local.tee $4
+   local.get $4
    i64.const 8
    i64.shl
-   local.get $4
    i64.or
    i64.const 71777214294589695
    i64.and
    i64.store
-   local.get $7
+   local.get $6
    local.get $2
    i64.const 32
    i64.shr_u
    local.tee $2
+   local.get $2
    i64.const 16
    i64.shl
-   local.get $2
    i64.or
    i64.const 281470681808895
    i64.and
    local.tee $2
+   local.get $2
    i64.const 8
    i64.shl
-   local.get $2
    i64.or
    i64.const 71777214294589695
    i64.and
    i64.store offset=8
-   local.get $7
+   local.get $6
+   i32.const 16
+   i32.add
    global.get $~lib/util/dtoa/gDigLo
    local.tee $2
    i64.const 4294967295
    i64.and
    local.tee $4
+   local.get $4
    i64.const 16
    i64.shl
-   local.get $4
    i64.or
    i64.const 281470681808895
    i64.and
    local.tee $4
+   local.get $4
    i64.const 8
    i64.shl
-   local.get $4
    i64.or
    i64.const 71777214294589695
    i64.and
-   i64.store offset=16
-   local.get $7
+   i64.store
+   local.get $6
    local.get $2
    i64.const 32
    i64.shr_u
    local.tee $2
+   local.get $2
    i64.const 16
    i64.shl
-   local.get $2
    i64.or
    i64.const 281470681808895
    i64.and
    local.tee $2
+   local.get $2
    i64.const 8
    i64.shl
-   local.get $2
    i64.or
    i64.const 71777214294589695
    i64.and
    i64.store offset=24
-   local.get $7
+   local.get $6
    global.get $~lib/util/dtoa/gLastDigit
    i32.const 48
    i32.add
    i32.store16 offset=32
-   local.get $7
-   i32.const 17
-   global.get $~lib/util/dtoa/gDigits
    local.get $6
-   select
+   local.get $7
+   i32.const 16
+   i32.add
    i32.const 1
    i32.shl
    i32.add
    local.set $6
-   loop $while-continue|2
-    local.get $6
-    local.get $3
-    i32.const 4
-    i32.add
-    i32.gt_u
-    if (result i32)
-     local.get $6
-     i32.const 2
-     i32.sub
-     i32.load16_u
-     i32.const 48
-     i32.eq
-    else
-     i32.const 0
-    end
-    if
-     local.get $6
-     i32.const 2
-     i32.sub
-     local.set $6
-     br $while-continue|2
-    end
-   end
    local.get $3
    local.get $3
    i32.load16_u offset=2
@@ -14233,6 +14170,40 @@
    local.get $3
    i32.const 46
    i32.store16 offset=2
+   local.get $7
+   i32.eqz
+   if
+    global.get $~lib/util/dtoa/gDigHi
+    local.set $2
+    local.get $6
+    global.get $~lib/util/dtoa/gDigLo
+    i64.const 3472328296227680304
+    i64.xor
+    i64.clz
+    i64.const 3
+    i64.shr_u
+    i32.wrap_i64
+    local.tee $6
+    i32.const 8
+    i32.eq
+    if (result i32)
+     local.get $6
+     local.get $2
+     i64.const 3472328296227680304
+     i64.xor
+     i64.clz
+     i64.const 3
+     i64.shr_u
+     i32.wrap_i64
+     i32.add
+    else
+     local.get $6
+    end
+    i32.const 1
+    i32.shl
+    i32.sub
+    local.set $6
+   end
    local.get $6
    local.get $6
    local.get $3
@@ -14573,7 +14544,7 @@
    global.get $~lib/memory/__stack_pointer
    i64.const 0
    i64.store
-   block $__inlined_func$~lib/util/string/joinIntegerArray<u8>$1421
+   block $__inlined_func$~lib/util/string/joinIntegerArray<u8>$1423
     local.get $0
     i32.const 1
     i32.sub
@@ -14587,7 +14558,7 @@
      global.set $~lib/memory/__stack_pointer
      i32.const 7776
      local.set $0
-     br $__inlined_func$~lib/util/string/joinIntegerArray<u8>$1421
+     br $__inlined_func$~lib/util/string/joinIntegerArray<u8>$1423
     end
     local.get $6
     i32.eqz
@@ -14600,7 +14571,7 @@
      i32.const 8
      i32.add
      global.set $~lib/memory/__stack_pointer
-     br $__inlined_func$~lib/util/string/joinIntegerArray<u8>$1421
+     br $__inlined_func$~lib/util/string/joinIntegerArray<u8>$1423
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 9584
@@ -14693,7 +14664,7 @@
      i32.const 8
      i32.add
      global.set $~lib/memory/__stack_pointer
-     br $__inlined_func$~lib/util/string/joinIntegerArray<u8>$1421
+     br $__inlined_func$~lib/util/string/joinIntegerArray<u8>$1423
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 8
@@ -16219,7 +16190,7 @@
    local.get $1
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$1415
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$1417
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -16243,7 +16214,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$1415
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$1417
    end
    local.get $0
    i32.load offset=8
@@ -21751,7 +21722,7 @@
    global.get $~lib/memory/__stack_pointer
    i64.const 0
    i64.store
-   block $__inlined_func$~lib/util/string/joinIntegerArray<u32>$1425
+   block $__inlined_func$~lib/util/string/joinIntegerArray<u32>$1427
     local.get $0
     i32.const 1
     i32.sub
@@ -21765,7 +21736,7 @@
      global.set $~lib/memory/__stack_pointer
      i32.const 7776
      local.set $0
-     br $__inlined_func$~lib/util/string/joinIntegerArray<u32>$1425
+     br $__inlined_func$~lib/util/string/joinIntegerArray<u32>$1427
     end
     local.get $6
     i32.eqz
@@ -21778,7 +21749,7 @@
      i32.const 8
      i32.add
      global.set $~lib/memory/__stack_pointer
-     br $__inlined_func$~lib/util/string/joinIntegerArray<u32>$1425
+     br $__inlined_func$~lib/util/string/joinIntegerArray<u32>$1427
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 9584
@@ -21875,7 +21846,7 @@
      i32.const 8
      i32.add
      global.set $~lib/memory/__stack_pointer
-     br $__inlined_func$~lib/util/string/joinIntegerArray<u32>$1425
+     br $__inlined_func$~lib/util/string/joinIntegerArray<u32>$1427
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 8
@@ -22474,7 +22445,7 @@
    global.get $~lib/memory/__stack_pointer
    i64.const 0
    i64.store
-   block $__inlined_func$~lib/util/string/joinIntegerArray<u16>$1423
+   block $__inlined_func$~lib/util/string/joinIntegerArray<u16>$1425
     local.get $0
     i32.const 1
     i32.sub
@@ -22488,7 +22459,7 @@
      global.set $~lib/memory/__stack_pointer
      i32.const 7776
      local.set $0
-     br $__inlined_func$~lib/util/string/joinIntegerArray<u16>$1423
+     br $__inlined_func$~lib/util/string/joinIntegerArray<u16>$1425
     end
     local.get $6
     i32.eqz
@@ -22501,7 +22472,7 @@
      i32.const 8
      i32.add
      global.set $~lib/memory/__stack_pointer
-     br $__inlined_func$~lib/util/string/joinIntegerArray<u16>$1423
+     br $__inlined_func$~lib/util/string/joinIntegerArray<u16>$1425
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 9584
@@ -22598,7 +22569,7 @@
      i32.const 8
      i32.add
      global.set $~lib/memory/__stack_pointer
-     br $__inlined_func$~lib/util/string/joinIntegerArray<u16>$1423
+     br $__inlined_func$~lib/util/string/joinIntegerArray<u16>$1425
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 8
@@ -23444,7 +23415,7 @@
    global.get $~lib/memory/__stack_pointer
    i64.const 0
    i64.store
-   block $__inlined_func$~lib/util/string/joinIntegerArray<i8>$1420
+   block $__inlined_func$~lib/util/string/joinIntegerArray<i8>$1422
     local.get $0
     i32.const 1
     i32.sub
@@ -23458,7 +23429,7 @@
      global.set $~lib/memory/__stack_pointer
      i32.const 7776
      local.set $0
-     br $__inlined_func$~lib/util/string/joinIntegerArray<i8>$1420
+     br $__inlined_func$~lib/util/string/joinIntegerArray<i8>$1422
     end
     local.get $6
     i32.eqz
@@ -23471,7 +23442,7 @@
      i32.const 8
      i32.add
      global.set $~lib/memory/__stack_pointer
-     br $__inlined_func$~lib/util/string/joinIntegerArray<i8>$1420
+     br $__inlined_func$~lib/util/string/joinIntegerArray<i8>$1422
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 9584
@@ -23564,7 +23535,7 @@
      i32.const 8
      i32.add
      global.set $~lib/memory/__stack_pointer
-     br $__inlined_func$~lib/util/string/joinIntegerArray<i8>$1420
+     br $__inlined_func$~lib/util/string/joinIntegerArray<i8>$1422
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 8
@@ -24579,7 +24550,7 @@
    global.get $~lib/memory/__stack_pointer
    i64.const 0
    i64.store
-   block $__inlined_func$~lib/util/string/joinIntegerArray<i64>$5
+   block $__inlined_func$~lib/util/string/joinIntegerArray<i64>$6
     local.get $0
     i32.const 1
     i32.sub
@@ -24593,13 +24564,13 @@
      global.set $~lib/memory/__stack_pointer
      i32.const 7776
      local.set $0
-     br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$5
+     br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$6
     end
     block $folding-inner0
      local.get $6
      i32.eqz
      if
-      block $__inlined_func$~lib/util/number/itoa64$3 (result i32)
+      block $__inlined_func$~lib/util/number/itoa64 (result i32)
        local.get $5
        i64.load
        i64.extend32_s
@@ -24623,7 +24594,7 @@
         i32.add
         global.set $~lib/memory/__stack_pointer
         i32.const 8000
-        br $__inlined_func$~lib/util/number/itoa64$3
+        br $__inlined_func$~lib/util/number/itoa64
        end
        i64.const 0
        local.get $2
@@ -24885,7 +24856,7 @@
      i32.const 8
      i32.add
      global.set $~lib/memory/__stack_pointer
-     br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$5
+     br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$6
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 8
@@ -25763,7 +25734,7 @@
    global.get $~lib/memory/__stack_pointer
    i64.const 0
    i64.store
-   block $__inlined_func$~lib/util/string/joinIntegerArray<i32>$1424
+   block $__inlined_func$~lib/util/string/joinIntegerArray<i32>$1426
     local.get $0
     i32.const 1
     i32.sub
@@ -25777,7 +25748,7 @@
      global.set $~lib/memory/__stack_pointer
      i32.const 7776
      local.set $0
-     br $__inlined_func$~lib/util/string/joinIntegerArray<i32>$1424
+     br $__inlined_func$~lib/util/string/joinIntegerArray<i32>$1426
     end
     local.get $6
     i32.eqz
@@ -25790,7 +25761,7 @@
      i32.const 8
      i32.add
      global.set $~lib/memory/__stack_pointer
-     br $__inlined_func$~lib/util/string/joinIntegerArray<i32>$1424
+     br $__inlined_func$~lib/util/string/joinIntegerArray<i32>$1426
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 9584
@@ -25887,7 +25858,7 @@
      i32.const 8
      i32.add
      global.set $~lib/memory/__stack_pointer
-     br $__inlined_func$~lib/util/string/joinIntegerArray<i32>$1424
+     br $__inlined_func$~lib/util/string/joinIntegerArray<i32>$1426
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 8
@@ -26941,7 +26912,7 @@
    global.get $~lib/memory/__stack_pointer
    i64.const 0
    i64.store
-   block $__inlined_func$~lib/util/string/joinIntegerArray<i16>$1422
+   block $__inlined_func$~lib/util/string/joinIntegerArray<i16>$1424
     local.get $0
     i32.const 1
     i32.sub
@@ -26955,7 +26926,7 @@
      global.set $~lib/memory/__stack_pointer
      i32.const 7776
      local.set $0
-     br $__inlined_func$~lib/util/string/joinIntegerArray<i16>$1422
+     br $__inlined_func$~lib/util/string/joinIntegerArray<i16>$1424
     end
     local.get $6
     i32.eqz
@@ -26968,7 +26939,7 @@
      i32.const 8
      i32.add
      global.set $~lib/memory/__stack_pointer
-     br $__inlined_func$~lib/util/string/joinIntegerArray<i16>$1422
+     br $__inlined_func$~lib/util/string/joinIntegerArray<i16>$1424
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 9584
@@ -27065,7 +27036,7 @@
      i32.const 8
      i32.add
      global.set $~lib/memory/__stack_pointer
-     br $__inlined_func$~lib/util/string/joinIntegerArray<i16>$1422
+     br $__inlined_func$~lib/util/string/joinIntegerArray<i16>$1424
     end
     global.get $~lib/memory/__stack_pointer
     i32.const 8
@@ -29902,7 +29873,7 @@
      global.get $~lib/memory/__stack_pointer
      i32.const 0
      i32.store
-     block $__inlined_func$~lib/util/number/utoa64$747
+     block $__inlined_func$~lib/util/number/utoa64$749
       local.get $3
       i64.eqz
       if
@@ -29912,7 +29883,7 @@
        global.set $~lib/memory/__stack_pointer
        i32.const 8000
        local.set $1
-       br $__inlined_func$~lib/util/number/utoa64$747
+       br $__inlined_func$~lib/util/number/utoa64$749
       end
       local.get $3
       i64.const 4294967295
@@ -30213,7 +30184,7 @@
      global.get $~lib/memory/__stack_pointer
      i32.const 0
      i32.store
-     block $__inlined_func$~lib/util/number/dtoa<f64>$761
+     block $__inlined_func$~lib/util/number/dtoa<f64>$763
       local.get $3
       f64.const 0
       f64.eq
@@ -30224,7 +30195,7 @@
        global.set $~lib/memory/__stack_pointer
        i32.const 9664
        local.set $0
-       br $__inlined_func$~lib/util/number/dtoa<f64>$761
+       br $__inlined_func$~lib/util/number/dtoa<f64>$763
       end
       local.get $3
       local.get $3
@@ -30242,7 +30213,7 @@
         global.set $~lib/memory/__stack_pointer
         i32.const 9696
         local.set $0
-        br $__inlined_func$~lib/util/number/dtoa<f64>$761
+        br $__inlined_func$~lib/util/number/dtoa<f64>$763
        end
        global.get $~lib/memory/__stack_pointer
        i32.const 4
@@ -30255,7 +30226,7 @@
        f64.lt
        select
        local.set $0
-       br $__inlined_func$~lib/util/number/dtoa<f64>$761
+       br $__inlined_func$~lib/util/number/dtoa<f64>$763
       end
       global.get $~lib/memory/__stack_pointer
       i32.const 9808
@@ -30443,7 +30414,7 @@
      global.get $~lib/memory/__stack_pointer
      i32.const 0
      i32.store
-     block $__inlined_func$~lib/util/number/dtoa<f32>$753
+     block $__inlined_func$~lib/util/number/dtoa<f32>$755
       local.get $3
       f32.const 0
       f32.eq
@@ -30454,7 +30425,7 @@
        global.set $~lib/memory/__stack_pointer
        i32.const 9664
        local.set $0
-       br $__inlined_func$~lib/util/number/dtoa<f32>$753
+       br $__inlined_func$~lib/util/number/dtoa<f32>$755
       end
       local.get $3
       local.get $3
@@ -30472,7 +30443,7 @@
         global.set $~lib/memory/__stack_pointer
         i32.const 9696
         local.set $0
-        br $__inlined_func$~lib/util/number/dtoa<f32>$753
+        br $__inlined_func$~lib/util/number/dtoa<f32>$755
        end
        global.get $~lib/memory/__stack_pointer
        i32.const 4
@@ -30485,7 +30456,7 @@
        f32.lt
        select
        local.set $0
-       br $__inlined_func$~lib/util/number/dtoa<f32>$753
+       br $__inlined_func$~lib/util/number/dtoa<f32>$755
       end
       global.get $~lib/memory/__stack_pointer
       i32.const 9808
