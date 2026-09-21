@@ -39,6 +39,7 @@
  (global $~lib/native/ASC_FEATURE_SIMD i32 (i32.const 0))
  (global $~lib/util/dtoa/LOG10_2_EXP i32 (i32.const 20))
  (global $~lib/util/dtoa/LOG2_POW10_EXP i32 (i32.const 16))
+ (global $~lib/native/ASC_OPTIMIZE_LEVEL i32 (i32.const 0))
  (global $~lib/util/dtoa/gPow10Hi (mut i64) (i64.const 0))
  (global $~lib/builtins/u64.MAX_VALUE i64 (i64.const -1))
  (global $~lib/util/dtoa/gSig (mut i64) (i64.const 0))
@@ -4171,6 +4172,10 @@
         i32.const 293
         i32.add
         local.set $i
+        i32.const 0
+        i32.const 3
+        i32.ge_s
+        drop
         local.get $i
         i32.const 10
         i32.add
@@ -4571,6 +4576,10 @@
        i32.const 293
        i32.add
        local.set $i|102
+       i32.const 0
+       i32.const 3
+       i32.ge_s
+       drop
        local.get $i|102
        i32.const 10
        i32.add
@@ -5173,6 +5182,10 @@
           i32.const 293
           i32.add
           local.set $i|196
+          i32.const 0
+          i32.const 3
+          i32.ge_s
+          drop
           local.get $i|196
           i32.const 10
           i32.add
@@ -5573,6 +5586,10 @@
          i32.const 293
          i32.add
          local.set $i|242
+         i32.const 0
+         i32.const 3
+         i32.ge_s
+         drop
          local.get $i|242
          i32.const 10
          i32.add
@@ -6167,6 +6184,10 @@
        i32.const 293
        i32.add
        local.set $i|332
+       i32.const 0
+       i32.const 3
+       i32.ge_s
+       drop
        local.get $i|332
        i32.const 10
        i32.add
