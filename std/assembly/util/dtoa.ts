@@ -206,7 +206,13 @@ import { DIGITS, MAX_DOUBLE_LENGTH } from "./number";
   let j = i + 10;
   let major = (j * 293) >>> 13; // exact j / 28 for j in [10,627]
   let minor = j - major * 28;
-  let m = load<u64>(POW10_MINOR + (<usize>minor << 3));
+  let m: u64;
+  if (ASC_OPTIMIZE_LEVEL >= 3 && ASC_SHRINK_LEVEL == 0) {
+    // The minor factors are POW10_FLOAT_HI[44..17] in reverse order.
+    m = load<u64>(POW10_FLOAT_HI + (<usize>(44 - minor) << 3));
+  } else {
+    m = load<u64>(POW10_MINOR + (<usize>minor << 3));
+  }
   let hoff = POW10_MAJOR + (<usize>major << 4);
   let hHi = load<u64>(hoff);
   let hLo = load<u64>(hoff, 8);

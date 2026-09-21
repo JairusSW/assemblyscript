@@ -5480,6 +5480,10 @@
         i32.mul
         i32.sub
         local.set $minor
+        i32.const 0
+        i32.const 3
+        i32.ge_s
+        drop
         i32.const 22448
         local.get $minor
         i32.const 3
@@ -5884,6 +5888,10 @@
        i32.mul
        i32.sub
        local.set $minor|105
+       i32.const 0
+       i32.const 3
+       i32.ge_s
+       drop
        i32.const 22448
        local.get $minor|105
        i32.const 3
@@ -6490,6 +6498,10 @@
           i32.mul
           i32.sub
           local.set $minor|199
+          i32.const 0
+          i32.const 3
+          i32.ge_s
+          drop
           i32.const 22448
           local.get $minor|199
           i32.const 3
@@ -6894,6 +6906,10 @@
          i32.mul
          i32.sub
          local.set $minor|245
+         i32.const 0
+         i32.const 3
+         i32.ge_s
+         drop
          i32.const 22448
          local.get $minor|245
          i32.const 3
@@ -7492,6 +7508,10 @@
        i32.mul
        i32.sub
        local.set $minor|335
+       i32.const 0
+       i32.const 3
+       i32.ge_s
+       drop
        i32.const 22448
        local.get $minor|335
        i32.const 3
