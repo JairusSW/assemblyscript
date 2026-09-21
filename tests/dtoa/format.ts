@@ -3,6 +3,15 @@ import {
 } from "~lib/util/dtoa";
 import { dtoa as numberDtoa, dtoa_buffered as numberBuffered } from "util/number";
 
+// Called by the JS differential harness with exact input bit patterns.
+export function format64Bits(bits: u64, buffer: usize): u32 {
+  return numberBuffered<f64>(buffer, reinterpret<f64>(bits));
+}
+
+export function format32Bits(bits: u32, buffer: usize): u32 {
+  return numberBuffered<f32>(buffer, reinterpret<f32>(bits));
+}
+
 toDigits32(1);
 assert(gDigits == 1);
 assert(gDigHi == 0x3130303030303030); // "00000001"
