@@ -3,34 +3,34 @@ import { DIGITS, MAX_DOUBLE_LENGTH } from "./number";
 
 // Fixed-point log significands shared by the dec-exp / binary-exp estimates below.
 @lazy @inline const LOG10_2_SIGNIFICAND = 0x4D105; // ~(log10(2) * 2**20)
-const LOG10_2_EXP = 20;
+@lazy const LOG10_2_EXP = 20;
 @lazy @inline const LOG2_POW10_SIGNIFICAND = 0x3526B; // ~(log2(10) * 2**16)
-const LOG2_POW10_EXP = 16;
+@lazy const LOG2_POW10_EXP = 16;
 
 @lazy @inline const DIV10_EXP = 10;
-const DIV10_SIG: u64 = (1 << DIV10_EXP) / 10 + 1;
+@lazy const DIV10_SIG: u64 = (1 << DIV10_EXP) / 10 + 1;
 @lazy @inline const NEG10: u64 = (1 << 8) - 10;
 
 @lazy @inline const DIV100_EXP = 19;
-const DIV100_SIG: u64 = (1 << DIV100_EXP) / 100 + 1;
+@lazy const DIV100_SIG: u64 = (1 << DIV100_EXP) / 100 + 1;
 @lazy @inline const NEG100: u64 = (1 << 16) - 100;
 
 @lazy @inline const DIV10K_EXP = 40;
-const DIV10K_SIG: u64 = ((<u64>1) << DIV10K_EXP) / 10000 + 1;
+@lazy const DIV10K_SIG: u64 = ((<u64>1) << DIV10K_EXP) / 10000 + 1;
 @lazy @inline const NEG10K: u64 = ((<u64>1) << 32) - 10000;
 
 @lazy @inline export const BCD_ZEROS: u64 = 0x3030303030303030;
 
 @lazy @inline export const DOUBLE_EXP_OFFSET = 1075; // exp_bias(1023) + num_sig_bits(52)
-export const DOUBLE_SIGNIFICAND_SIZE = 52; // explicit mantissa bits
+@lazy export const DOUBLE_SIGNIFICAND_SIZE = 52; // explicit mantissa bits
 @lazy @inline export const DOUBLE_HIDDEN_BIT: u64 = (<u64>1) << DOUBLE_SIGNIFICAND_SIZE; // implicit leading 1
-export const DOUBLE_SIGNIFICAND_MASK: u64 = DOUBLE_HIDDEN_BIT - 1;
+@lazy export const DOUBLE_SIGNIFICAND_MASK: u64 = DOUBLE_HIDDEN_BIT - 1;
 @lazy @inline export const EXTRA_SHIFT = 6;
-export const BIASED_HALF: u64 = ((<u64>1) << 63) + 6;
+@lazy export const BIASED_HALF: u64 = ((<u64>1) << 63) + 6;
 @lazy @inline export const DOUBLE_MAX_DIGITS10 = 17;
 // Fixed notation when decExp (= decimal-point position - 1) is in [-6, 20].
 @lazy @inline export const MIN_FIXED_DEC_EXP = -6;
-export const MAX_FIXED_DEC_EXP = 20;
+@lazy export const MAX_FIXED_DEC_EXP = 20;
 
 // Compact pow10 (Dougall Johnson's method, ported from vitaut/zmij)
 // 10**i = top-128-bits(major[(i+10)/28] * minor[(i+10)%28]) minus a per-power round-down bit.
@@ -102,9 +102,9 @@ export const MAX_FIXED_DEC_EXP = 20;
 ]);
 
 @lazy @inline const FLOAT_EXP_OFFSET = 150; // exp_bias(127) + num_sig_bits(23)
-const FLOAT_SIGNIFICAND_SIZE = 23; // explicit mantissa bits
+@lazy const FLOAT_SIGNIFICAND_SIZE = 23; // explicit mantissa bits
 @lazy @inline const FLOAT_HIDDEN_BIT: u64 = (<u64>1) << FLOAT_SIGNIFICAND_SIZE; // implicit leading 1
-const FLOAT_SIGNIFICAND_MASK: u32 = (<u32>1 << FLOAT_SIGNIFICAND_SIZE) - 1;
+@lazy const FLOAT_SIGNIFICAND_MASK: u32 = (<u32>1 << FLOAT_SIGNIFICAND_SIZE) - 1;
 @lazy @inline const FLOAT_BIT = 36; // xjb's fixed-point split for the f32 core
 // xjb's c1, ASCII offset stripped so the `one` digit comes out numeric.
 @lazy @inline const FLOAT_ONE_BIAS: u64 = ((<u64>1) << (FLOAT_BIT - 2)) - 7;
@@ -116,13 +116,13 @@ const FLOAT_SIGNIFICAND_MASK: u32 = (<u32>1 << FLOAT_SIGNIFICAND_SIZE) - 1;
 
 // Shared results where the caller needs more than one return value.
 @lazy export let gPow10Hi: u64 = 0;
-let gBcdValue: u64 = 0;
+@lazy let gBcdValue: u64 = 0;
 @lazy export let gDigHi: u64 = 0;
-export let gDigLo: u64 = 0;
+@lazy export let gDigLo: u64 = 0;
 @lazy export let gDigits: i32 = 0;
-export let gSig: i64 = 0;
+@lazy export let gSig: i64 = 0;
 @lazy export let gExp: i32 = 0;
-export let gLastDigit: i32 = 0;
+@lazy export let gLastDigit: i32 = 0;
 @lazy export let gHasLastDigit: bool = false;
 
 // High 64 bits of the 128-bit product x * y. Matches umul128.
