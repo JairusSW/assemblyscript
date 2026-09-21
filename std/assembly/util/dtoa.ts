@@ -1,32 +1,5 @@
-import { POWERS10 } from "./string";
+import { CharCode, POWERS10 } from "./string";
 import { DIGITS, MAX_DOUBLE_LENGTH } from "./number";
-
-// High 64 bits of the 128-bit product x * y. Matches umul128.
-// @ts-ignore: decorator
-@inline export function mulhi64(a: u64, b: u64): u64 {
-  let a0 = a & 0xffffffff
-  let a1 = a >> 32
-  
-  let b0 = b & 0xffffffff
-  let b1 = b >> 32
-  
-  let w0 = a0 * b0
-  let t = a1 * b0 + (w0 >> 32)
-  let w1 = t & 0xffffffff
-  let w2 = t >> 32
-  
-  w1 = a0 * b1 + w1
-  
-  return a1 * b1 + w2 + (w1 >> 32)
-}
-
-// Returns (x * y + c) >> 64.
-// @ts-ignore: decorator
-@inline export function umul128AddHi64(x: u64, y: u64, c: u64): u64 {
-  let lo = x * y;
-  let hi = mulhi64(x, y);
-  return hi + u64(lo + c < lo);
-}
 
 // Fixed-point log significands shared by the dec-exp / binary-exp estimates below.
 const LOG10_2_SIGNIFICAND = 0x4D105; // ~(log10(2) * 2**20)
@@ -34,22 +7,30 @@ const LOG10_2_EXP = 20;
 const LOG2_POW10_SIGNIFICAND = 0x3526B; // ~(log2(10) * 2**16)
 const LOG2_POW10_EXP = 16;
 
-// floor(log10(2**bin_exp)). (The f64 path only ever needs the regular form; the
-// irregular 3/4 variant lives in ftoa.ts's own copy.)
-// @ts-ignore: decorator
-@inline export function computeDecExp(binExp: i32): i32 {
-  return (binExp * LOG10_2_SIGNIFICAND) >> LOG10_2_EXP;
-}
+const DIV10_EXP = 10;
+const DIV10_SIG: u64 = (1 << DIV10_EXP) / 10 + 1;
+const NEG10: u64 = (1 << 8) - 10;
 
-// Shift that keeps a fixed 128-bit fractional part after scaling by 10**dec_exp.
-// @ts-ignore: decorator
-@inline export function computeExpShift(binExp: i32, decExp: i32): i32 {
-  let pow10BinExp = (-decExp * LOG2_POW10_SIGNIFICAND) >> LOG2_POW10_EXP;
-  return binExp + pow10BinExp + 1;
-}
+const DIV100_EXP = 19;
+const DIV100_SIG: u64 = (1 << DIV100_EXP) / 100 + 1;
+const NEG100: u64 = (1 << 16) - 100;
 
-export let gPow10Hi: u64 = 0;
-export let gPow10Lo: u64 = 0;
+const DIV10K_EXP = 40;
+const DIV10K_SIG: u64 = ((<u64>1) << DIV10K_EXP) / 10000 + 1;
+const NEG10K: u64 = ((<u64>1) << 32) - 10000;
+
+export const BCD_ZEROS: u64 = 0x3030303030303030;
+
+export const DOUBLE_EXP_OFFSET = 1075; // exp_bias(1023) + num_sig_bits(52)
+export const DOUBLE_SIGNIFICAND_SIZE = 52; // explicit mantissa bits
+export const DOUBLE_HIDDEN_BIT: u64 = (<u64>1) << DOUBLE_SIGNIFICAND_SIZE; // implicit leading 1
+export const DOUBLE_SIGNIFICAND_MASK: u64 = DOUBLE_HIDDEN_BIT - 1;
+export const EXTRA_SHIFT = 6;
+export const BIASED_HALF: u64 = ((<u64>1) << 63) + 6;
+export const DOUBLE_MAX_DIGITS10 = 17;
+// Fixed notation when decExp (= decimal-point position - 1) is in [-6, 20].
+export const MIN_FIXED_DEC_EXP = -6;
+export const MAX_FIXED_DEC_EXP = 20;
 
 // Compact pow10 (Dougall Johnson's method, ported from vitaut/zmij)
 // 10**i = top-128-bits(major[(i+10)/28] * minor[(i+10)%28]) minus a per-power round-down bit.
@@ -93,21 +74,113 @@ export let gPow10Lo: u64 = 0;
   0x00000d0d, 0x14042400, 0x53713840, 0x11781db4, 0x00000000,
 ]);
 
-// Rebuild gPow10Hi/gPow10Lo for table index i in [0,617]: the top 128 bits of
+// hi-only significand of 10**i, 77 entries (index = 45 + k, k in [-45,31]) with
+// the xjb64 +1 low-limb rounding folded in. One hi-only multiply covers both the
+// regular and power-of-two paths.
+// @ts-ignore: decorator
+@inline const POW10_FLOAT_HI = memory.data<u64>([
+  0x8f7e32ce7bea5c70, 0xe596b7b0c643c71a, 0xb7abc627050305ae, 0x92efd1b8d0cf37bf,
+  0xeb194f8e1ae525fe, 0xbc143fa4e250eb32, 0x96769950b50d88f5, 0xf0bdc21abb48db21,
+  0xc097ce7bc90715b4, 0x9a130b963a6c115d, 0xf684df56c3e01bc7, 0xc5371912364ce306,
+  0x9dc5ada82b70b59e, 0xfc6f7c4045812297, 0xc9f2c9cd04674edf, 0xa18f07d736b90be6,
+  0x813f3978f8940985, 0xcecb8f27f4200f3a, 0xa56fa5b99019a5c8, 0x84595161401484a0,
+  0xd3c21bcecceda100, 0xa968163f0a57b400, 0x878678326eac9000, 0xd8d726b7177a8000,
+  0xad78ebc5ac620000, 0x8ac7230489e80000, 0xde0b6b3a76400000, 0xb1a2bc2ec5000000,
+  0x8e1bc9bf04000000, 0xe35fa931a0000000, 0xb5e620f480000000, 0x9184e72a00000000,
+  0xe8d4a51000000000, 0xba43b74000000000, 0x9502f90000000000, 0xee6b280000000000,
+  0xbebc200000000000, 0x9896800000000000, 0xf424000000000000, 0xc350000000000000,
+  0x9c40000000000000, 0xfa00000000000000, 0xc800000000000000, 0xa000000000000000,
+  0x8000000000000000, 0xcccccccccccccccd, 0xa3d70a3d70a3d70b, 0x83126e978d4fdf3c,
+  0xd1b71758e219652c, 0xa7c5ac471b478424, 0x8637bd05af6c69b6, 0xd6bf94d5e57a42bd,
+  0xabcc77118461cefd, 0x89705f4136b4a598, 0xdbe6fecebdedd5bf, 0xafebff0bcb24aaff,
+  0x8cbccc096f5088cc, 0xe12e13424bb40e14, 0xb424dc35095cd810, 0x901d7cf73ab0acda,
+  0xe69594bec44de15c, 0xb877aa3236a4b44a, 0x9392ee8e921d5d08, 0xec1e4a7db69561a6,
+  0xbce5086492111aeb, 0x971da05074da7bef, 0xf1c90080baf72cb2, 0xc16d9a0095928a28,
+  0x9abe14cd44753b53, 0xf79687aed3eec552, 0xc612062576589ddb, 0x9e74d1b791e07e49,
+  0xfd87b5f28300ca0e, 0xcad2f7f5359a3b3f, 0xa2425ff75e14fc32, 0x81ceb32c4b43fcf5,
+  0xcfb11ead453994bb,
+]);
+
+const FLOAT_EXP_OFFSET = 150; // exp_bias(127) + num_sig_bits(23)
+const FLOAT_SIGNIFICAND_SIZE = 23; // explicit mantissa bits
+const FLOAT_HIDDEN_BIT: u64 = (<u64>1) << FLOAT_SIGNIFICAND_SIZE; // implicit leading 1
+const FLOAT_SIGNIFICAND_MASK: u32 = (<u32>1 << FLOAT_SIGNIFICAND_SIZE) - 1;
+const FLOAT_BIT = 36; // xjb's fixed-point split for the f32 core
+// xjb's c1, ASCII offset stripped so the `one` digit comes out numeric.
+const FLOAT_ONE_BIAS: u64 = ((<u64>1) << (FLOAT_BIT - 2)) - 7;
+
+export const FLOAT_MAX_DIGITS10 = 9;
+
+// @ts-ignore: decorator
+@lazy export const SCRATCH = memory.data(128);
+
+// Shared results where the caller needs more than one return value.
+export let gPow10Hi: u64 = 0;
+let gBcdValue: u64 = 0;
+export let gDigHi: u64 = 0;
+export let gDigLo: u64 = 0;
+export let gDigits: i32 = 0;
+export let gSig: i64 = 0;
+export let gExp: i32 = 0;
+export let gLastDigit: i32 = 0;
+export let gHasLastDigit: bool = false;
+
+// High 64 bits of the 128-bit product x * y. Matches umul128.
+// @ts-ignore: decorator
+@inline export function umul64hi(a: u64, b: u64): u64 {
+  let a0 = a & 0xffffffff
+  let a1 = a >> 32
+
+  let b0 = b & 0xffffffff
+  let b1 = b >> 32
+
+  let w0 = a0 * b0
+  let t = a1 * b0 + (w0 >> 32)
+  let w1 = t & 0xffffffff
+  let w2 = t >> 32
+
+  w1 = a0 * b1 + w1
+
+  return a1 * b1 + w2 + (w1 >> 32)
+}
+
+// Returns (x * y + c) >> 64.
+// @ts-ignore: decorator
+@inline export function umul64hiCarry(x: u64, y: u64, c: u64): u64 {
+  let lo = x * y;
+  let hi = umul64hi(x, y);
+  return hi + u64(lo + c < lo);
+}
+
+// floor(log10(2**bin_exp)). (The f64 path only ever needs the regular form; the
+// irregular 3/4 variant lives in ftoa.ts's own copy.)
+// @ts-ignore: decorator
+@inline export function toDecExponent(binExp: i32): i32 {
+  return (binExp * LOG10_2_SIGNIFICAND) >> LOG10_2_EXP;
+}
+
+// Shift that keeps a fixed 128-bit fractional part after scaling by 10**dec_exp.
+// @ts-ignore: decorator
+@inline export function exponentShift(binExp: i32, decExp: i32): i32 {
+  let pow10BinExp = (-decExp * LOG2_POW10_SIGNIFICAND) >> LOG2_POW10_EXP;
+  return binExp + pow10BinExp + 1;
+}
+
+// Rebuild the top 128 bits of 10**(i - 293) for table index i in [0,617]:
 // major[(i+10)/28] * minor[(i+10)%28], normalized left if the top bit is clear,
 // then the per-power fixup bit subtracted off the low limb.
 // @ts-ignore: decorator
-@inline function computePow10(i: i32): void {
+@inline function computePow10(i: i32): u64 {
   let m = load<u64>(POW10_MINOR + (<usize>((i + 10) % 28) << 3));
   let hoff = POW10_MAJOR + (<usize>((i + 10) / 28) << 4);
   let hHi = load<u64>(hoff);
   let hLo = load<u64>(hoff, 8);
 
   // 192-bit product major * minor as c2:c1:c0, keep the top 128 bits (c2:c1).
-  let h1 = mulhi64(hLo, m);
+  let h1 = umul64hi(hLo, m);
   let c0 = hLo * m;
   let c1 = h1 + hHi * m;
-  let c2 = u64(c1 < h1) + mulhi64(hHi, m);
+  let c2 = u64(c1 < h1) + umul64hi(hHi, m);
 
   let hi: u64, lo: u64;
   if ((c2 >> 63) != 0) {
@@ -119,42 +192,12 @@ export let gPow10Lo: u64 = 0;
   }
   lo -= <u64>((load<u32>(POW10_FIXUPS + (<usize>(i >> 5) << 2)) >> (i & 31)) & 1);
   gPow10Hi = hi;
-  gPow10Lo = lo;
+  return lo;
 }
-
-// xjb64 v2 rounds up the negative-power low limb by one.
-// @ts-ignore: decorator
-@inline export function loadPow10Xjb64(power: i32): void {
-  computePow10(power + 293);
-  gPow10Lo += u64(power < 0);
-}
-
-// @ts-ignore: decorator
-@inline export function loadPow10HiXjb64(power: i32): u64 {
-  computePow10(power + 293);
-  return gPow10Hi;
-}
-
-const DIV10_EXP = 10;
-const DIV10_SIG: u64 = (1 << DIV10_EXP) / 10 + 1;
-const NEG10: u64 = (1 << 8) - 10;
-
-const DIV100_EXP = 19;
-const DIV100_SIG: u64 = (1 << DIV100_EXP) / 100 + 1;
-const NEG100: u64 = (1 << 16) - 100;
-
-const DIV10K_EXP = 40;
-const DIV10K_SIG: u64 = ((<u64>1) << DIV10K_EXP) / 10000 + 1;
-const NEG10K: u64 = ((<u64>1) << 32) - 10000;
-
-export const ZEROS: u64 = 0x3030303030303030;
-
-let gBcd: u64 = 0;
-let gBcdLen: i32 = 0;
 
 // value < 1e8 -> 8 packed BCD digits (SWAR: split by divide-by-constant
 // reciprocals, halving the digits-per-lane each step).
-function toBcd8(value: u64): void {
+function toBcd8(value: u64): i32 {
   // 12345678 -> two 4-digit groups, one per 32-bit lane: [1234][5678]
   let quads = value + NEG10K * ((value * DIV10K_SIG) >> DIV10K_EXP);
   // four 2-digit groups, one per 16-bit lane: [12][34][56][78]
@@ -164,15 +207,10 @@ function toBcd8(value: u64): void {
   let singles =
     pairs + NEG10 * (((pairs * DIV10_SIG) >> DIV10_EXP) & 0xf000f000f000f);
   // bswap to big-endian so the most-significant digit lands in the high byte
-  let bcd = bswap<u64>(singles);
-  gBcd = bcd;
-  gBcdLen = <i32>((70 - clz<u64>((bcd << 1) | 1)) / 8);
+  gBcdValue = bswap<u64>(singles);
+  const BCD_LENGTH_BIAS = 70; // 64 bits, one sentinel bit, and a six-bit rounding offset
+  return <i32>((BCD_LENGTH_BIAS - clz<u64>((singles << 1) | 1)) / 8);
 }
-
-// to_digits<64> result: two u64 of ASCII digits + significant digit count.
-export let gDigHi: u64 = 0;
-export let gDigLo: u64 = 0;
-export let gDigits: i32 = 0;
 
 // Unsigned 16-bit multiply-high across all 8 lanes (= _mm_mulhi_epu16).
 // @ts-ignore: decorator
@@ -185,14 +223,14 @@ export let gDigits: i32 = 0;
 // Four 4-digit lanes -> 16 BCD bytes (byte i = 10**i digit).
 // @ts-ignore: decorator
 @inline function toBcd4x4(y: v128): v128 {
-  const DIV100 = i32x4.splat(<i32>DIV100_SIG); // 5243
-  const DIV10V = i16x8.splat(6554); // (1 << 16) / 10 + 1
-  const NEG100V = i32x4.splat(65436); // (1 << 16) - 100
-  const NEG10V = i16x8.splat(246); // (1 << 8) - 10
-  
-  let t = i32x4.shr_u(mulhiU16(y, DIV100), 3);
-  let z = i32x4.add(y, i32x4.mul(NEG100V, t));
-  return i16x8.add(z, i16x8.mul(NEG10V, mulhiU16(z, DIV10V)));
+  let div100 = i32x4.splat(<i32>DIV100_SIG);
+  let div10 = i16x8.splat(6554); // (1 << 16) / 10 + 1
+  let neg100 = i32x4.splat(65436); // (1 << 16) - 100
+  let neg10 = i16x8.splat(246); // (1 << 8) - 10
+
+  let t = i32x4.shr_u(mulhiU16(y, div100), 3);
+  let z = i32x4.add(y, i32x4.mul(neg100, t));
+  return i16x8.add(z, i16x8.mul(neg10, mulhiU16(z, div10)));
 }
 
 // Pack the low 32 bits of each i64 lane into adjacent i32 lanes 0,1 (zero the
@@ -208,8 +246,8 @@ export let gDigits: i32 = 0;
 // SIMD version of toDigits64: builds all 16 ASCII digits in one pass.
 // @ts-ignore: decorator
 @inline function toDigits64Simd(value: u64): void {
-  const REV_ORDER = i8x16(15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
-  
+  let revOrder = i8x16(15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
+
   let hi = value / 100000000;
   let lo = value - hi * 100000000;
 
@@ -225,11 +263,11 @@ export let gDigits: i32 = 0;
   let bcd = toBcd4x4(y);
 
   let mask = i8x16.bitmask(i8x16.gt_s(bcd, i8x16.splat(0)));
-  gDigits = 16 - ctz(mask); // mask is never 0 (significand >= 1)
+  gDigits = 32 - clz(mask); // mask is never 0 (significand >= 1)
 
   let ascii = v128.or(
-    v128.swizzle(bcd, REV_ORDER),
-    i8x16.splat(0x30)
+    v128.swizzle(bcd, revOrder),
+    i8x16.splat(<i8>CharCode._0)
   );
   gDigHi = i64x2.extract_lane(ascii, 0);
   gDigLo = i64x2.extract_lane(ascii, 1);
@@ -240,24 +278,23 @@ export let gDigits: i32 = 0;
 @inline function toDigits64Swar(value: u64): void {
   let hi = value / 100000000;
   let lo = value - hi * 100000000;
-  
-  toBcd8(hi);
-  
-  let hiBcd = gBcd;
-  let hiLen = gBcdLen;
-  
+
+  let hiLen = toBcd8(hi);
+
+  let hiBcd = gBcdValue;
+
   if (lo == 0) {
-    gDigHi = hiBcd + ZEROS;
-    gDigLo = ZEROS;
-    gDigits = hiLen;
+    gDigHi = hiBcd + BCD_ZEROS;
+    gDigLo = BCD_ZEROS;
+    gDigits = hiLen + 8;
     return;
   }
-  
-  toBcd8(lo);
-  
-  gDigHi = hiBcd + ZEROS;
-  gDigLo = gBcd + ZEROS;
-  gDigits = 8 + gBcdLen;
+
+  let loLen = toBcd8(lo);
+
+  gDigHi = hiBcd + BCD_ZEROS;
+  gDigLo = gBcdValue + BCD_ZEROS;
+  gDigits = hi == 0 ? loLen : hiLen + 8;
 }
 
 // @ts-ignore: decorator
@@ -269,57 +306,41 @@ export let gDigits: i32 = 0;
   }
 }
 
-export let gSig: i64 = 0;
-export let gExp: i32 = 0;
-export let gLastDigit: i32 = 0;
-export let gHasLastDigit: bool = false;
-
-export const DOUBLE_EXP_OFFSET = 1075; // exp_bias(1023) + num_sig_bits(52)
-export const DOUBLE_SIGNIFICAND_SIZE = 52; // explicit mantissa bits
-export const DOUBLE_HIDDEN_BIT: u64 = (<u64>1) << DOUBLE_SIGNIFICAND_SIZE; // implicit leading 1
-export const DOUBLE_SIGNIFICAND_MASK: u64 = DOUBLE_HIDDEN_BIT - 1;
-export const EXTRA_SHIFT = 6;
-export const BIASED_HALF: u64 = ((<u64>1) << 63) + 6;
-export const DOUBLE_MAX_DIGITS10 = 17;
-// Fixed notation when decExp (= decimal-point position - 1) is in [-6, 20].
-export const MIN_FIXED_DEC_EXP = -6;
-export const MAX_FIXED_DEC_EXP = 20;
-
 // Eight packed ASCII digits in a u64 -> 8 UTF-16 code units (16 bytes) at
 // `p + off`. SIMD zero-extends the bytes to u16 lanes in one store.
 // @ts-ignore: decorator
-@inline export function putBlock8(p: usize, ascii: u64, off: usize = 0): void {
+@inline export function writeUnpacked8(p: usize, ascii: u64, off: usize = 0): void {
   let base = p + off;
   if (ASC_FEATURE_SIMD) {
     v128.store(base, i16x8.extend_low_i8x16_u(i64x2.splat(ascii)));
   } else {
-    store<u16>(base, <u16>(ascii & 0xff));
-    store<u16>(base, <u16>((ascii >> 8) & 0xff), 2);
-    store<u16>(base, <u16>((ascii >> 16) & 0xff), 4);
-    store<u16>(base, <u16>((ascii >> 24) & 0xff), 6);
-    store<u16>(base, <u16>((ascii >> 32) & 0xff), 8);
-    store<u16>(base, <u16>((ascii >> 40) & 0xff), 10);
-    store<u16>(base, <u16>((ascii >> 48) & 0xff), 12);
-    store<u16>(base, <u16>(ascii >> 56), 14);
+    let lo = ascii & 0xffffffff;
+    let hi = ascii >> 32;
+    lo = (lo | (lo << 16)) & 0x0000ffff0000ffff;
+    hi = (hi | (hi << 16)) & 0x0000ffff0000ffff;
+    lo = (lo | (lo << 8)) & 0x00ff00ff00ff00ff;
+    hi = (hi | (hi << 8)) & 0x00ff00ff00ff00ff;
+    store<u64>(base, lo);
+    store<u64>(base, hi, 8);
   }
 }
 
 // ECMAScript spellings for the non-finite cases.
 // @ts-ignore: decorator
 @inline export function writeNaN(buf: usize): usize {
-  store<u16>(buf, 0x4e, 0); // 'N'
-  store<u16>(buf, 0x61, 2); // 'a'
-  store<u16>(buf, 0x4e, 4); // 'N'
+  store<u16>(buf, CharCode.N, 0); // 'N'
+  store<u16>(buf, CharCode.a, 2); // 'a'
+  store<u16>(buf, CharCode.N, 4); // 'N'
   return buf + 6;
 }
 
 // @ts-ignore: decorator
 @inline export function writeInfinity(buf: usize, neg: bool): usize {
   if (neg) {
-    store<u16>(buf, 0x2d);  // '-'
+    store<u16>(buf, CharCode.MINUS);  // '-'
     buf += 2;
   }
-  putBlock8(buf, 0x7974696e69666e49); // 'Infinity'
+  writeUnpacked8(buf, 0x7974696e69666e49); // 'Infinity'
   return buf + 16;
 }
 
@@ -332,19 +353,19 @@ export const MAX_FIXED_DEC_EXP = 20;
   decExp: i32,
   hasLastDigit: bool,
 ): usize {
-  if (decExp < 0) putBlock8(start, ZEROS);
-  let lastDigitChar = <u64>(0x30 + (hasLastDigit ? gLastDigit : 0));
+  if (decExp < 0) writeUnpacked8(start, BCD_ZEROS);
+  let lastDigitChar = <u64>(CharCode._0 + (hasLastDigit ? gLastDigit : 0));
   let numDigits = hasLastDigit ? 16 : gDigits - 1;
   let dHi = gDigHi, dLo = gDigLo;
 
   // decExp >= 16: integer rendered as significant digits then trailing zeros.
   if (decExp >= 16) {
-    putBlock8(buf, dHi);
-    putBlock8(buf, dLo, 16);
+    writeUnpacked8(buf, dHi);
+    writeUnpacked8(buf, dLo, 16);
     store<u16>(buf + 32, <u32>lastDigitChar);
     let endByte = buf + ((decExp + 1) << 1);
     for (let z = buf + (17 << 1); z < endByte; z += 16) {
-      putBlock8(z, ZEROS);
+      writeUnpacked8(z, BCD_ZEROS);
     }
     return endByte;
   }
@@ -358,8 +379,8 @@ export const MAX_FIXED_DEC_EXP = 20;
   let startPos = (1 - decExp) & (decExp >> 31);
 
   buf += startPos << 1;
-  putBlock8(buf, dHi);
-  putBlock8(buf, dLo, 16);
+  writeUnpacked8(buf, dHi);
+  writeUnpacked8(buf, dLo, 16);
   store<u16>(buf + 32, <u32>lastDigitChar);
 
   if (decExp >= 0) {
@@ -373,7 +394,8 @@ export const MAX_FIXED_DEC_EXP = 20;
       fHi = (dHi >> s) | (dLo << (64 - s));
       fLo = (dLo >> s) | (d16 << (64 - s));
     } else if (s == 64) {
-      fHi = dLo; fLo = d16;
+      fHi = dLo;
+      fLo = d16;
     } else if (s < 128) {
       let s2 = s - 64;
       fHi = (dLo >> s2) | (d16 << (64 - s2));
@@ -381,15 +403,20 @@ export const MAX_FIXED_DEC_EXP = 20;
     } else {
       fHi = d16; fLo = 0;
     }
-    putBlock8(buf + ((k + 1) << 1), fHi);
+    writeUnpacked8(buf + ((k + 1) << 1), fHi);
     // fLo's window starts at char k + 9; skip it if the output ends before there.
-    if (endPos > k + 9) putBlock8(buf + ((k + 9) << 1), fLo);
-    store<u16>(buf + (k << 1), 0x2e);
+    if (endPos > k + 9) writeUnpacked8(buf + ((k + 9) << 1), fLo);
+    store<u16>(buf + (k << 1), CharCode.DOT);
   } else {
-    store<u16>(start, 0x2e, 2); // "0." prefix
+    store<u16>(start, CharCode.DOT, 2); // "0." prefix
   }
 
-  return buf + (endPos << 1);
+  let end = buf + (endPos << 1);
+  while (end > start + 2 && load<u16>(end - 2) == CharCode._0) {
+    end -= 2;
+  }
+  if (load<u16>(end - 2) == CharCode.DOT) end -= 2;
+  return end;
 }
 
 // Exponential-notation tail. Lays the mantissa "d.ddd" (single leading digit)
@@ -404,14 +431,17 @@ export const MAX_FIXED_DEC_EXP = 20;
   bcdSize: i32,
 ): usize {
   buf += usize(hasExtraDigit) << 1;
-  putBlock8(buf, gDigHi);
-  if (bcdSize == 16) putBlock8(buf, gDigLo, 16);
-  store<u16>(buf + (bcdSize << 1), <u32>(0x30 + gLastDigit));
+  writeUnpacked8(buf, gDigHi);
+  if (bcdSize == 16) writeUnpacked8(buf, gDigLo, 16);
+  store<u16>(buf + (bcdSize << 1), <u32>(CharCode._0 + gLastDigit));
   buf += (hasLastDigit ? bcdSize + 1 : gDigits) << 1;
+  while (buf > start + 4 && load<u16>(buf - 2) == CharCode._0) {
+    buf -= 2;
+  }
   // Move the lead digit to pos 0, drop '.' at pos 1.
   let lead: u32 = <u32>load<u16>(start, 2);
   store<u16>(start, lead);
-  store<u16>(start, 0x2e, 2);
+  store<u16>(start, CharCode.DOT, 2);
   buf -= usize(buf - 2 == start + 2) << 1; // drop a trailing point
   return writeExponent(buf, decExp);
 }
@@ -420,13 +450,13 @@ export const MAX_FIXED_DEC_EXP = 20;
 // @ts-ignore: decorator
 @inline export function writeExponent(buf: usize, decExp: i32): usize {
   let m = decExp >> 31; // all-ones if decExp < 0
-  store<u16>(buf, 0x65); // 'e'
-  store<u16>(buf, 0x2b + (m & 2), 2); // '+' / '-' branchlessly
+  store<u16>(buf, CharCode.e); // 'e'
+  store<u16>(buf, CharCode.PLUS + (m & 2), 2); // '+' / '-' branchlessly
   buf += 4;
   let e = (decExp ^ m) - m; // abs(decExp)
   if (e >= 100) {
     let d = (<u32>e * <u32>DIV100_SIG) >> DIV100_EXP; // e / 100
-    store<u16>(buf, 0x30 + d);
+    store<u16>(buf, CharCode._0 + d);
     store<u32>(buf, load<u32>(DIGITS + (<usize>(e - <i32>d * 100) << alignof<u32>())), 2);
     return buf + 6;
   }
@@ -434,12 +464,9 @@ export const MAX_FIXED_DEC_EXP = 20;
     store<u32>(buf, load<u32>(DIGITS + (<usize>e << alignof<u32>())));
     return buf + 4;
   }
-  store<u16>(buf, 0x30 + e);
+  store<u16>(buf, CharCode._0 + e);
   return buf + 2;
 }
-
-// @ts-ignore: decorator
-@lazy export const SCRATCH = memory.data(128);
 
 // @ts-ignore: decorator
 @inline export function scratchString(byteLen: usize): string {
@@ -477,7 +504,8 @@ export const MAX_FIXED_DEC_EXP = 20;
     let powExp = -decExp - 1;
     let h = q + ((powExp * LOG2_POW10_SIGNIFICAND) >> LOG2_POW10_EXP);
 
-    let pow10Hi = loadPow10HiXjb64(powExp);
+    computePow10(powExp + 293);
+    let pow10Hi = gPow10Hi;
 
     let integral = pow10Hi >> (11 - h);
     let halfUlp = pow10Hi >> (-h);
@@ -500,20 +528,21 @@ export const MAX_FIXED_DEC_EXP = 20;
   let h = q + ((powExp * LOG2_POW10_SIGNIFICAND) >> LOG2_POW10_EXP);
   let shift = h + 1 + EXTRA_SHIFT;
 
-  loadPow10Xjb64(powExp);
-  let pHi = gPow10Hi, pLo = gPow10Lo;
+  // xjb64 rounds up the negative-power low limb by one.
+  let pLo = computePow10(powExp + 293) + u64(powExp < 0);
+  let pHi = gPow10Hi;
   let y = c << shift;
 
-  let a = mulhi64(pHi, y);
+  let a = umul64hi(pHi, y);
   let pLo64 = pHi * y;
-  let lo = pLo64 + mulhi64(pLo, y);
+  let lo = pLo64 + umul64hi(pLo, y);
   let pHi64 = a + u64(lo < pLo64);
 
   let integral = pHi64 >> EXTRA_SHIFT;
   let dotOne = (pHi64 << (64 - EXTRA_SHIFT)) | (lo >> EXTRA_SHIFT);
   let halfUlp = (pHi >> (-h)) + <u64>(1 - (c & 1));
 
-  let one = umul128AddHi64(dotOne, 10, dotOne == ((<u64>1) << 62) ? 0 : BIASED_HALF);
+  let one = umul64hiCarry(dotOne, 10, dotOne == ((<u64>1) << 62) ? 0 : BIASED_HALF);
   one = dotOne < halfUlp ? 0 : one;
   one = u64.MAX_VALUE - dotOne < halfUlp ? 10 : one;
 
@@ -525,23 +554,24 @@ export const MAX_FIXED_DEC_EXP = 20;
 @inline export function toDecimalDouble(binSig: u64, rawExp: i32, regular: bool): void {
   if (rawExp != 0) return toDecimalDoubleNormal(binSig, rawExp, regular);
 
-  let decExp = computeDecExp(-1074);
-  let shift = computeExpShift(-1074, decExp + 1) + EXTRA_SHIFT;
+  let decExp = toDecExponent(-1074);
+  let shift = exponentShift(-1074, decExp + 1) + EXTRA_SHIFT;
 
-  loadPow10Xjb64(-decExp - 1);
-  let pHi = gPow10Hi, pLo = gPow10Lo;
+  let powExp = -decExp - 1;
+  let pLo = computePow10(powExp + 293) + u64(powExp < 0);
+  let pHi = gPow10Hi;
   let y = binSig << shift;
 
-  let a = mulhi64(pHi, y);
+  let a = umul64hi(pHi, y);
   let pLo64 = pHi * y;
-  let lo = pLo64 + mulhi64(pLo, y);
+  let lo = pLo64 + umul64hi(pLo, y);
   let pHi64 = a + u64(lo < pLo64);
 
   let integral = pHi64 >> EXTRA_SHIFT;
   let dotOne = (pHi64 << (64 - EXTRA_SHIFT)) | (lo >> EXTRA_SHIFT);
   let halfUlp = (pHi >> (EXTRA_SHIFT + 1 - shift)) + <u64>(1 - (binSig & 1));
 
-  let one = umul128AddHi64(dotOne, 10, BIASED_HALF);
+  let one = umul64hiCarry(dotOne, 10, BIASED_HALF);
   one = dotOne < halfUlp ? 0 : one;
   one = u64.MAX_VALUE - dotOne < halfUlp ? 10 : one;
 
@@ -585,7 +615,7 @@ export const MAX_FIXED_DEC_EXP = 20;
   if (v >= 10) {
     store<u32>(buf, load<u32>(DIGITS + (<usize>v << alignof<u32>())));
   } else {
-    store<u16>(buf, 0x30 + <u32>v);
+    store<u16>(buf, CharCode._0 + <u32>v);
   }
   return buf + (<usize>len << 1);
 }
@@ -622,13 +652,13 @@ export const MAX_FIXED_DEC_EXP = 20;
     }
     // +/-0 -> "0"
     if (binSig == 0) {
-      store<u16>(buf, 0x30);
+      store<u16>(buf, CharCode._0);
       return buf + 2;
     }
   }
 
   if (neg) {
-    store<u16>(buf, 0x2d);
+    store<u16>(buf, CharCode.MINUS);
     buf += 2;
   }
   if (isNormal) {
@@ -691,65 +721,6 @@ export function dtoa_buffered(buffer: usize, value: f64): u32 {
   return <u32>((formatDouble(buffer, value) - buffer) >> 1);
 }
 
-// hi-only significand of 10**i, 77 entries (index = 45 + k, k in [-45,31]) with
-// the xjb64 +1 low-limb rounding folded in. One hi-only multiply covers both the
-// regular and power-of-two paths.
-// @ts-ignore: decorator
-@inline const POW10_FLOAT_HI = memory.data<u64>([
-  0x8f7e32ce7bea5c70, 0xe596b7b0c643c71a, 0xb7abc627050305ae, 0x92efd1b8d0cf37bf,
-  0xeb194f8e1ae525fe, 0xbc143fa4e250eb32, 0x96769950b50d88f5, 0xf0bdc21abb48db21,
-  0xc097ce7bc90715b4, 0x9a130b963a6c115d, 0xf684df56c3e01bc7, 0xc5371912364ce306,
-  0x9dc5ada82b70b59e, 0xfc6f7c4045812297, 0xc9f2c9cd04674edf, 0xa18f07d736b90be6,
-  0x813f3978f8940985, 0xcecb8f27f4200f3a, 0xa56fa5b99019a5c8, 0x84595161401484a0,
-  0xd3c21bcecceda100, 0xa968163f0a57b400, 0x878678326eac9000, 0xd8d726b7177a8000,
-  0xad78ebc5ac620000, 0x8ac7230489e80000, 0xde0b6b3a76400000, 0xb1a2bc2ec5000000,
-  0x8e1bc9bf04000000, 0xe35fa931a0000000, 0xb5e620f480000000, 0x9184e72a00000000,
-  0xe8d4a51000000000, 0xba43b74000000000, 0x9502f90000000000, 0xee6b280000000000,
-  0xbebc200000000000, 0x9896800000000000, 0xf424000000000000, 0xc350000000000000,
-  0x9c40000000000000, 0xfa00000000000000, 0xc800000000000000, 0xa000000000000000,
-  0x8000000000000000, 0xcccccccccccccccd, 0xa3d70a3d70a3d70b, 0x83126e978d4fdf3c,
-  0xd1b71758e219652c, 0xa7c5ac471b478424, 0x8637bd05af6c69b6, 0xd6bf94d5e57a42bd,
-  0xabcc77118461cefd, 0x89705f4136b4a598, 0xdbe6fecebdedd5bf, 0xafebff0bcb24aaff,
-  0x8cbccc096f5088cc, 0xe12e13424bb40e14, 0xb424dc35095cd810, 0x901d7cf73ab0acda,
-  0xe69594bec44de15c, 0xb877aa3236a4b44a, 0x9392ee8e921d5d08, 0xec1e4a7db69561a6,
-  0xbce5086492111aeb, 0x971da05074da7bef, 0xf1c90080baf72cb2, 0xc16d9a0095928a28,
-  0x9abe14cd44753b53, 0xf79687aed3eec552, 0xc612062576589ddb, 0x9e74d1b791e07e49,
-  0xfd87b5f28300ca0e, 0xcad2f7f5359a3b3f, 0xa2425ff75e14fc32, 0x81ceb32c4b43fcf5,
-  0xcfb11ead453994bb,
-]);
-
-// Precomputed regular-path shift h = 37 + exp_bin + floor((-k-1)*log2(10)),
-// indexed by raw biased exponent (a byte load instead of a multiply).
-// @ts-ignore: decorator
-@inline const H37 = memory.data<u8>([
-  34, 34, 35, 36, 33, 34, 35, 36, 34, 35, 36, 34, 35, 36, 33, 34,
-  35, 36, 34, 35, 36, 34, 35, 36, 33, 34, 35, 36, 34, 35, 36, 34,
-  35, 36, 33, 34, 35, 36, 34, 35, 36, 34, 35, 36, 33, 34, 35, 36,
-  34, 35, 36, 34, 35, 36, 34, 35, 36, 33, 34, 35, 36, 34, 35, 36,
-  34, 35, 36, 33, 34, 35, 36, 34, 35, 36, 34, 35, 36, 33, 34, 35,
-  36, 34, 35, 36, 34, 35, 36, 33, 34, 35, 36, 34, 35, 36, 34, 35,
-  36, 33, 34, 35, 36, 34, 35, 36, 34, 35, 36, 33, 34, 35, 36, 34,
-  35, 36, 34, 35, 36, 33, 34, 35, 36, 34, 35, 36, 34, 35, 36, 33,
-  34, 35, 36, 34, 35, 36, 34, 35, 36, 33, 34, 35, 36, 34, 35, 36,
-  34, 35, 36, 34, 35, 36, 33, 34, 35, 36, 34, 35, 36, 34, 35, 36,
-  33, 34, 35, 36, 34, 35, 36, 34, 35, 36, 33, 34, 35, 36, 34, 35,
-  36, 34, 35, 36, 33, 34, 35, 36, 34, 35, 36, 34, 35, 36, 33, 34,
-  35, 36, 34, 35, 36, 34, 35, 36, 33, 34, 35, 36, 34, 35, 36, 34,
-  35, 36, 33, 34, 35, 36, 34, 35, 36, 34, 35, 36, 33, 34, 35, 36,
-  34, 35, 36, 34, 35, 36, 33, 34, 35, 36, 34, 35, 36, 34, 35, 36,
-  33, 34, 35, 36, 34, 35, 36, 34, 35, 36, 34, 35, 36, 33, 34, 35,
-]);
-
-const FLOAT_EXP_OFFSET = 150; // exp_bias(127) + num_sig_bits(23)
-const FLOAT_SIGNIFICAND_SIZE = 23; // explicit mantissa bits
-const FLOAT_HIDDEN_BIT: u64 = (<u64>1) << FLOAT_SIGNIFICAND_SIZE; // implicit leading 1
-const FLOAT_SIGNIFICAND_MASK: u32 = (<u32>1 << FLOAT_SIGNIFICAND_SIZE) - 1;
-const FLOAT_BIT = 36; // xjb's fixed-point split for the f32 core
-// xjb's c1, ASCII offset stripped so the `one` digit comes out numeric.
-const FLOAT_ONE_BIAS: u64 = ((<u64>1) << (FLOAT_BIT - 2)) - 7;
-
-export const FLOAT_MAX_DIGITS10 = 9;
-
 // @ts-ignore: decorator
 @inline function toDigits32Simd(value: u64): void {
   // two 4-digit groups, one per 32-bit lane: [1234][5678] (rest split in SIMD)
@@ -757,17 +728,17 @@ export const FLOAT_MAX_DIGITS10 = 9;
   let x = i64x2.replace_lane(i64x2.splat(quads), 1, 0);
   let bcd = toBcd4x4(x); // bytes 0-7 = 10**0..10**7 digits
   let low = i64x2.extract_lane(bcd, 0);
-  gDigHi = bswap<u64>(low) + ZEROS;
-  gDigits = 8 - <i32>(ctz(low) >> 3); // low is never 0 (significand >= 1)
+  gDigHi = bswap<u64>(low) + BCD_ZEROS;
+  gDigits = <i32>((70 - clz<u64>((low << 1) | 1)) / 8);
 }
 
 // to_digits<32>: a single u64 of 8 ASCII digits (value < 1e8).
 // @ts-ignore: decorator
 @inline export function toDigits32(value: u64): void {
   if (ASC_FEATURE_SIMD) return toDigits32Simd(value);
-  toBcd8(value);
-  gDigHi = gBcd + ZEROS;
-  gDigits = gBcdLen;
+  let length = toBcd8(value);
+  gDigHi = gBcdValue + BCD_ZEROS;
+  gDigits = length;
 }
 
 // Fixed-notation tail: 8-digit significand block (gDigHi) plus an optional 9th
@@ -780,8 +751,8 @@ export const FLOAT_MAX_DIGITS10 = 9;
   hasLastDigit: bool,
   hasExtraDigit: bool,
 ): usize {
-  if (decExp < 0) putBlock8(start, ZEROS);
-  let lastDigitChar = <u64>(0x30 + (hasLastDigit ? gLastDigit : 0));
+  if (decExp < 0) writeUnpacked8(start, BCD_ZEROS);
+  let lastDigitChar = <u64>(CharCode._0 + (hasLastDigit ? gLastDigit : 0));
   let numDigits = hasLastDigit ? 8 : gDigits - 1;
 
   // !hasExtraDigit: gSig has a leading '0'; shift it out and fold the last digit
@@ -793,12 +764,12 @@ export const FLOAT_MAX_DIGITS10 = 9;
 
   // decExp >= 8: integer rendered as significant digits then trailing zeros.
   if (decExp >= 8) {
-    putBlock8(buf, dHi);
+    writeUnpacked8(buf, dHi);
     if (hasExtraDigit) store<u16>(buf + 16, <u32>lastDigitChar);
     let sig = 8 + i32(hasExtraDigit);
     let endByte = buf + ((decExp + 1) << 1);
     for (let z = buf + (sig << 1); z < endByte; z += 16) {
-      putBlock8(z, ZEROS);
+      writeUnpacked8(z, BCD_ZEROS);
     }
     return endByte;
   }
@@ -813,7 +784,7 @@ export const FLOAT_MAX_DIGITS10 = 9;
   let startPos = (1 - decExp) & (decExp >> 31);
 
   buf += startPos << 1;
-  putBlock8(buf, dHi);
+  writeUnpacked8(buf, dHi);
   if (hasExtraDigit) store<u16>(buf + 16, <u32>lastDigitChar);
 
   if (decExp >= 0) {
@@ -823,13 +794,18 @@ export const FLOAT_MAX_DIGITS10 = 9;
     let d16: u64 = hasExtraDigit ? lastDigitChar : 0;
     let s = k << 3;
     let fHi = s < 64 ? (dHi >> s) | (d16 << (64 - s)) : d16;
-    putBlock8(buf + ((k + 1) << 1), fHi);
-    store<u16>(buf + (k << 1), 0x2e);
+    writeUnpacked8(buf + ((k + 1) << 1), fHi);
+    store<u16>(buf + (k << 1), CharCode.DOT);
   } else {
-    store<u16>(start, 0x2e, 2); // "0." prefix
+    store<u16>(start, CharCode.DOT, 2); // "0." prefix
   }
 
-  return buf + (endPos << 1);
+  let end = buf + (endPos << 1);
+  while (end > start + 2 && load<u16>(end - 2) == CharCode._0) {
+    end -= 2;
+  }
+  if (load<u16>(end - 2) == CharCode.DOT) end -= 2;
+  return end;
 }
 
 // Exponential-notation tail. Lays the mantissa "d.ddd" (single leading digit)
@@ -843,13 +819,16 @@ export const FLOAT_MAX_DIGITS10 = 9;
   hasExtraDigit: bool,
 ): usize {
   buf += usize(hasExtraDigit) << 1;
-  putBlock8(buf, gDigHi);
-  store<u16>(buf + 16, <u32>(0x30 + gLastDigit));
+  writeUnpacked8(buf, gDigHi);
+  store<u16>(buf + 16, <u32>(CharCode._0 + gLastDigit));
   buf += (hasLastDigit ? 9 : gDigits) << 1;
+  while (buf > start + 4 && load<u16>(buf - 2) == CharCode._0) {
+    buf -= 2;
+  }
   // Move the lead digit to pos 0, drop '.' at pos 1.
   let lead: u32 = <u32>load<u16>(start, 2);
   store<u16>(start, lead);
-  store<u16>(start, 0x2e, 2);
+  store<u16>(start, CharCode.DOT, 2);
   buf -= usize(buf - 2 == start + 2) << 1; // drop a trailing point
   return writeExponent(buf, decExp);
 }
@@ -865,7 +844,7 @@ export const FLOAT_MAX_DIGITS10 = 9;
   let k: i32, h: i32;
   if (regular) {
     k = (expBin * 1233) >> 12;
-    h = <i32>load<u8>(H37 + rawExp);
+    h = 37 + expBin + (((-k - 1) * 1701) >> 9);
   } else {
     k = (expBin * 1233 - 512) >> 12;
     h = 37 + expBin + ((k * -1701 + (-1701)) >> 9);
@@ -911,11 +890,11 @@ export const FLOAT_MAX_DIGITS10 = 9;
       return writeInfinity(buf, neg);
     }
     if (binSig == 0) {
-      store<u16>(buf, 0x30);
+      store<u16>(buf, CharCode._0);
       return buf + 2;
     }
     if (neg) {
-      store<u16>(buf, 0x2d);
+      store<u16>(buf, CharCode.MINUS);
       buf += 2;
     }
     toDecimalFloat(binSig, 1, true);
@@ -933,7 +912,7 @@ export const FLOAT_MAX_DIGITS10 = 9;
     gHasLastDigit = last != 0;
   } else {
     if (neg) {
-      store<u16>(buf, 0x2d);
+      store<u16>(buf, CharCode.MINUS);
       buf += 2;
     }
     toDecimalFloat(binSig | FLOAT_HIDDEN_BIT, binExp, binSig != 0);
