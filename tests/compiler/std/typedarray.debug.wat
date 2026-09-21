@@ -7599,6 +7599,8 @@
          br $~lib/util/dtoa/decimalLen16|inlined.0
         end
         local.set $len
+        i32.const 0
+        drop
         local.get $buf|48
         local.get $len
         i32.const 1
@@ -9886,6 +9888,8 @@
          br $~lib/util/dtoa/decimalLen16|inlined.1
         end
         local.set $len
+        i32.const 0
+        drop
         local.get $buf|32
         local.get $len
         i32.const 1

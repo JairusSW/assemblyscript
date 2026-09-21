@@ -315,7 +315,7 @@ function toBcd8(value: u64): i32 {
   }
 }
 
-// The f64 formatter has normalized its significand to exactly 16 digits.
+// Pack a zero-padded 16-digit block without computing the logical length.
 // @ts-ignore: decorator
 @inline function toDigits64Fixed16(value: u64): void {
   if (ASC_FEATURE_SIMD) toDigits64Simd(value, false);
@@ -643,6 +643,13 @@ function toBcd8(value: u64): i32 {
 // @ts-ignore: decorator
 @inline function writeUInt16(buf: usize, value: u64): usize {
   let len = decimalLen16(value);
+  if (ASC_FEATURE_SIMD && value >= 100000000) {
+    toDigits64Fixed16(value);
+    let prefix = len - 8;
+    writeUnpacked8(buf, gDigHi >> ((8 - prefix) << 3));
+    writeUnpacked8(buf + (<usize>prefix << 1), gDigLo);
+    return buf + (<usize>len << 1);
+  }
   let p = buf + (<usize>len << 1);
   let v = value;
   if (v >= 100) {
