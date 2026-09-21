@@ -101,6 +101,32 @@ import { DIGITS, MAX_DOUBLE_LENGTH } from "./number";
   0xcfb11ead453994bb,
 ]);
 
+// Low limbs shared with the f32 power range (entry t is power index 337 - t).
+// f32's high limb is rounded up exactly when the corresponding low limb is nonzero.
+// @ts-ignore: decorator
+@lazy @inline const POW10_FLOAT_LO = memory.data<u64>([
+  0xe4820023a2000000, 0x6d9ccd05d0000000, 0xf14a3d9e40000000, 0x5aa1cae500000000,
+  0x5dcfab0800000000, 0x17d955a000000000, 0x1314448000000000, 0x1e86d40000000000,
+  0x4b9f100000000000, 0x3c7f400000000000, 0xc732000000000000, 0x6c28000000000000,
+  0xf020000000000000, 0x4d00000000000000, 0xa400000000000000, 0x5000000000000000,
+  0x4000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
+  0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
+  0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
+  0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
+  0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
+  0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
+  0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
+  0x0000000000000000, 0xcccccccccccccccc, 0x3d70a3d70a3d70a3, 0x645a1cac083126e9,
+  0xd3c36113404ea4a8, 0x0fcf80dc33721d53, 0xa63f9a49c2c1b10f, 0x3d32907604691b4c,
+  0xfdc20d2b36ba7c3d, 0x31680a88f8953030, 0xb573440e5a884d1b, 0xf78f69a51539d748,
+  0xf93f87b7442e45d3, 0x2865a5f206b06fb9, 0x538484c19ef38c94, 0x0f9d37014bf60a10,
+  0x4c2ebe687989a9b3, 0x09befeb9fad487c2, 0x3aff322e62439fcf, 0x2b31e9e3d06c32e5,
+  0x88f4bb1ca6bcf584, 0xd3f6fc16ebca5e03, 0x5324c68b12dd6338, 0x75b7053c0f178293,
+  0xc4926a9672793542, 0x3a83ddbd83f52204, 0x95364afe032a819d, 0x775ea264cf55347d,
+  0x8bca9d6e188853fc, 0x096ee45813a04330, 0xa1258379a94d028d, 0x80eacf948770ced7,
+  0x67de18eda5814af2
+]);
+
 @lazy @inline const FLOAT_EXP_OFFSET = 150; // exp_bias(127) + num_sig_bits(23)
 @lazy const FLOAT_SIGNIFICAND_SIZE = 23; // explicit mantissa bits
 @lazy @inline const FLOAT_HIDDEN_BIT: u64 = (<u64>1) << FLOAT_SIGNIFICAND_SIZE; // implicit leading 1
@@ -171,6 +197,12 @@ import { DIGITS, MAX_DOUBLE_LENGTH } from "./number";
 // then the per-power fixup bit subtracted off the low limb.
 // @ts-ignore: decorator
 @inline function computePow10(i: i32): u64 {
+  if (ASC_OPTIMIZE_LEVEL >= 3 && ASC_SHRINK_LEVEL == 0 && i >= 261 && i <= 337) {
+    let t = 337 - i;
+    let lo = load<u64>(POW10_FLOAT_LO + (<usize>t << 3));
+    gPow10Hi = load<u64>(POW10_FLOAT_HI + (<usize>t << 3)) - u64(lo != 0);
+    return lo;
+  }
   let j = i + 10;
   let major = (j * 293) >>> 13; // exact j / 28 for j in [10,627]
   let minor = j - major * 28;
