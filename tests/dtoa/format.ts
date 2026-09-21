@@ -3,6 +3,13 @@ import {
 } from "~lib/util/dtoa";
 import { dtoa as numberDtoa, dtoa_buffered as numberBuffered } from "util/number";
 
+// The allocator can grow into host-grown memory during the string sweep.
+const output = memory.data(64);
+
+export function outputBuffer(): usize {
+  return output;
+}
+
 // Called by the JS differential harness with exact input bit patterns.
 export function format64Bits(bits: u64, buffer: usize): u32 {
   return numberBuffered<f64>(buffer, reinterpret<f64>(bits));
@@ -10,6 +17,18 @@ export function format64Bits(bits: u64, buffer: usize): u32 {
 
 export function format32Bits(bits: u32, buffer: usize): u32 {
   return numberBuffered<f32>(buffer, reinterpret<f32>(bits));
+}
+
+export function string64Bits(bits: u64, buffer: usize): u32 {
+  let result = numberDtoa<f64>(reinterpret<f64>(bits));
+  memory.copy(buffer, changetype<usize>(result), <usize>result.length << 1);
+  return result.length;
+}
+
+export function string32Bits(bits: u32, buffer: usize): u32 {
+  let result = numberDtoa<f32>(reinterpret<f32>(bits));
+  memory.copy(buffer, changetype<usize>(result), <usize>result.length << 1);
+  return result.length;
 }
 
 toDigits32(1);

@@ -418,6 +418,52 @@ export function dtoa<T extends number>(value: T): String {
     if (isNaN(value)) return "NaN";
     return select<String>("-Infinity", "Infinity", value < 0);
   }
+  // Exact integers in this range can be written into their final allocation.
+  // The f32 limit matters: larger integral f32 values can have a shorter
+  // decimal representation than their exact integer value.
+  let exactIntegerRange = false;
+  if (isFloat<T>()) {
+    if (sizeof<T>() == 4) {
+      let bits = reinterpret<u32>(<f32>value) & 0x7fffffff;
+      exactIntegerRange = bits >= 0x3f800000 && bits <= 0x4b800000;
+    } else {
+      let bits = reinterpret<u64>(<f64>value) & 0x7fffffffffffffff;
+      exactIntegerRange = bits >= 0x3ff0000000000000 && bits <= 0x41cdcd6500000000;
+    }
+  }
+  if (exactIntegerRange) {
+    let integer = <i32>value;
+    if (value == <T>integer) {
+      let negative = integer < 0;
+      let magnitude = <u32>(negative ? -integer : integer);
+      let digits = decimalCount32(magnitude);
+      let result = changetype<String>(__new(<usize>(digits + u32(negative) + 2) << 1, idof<String>()));
+      let out = changetype<usize>(result);
+      if (negative) {
+        store<u16>(out, CharCode.MINUS);
+        out += 2;
+      }
+      if (magnitude < 10) {
+        store<u16>(out, CharCode._0 + magnitude);
+      } else if (magnitude < 100) {
+        store<u32>(out, load<u32>(DIGITS + (<usize>magnitude << 2)));
+      } else if (magnitude < 10000) {
+        let high = magnitude / 100;
+        let low = magnitude - high * 100;
+        if (magnitude < 1000) {
+          store<u16>(out, CharCode._0 + high);
+          store<u32>(out + 2, load<u32>(DIGITS + (<usize>low << 2)));
+        } else {
+          store<u32>(out, load<u32>(DIGITS + (<usize>high << 2)));
+          store<u32>(out + 4, load<u32>(DIGITS + (<usize>low << 2)));
+        }
+      } else {
+        utoa32_dec_core(out, magnitude, digits);
+      }
+      store<u32>(out + (<usize>digits << 1), <u32>CharCode.DOT | (<u32>CharCode._0 << 16));
+      return result;
+    }
+  }
   let len: u32;
   if (isFloat<T>() && sizeof<T>() == 4) {
     // @ts-ignore: type

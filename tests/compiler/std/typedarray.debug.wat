@@ -97980,29 +97980,42 @@
   return
  )
  (func $~lib/util/number/dtoa<f32> (param $value f32) (result i32)
+  (local $exactIntegerRange i32)
+  (local $bits i32)
+  (local $integer i32)
+  (local $negative i32)
+  (local $magnitude i32)
+  (local $digits i32)
+  (local $result i32)
+  (local $out i32)
+  (local $high i32)
+  (local $low i32)
+  (local $buffer i32)
+  (local $num i32)
+  (local $offset i32)
   (local $len i32)
   (local $size i32)
-  (local $result i32)
-  (local $4 i32)
+  (local $result|16 i32)
+  (local $17 i32)
   global.get $~lib/memory/__stack_pointer
-  i32.const 4
+  i32.const 8
   i32.sub
   global.set $~lib/memory/__stack_pointer
   call $~stack_check
   global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store
+  i64.const 0
+  i64.store
   local.get $value
   f32.const 0
   f32.eq
   if
    i32.const 8640
-   local.set $4
+   local.set $17
    global.get $~lib/memory/__stack_pointer
-   i32.const 4
+   i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $4
+   local.get $17
    return
   end
   local.get $value
@@ -98017,12 +98030,12 @@
    f32.ne
    if
     i32.const 8672
-    local.set $4
+    local.set $17
     global.get $~lib/memory/__stack_pointer
-    i32.const 4
+    i32.const 8
     i32.add
     global.set $~lib/memory/__stack_pointer
-    local.get $4
+    local.get $17
     return
    end
    i32.const 8704
@@ -98031,13 +98044,202 @@
    f32.const 0
    f32.lt
    select
-   local.set $4
+   local.set $17
    global.get $~lib/memory/__stack_pointer
-   i32.const 4
+   i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $4
+   local.get $17
    return
+  end
+  i32.const 0
+  local.set $exactIntegerRange
+  i32.const 1
+  drop
+  i32.const 4
+  i32.const 4
+  i32.eq
+  drop
+  local.get $value
+  i32.reinterpret_f32
+  i32.const 2147483647
+  i32.and
+  local.set $bits
+  local.get $bits
+  i32.const 1065353216
+  i32.ge_u
+  if (result i32)
+   local.get $bits
+   i32.const 1266679808
+   i32.le_u
+  else
+   i32.const 0
+  end
+  local.set $exactIntegerRange
+  local.get $exactIntegerRange
+  if
+   local.get $value
+   i32.trunc_sat_f32_s
+   local.set $integer
+   local.get $value
+   local.get $integer
+   f32.convert_i32_s
+   f32.eq
+   if
+    local.get $integer
+    i32.const 0
+    i32.lt_s
+    local.set $negative
+    local.get $negative
+    if (result i32)
+     i32.const 0
+     local.get $integer
+     i32.sub
+    else
+     local.get $integer
+    end
+    local.set $magnitude
+    local.get $magnitude
+    call $~lib/util/number/decimalCount32
+    local.set $digits
+    global.get $~lib/memory/__stack_pointer
+    local.get $digits
+    local.get $negative
+    i32.add
+    i32.const 2
+    i32.add
+    i32.const 1
+    i32.shl
+    i32.const 2
+    call $~lib/rt/itcms/__new
+    local.tee $result
+    i32.store
+    local.get $result
+    local.set $out
+    local.get $negative
+    if
+     local.get $out
+     i32.const 45
+     i32.store16
+     local.get $out
+     i32.const 2
+     i32.add
+     local.set $out
+    end
+    local.get $magnitude
+    i32.const 10
+    i32.lt_u
+    if
+     local.get $out
+     i32.const 48
+     local.get $magnitude
+     i32.add
+     i32.store16
+    else
+     local.get $magnitude
+     i32.const 100
+     i32.lt_u
+     if
+      local.get $out
+      i32.const 6988
+      local.get $magnitude
+      i32.const 2
+      i32.shl
+      i32.add
+      i32.load
+      i32.store
+     else
+      local.get $magnitude
+      i32.const 10000
+      i32.lt_u
+      if
+       local.get $magnitude
+       i32.const 100
+       i32.div_u
+       local.set $high
+       local.get $magnitude
+       local.get $high
+       i32.const 100
+       i32.mul
+       i32.sub
+       local.set $low
+       local.get $magnitude
+       i32.const 1000
+       i32.lt_u
+       if
+        local.get $out
+        i32.const 48
+        local.get $high
+        i32.add
+        i32.store16
+        local.get $out
+        i32.const 2
+        i32.add
+        i32.const 6988
+        local.get $low
+        i32.const 2
+        i32.shl
+        i32.add
+        i32.load
+        i32.store
+       else
+        local.get $out
+        i32.const 6988
+        local.get $high
+        i32.const 2
+        i32.shl
+        i32.add
+        i32.load
+        i32.store
+        local.get $out
+        i32.const 4
+        i32.add
+        i32.const 6988
+        local.get $low
+        i32.const 2
+        i32.shl
+        i32.add
+        i32.load
+        i32.store
+       end
+      else
+       local.get $out
+       local.set $buffer
+       local.get $magnitude
+       local.set $num
+       local.get $digits
+       local.set $offset
+       i32.const 0
+       i32.const 1
+       i32.ge_s
+       drop
+       local.get $buffer
+       local.get $num
+       local.get $offset
+       call $~lib/util/number/utoa32_dec_lut
+      end
+     end
+    end
+    local.get $out
+    local.get $digits
+    i32.const 1
+    i32.shl
+    i32.add
+    i32.const 46
+    i32.const 48
+    i32.const 16
+    i32.shl
+    i32.or
+    i32.store
+    local.get $result
+    local.set $17
+    global.get $~lib/memory/__stack_pointer
+    i32.const 8
+    i32.add
+    global.set $~lib/memory/__stack_pointer
+    local.get $17
+    return
+   end
   end
   i32.const 4
   i32.const 4
@@ -98055,45 +98257,58 @@
   local.get $size
   i32.const 2
   call $~lib/rt/itcms/__new
-  local.tee $result
-  i32.store
-  local.get $result
+  local.tee $result|16
+  i32.store offset=4
+  local.get $result|16
   i32.const 8784
   local.get $size
   memory.copy
-  local.get $result
-  local.set $4
+  local.get $result|16
+  local.set $17
   global.get $~lib/memory/__stack_pointer
-  i32.const 4
+  i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $17
   return
  )
  (func $~lib/util/number/dtoa<f64> (param $value f64) (result i32)
+  (local $exactIntegerRange i32)
+  (local $bits i64)
+  (local $integer i32)
+  (local $negative i32)
+  (local $magnitude i32)
+  (local $digits i32)
+  (local $result i32)
+  (local $out i32)
+  (local $high i32)
+  (local $low i32)
+  (local $buffer i32)
+  (local $num i32)
+  (local $offset i32)
   (local $len i32)
   (local $size i32)
-  (local $result i32)
-  (local $4 i32)
+  (local $result|16 i32)
+  (local $17 i32)
   global.get $~lib/memory/__stack_pointer
-  i32.const 4
+  i32.const 8
   i32.sub
   global.set $~lib/memory/__stack_pointer
   call $~stack_check
   global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store
+  i64.const 0
+  i64.store
   local.get $value
   f64.const 0
   f64.eq
   if
    i32.const 8640
-   local.set $4
+   local.set $17
    global.get $~lib/memory/__stack_pointer
-   i32.const 4
+   i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $4
+   local.get $17
    return
   end
   local.get $value
@@ -98108,12 +98323,12 @@
    f64.ne
    if
     i32.const 8672
-    local.set $4
+    local.set $17
     global.get $~lib/memory/__stack_pointer
-    i32.const 4
+    i32.const 8
     i32.add
     global.set $~lib/memory/__stack_pointer
-    local.get $4
+    local.get $17
     return
    end
    i32.const 8704
@@ -98122,13 +98337,202 @@
    f64.const 0
    f64.lt
    select
-   local.set $4
+   local.set $17
    global.get $~lib/memory/__stack_pointer
-   i32.const 4
+   i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $4
+   local.get $17
    return
+  end
+  i32.const 0
+  local.set $exactIntegerRange
+  i32.const 1
+  drop
+  i32.const 8
+  i32.const 4
+  i32.eq
+  drop
+  local.get $value
+  i64.reinterpret_f64
+  i64.const 9223372036854775807
+  i64.and
+  local.set $bits
+  local.get $bits
+  i64.const 4607182418800017408
+  i64.ge_u
+  if (result i32)
+   local.get $bits
+   i64.const 4741671816366391296
+   i64.le_u
+  else
+   i32.const 0
+  end
+  local.set $exactIntegerRange
+  local.get $exactIntegerRange
+  if
+   local.get $value
+   i32.trunc_sat_f64_s
+   local.set $integer
+   local.get $value
+   local.get $integer
+   f64.convert_i32_s
+   f64.eq
+   if
+    local.get $integer
+    i32.const 0
+    i32.lt_s
+    local.set $negative
+    local.get $negative
+    if (result i32)
+     i32.const 0
+     local.get $integer
+     i32.sub
+    else
+     local.get $integer
+    end
+    local.set $magnitude
+    local.get $magnitude
+    call $~lib/util/number/decimalCount32
+    local.set $digits
+    global.get $~lib/memory/__stack_pointer
+    local.get $digits
+    local.get $negative
+    i32.add
+    i32.const 2
+    i32.add
+    i32.const 1
+    i32.shl
+    i32.const 2
+    call $~lib/rt/itcms/__new
+    local.tee $result
+    i32.store
+    local.get $result
+    local.set $out
+    local.get $negative
+    if
+     local.get $out
+     i32.const 45
+     i32.store16
+     local.get $out
+     i32.const 2
+     i32.add
+     local.set $out
+    end
+    local.get $magnitude
+    i32.const 10
+    i32.lt_u
+    if
+     local.get $out
+     i32.const 48
+     local.get $magnitude
+     i32.add
+     i32.store16
+    else
+     local.get $magnitude
+     i32.const 100
+     i32.lt_u
+     if
+      local.get $out
+      i32.const 6988
+      local.get $magnitude
+      i32.const 2
+      i32.shl
+      i32.add
+      i32.load
+      i32.store
+     else
+      local.get $magnitude
+      i32.const 10000
+      i32.lt_u
+      if
+       local.get $magnitude
+       i32.const 100
+       i32.div_u
+       local.set $high
+       local.get $magnitude
+       local.get $high
+       i32.const 100
+       i32.mul
+       i32.sub
+       local.set $low
+       local.get $magnitude
+       i32.const 1000
+       i32.lt_u
+       if
+        local.get $out
+        i32.const 48
+        local.get $high
+        i32.add
+        i32.store16
+        local.get $out
+        i32.const 2
+        i32.add
+        i32.const 6988
+        local.get $low
+        i32.const 2
+        i32.shl
+        i32.add
+        i32.load
+        i32.store
+       else
+        local.get $out
+        i32.const 6988
+        local.get $high
+        i32.const 2
+        i32.shl
+        i32.add
+        i32.load
+        i32.store
+        local.get $out
+        i32.const 4
+        i32.add
+        i32.const 6988
+        local.get $low
+        i32.const 2
+        i32.shl
+        i32.add
+        i32.load
+        i32.store
+       end
+      else
+       local.get $out
+       local.set $buffer
+       local.get $magnitude
+       local.set $num
+       local.get $digits
+       local.set $offset
+       i32.const 0
+       i32.const 1
+       i32.ge_s
+       drop
+       local.get $buffer
+       local.get $num
+       local.get $offset
+       call $~lib/util/number/utoa32_dec_lut
+      end
+     end
+    end
+    local.get $out
+    local.get $digits
+    i32.const 1
+    i32.shl
+    i32.add
+    i32.const 46
+    i32.const 48
+    i32.const 16
+    i32.shl
+    i32.or
+    i32.store
+    local.get $result
+    local.set $17
+    global.get $~lib/memory/__stack_pointer
+    i32.const 8
+    i32.add
+    global.set $~lib/memory/__stack_pointer
+    local.get $17
+    return
+   end
   end
   i32.const 8
   i32.const 4
@@ -98146,19 +98550,19 @@
   local.get $size
   i32.const 2
   call $~lib/rt/itcms/__new
-  local.tee $result
-  i32.store
-  local.get $result
+  local.tee $result|16
+  i32.store offset=4
+  local.get $result|16
   i32.const 8784
   local.get $size
   memory.copy
-  local.get $result
-  local.set $4
+  local.get $result|16
+  local.set $17
   global.get $~lib/memory/__stack_pointer
-  i32.const 4
+  i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $17
   return
  )
  (func $~lib/arraybuffer/ArrayBuffer#constructor (param $this i32) (param $length i32) (result i32)

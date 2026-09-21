@@ -44,6 +44,10 @@ function makeCases64() {
     const base = bits64(Number(`1e${exponent}`));
     for (let delta = -2; delta <= 2; ++delta) addSigned(base + BigInt(delta));
   }
+  for (let value = 1; value < 10000; ++value) addSigned(bits64(value));
+  for (const value of [10000, 99999, 1234567, 16777216, 123456789, 999999999, 1000000000]) {
+    addSigned(bits64(value));
+  }
   for (let i = 0; i < 2048; ++i) {
     patterns.add((BigInt(random32()) << 32n) | BigInt(random32()));
   }
@@ -70,6 +74,10 @@ function makeCases32() {
     const base = bits32(10 ** exponent);
     for (let delta = -2; delta <= 2; ++delta) addSigned(base + delta);
   }
+  for (let value = 1; value < 10000; ++value) addSigned(bits32(value));
+  for (const value of [10000, 99999, 1234567, 16777215, 16777216, 16777218]) {
+    addSigned(bits32(value));
+  }
   for (let i = 0; i < 2048; ++i) patterns.add(random32());
   return [...patterns].map(bits => [bits, withAssemblyScriptDotZero(shortestFloat32(bits))]);
 }
@@ -78,22 +86,27 @@ const cases64 = makeCases64();
 const cases32 = makeCases32();
 
 function compareExactOutput(exports, mode) {
-  const { memory, format64Bits, format32Bits } = exports;
-  const buffer = memory.grow(1) * 65536;
-  for (const [bits, expected] of cases64) {
-    const length = format64Bits(bits, buffer);
-    if (length > 32) throw new Error(`${mode} f64 length ${length} exceeds buffer capacity`);
-    const actual = String.fromCharCode(...new Uint16Array(memory.buffer, buffer, length));
-    if (actual !== expected) {
-      throw new Error(`${mode} f64 0x${bits.toString(16)}: ${JSON.stringify(actual)} != ${JSON.stringify(expected)}`);
+  const { memory, format64Bits, format32Bits, string64Bits, string32Bits } = exports;
+  const buffer = exports.outputBuffer();
+  for (const [label, format64, format32] of [
+    ["buffered", format64Bits, format32Bits],
+    ["string", string64Bits, string32Bits],
+  ]) {
+    for (const [bits, expected] of cases64) {
+      const length = format64(bits, buffer);
+      if (length > 32) throw new Error(`${mode} ${label} f64 length ${length} exceeds buffer capacity`);
+      const actual = String.fromCharCode(...new Uint16Array(memory.buffer, buffer, length));
+      if (actual !== expected) {
+        throw new Error(`${mode} ${label} f64 0x${bits.toString(16)}: ${JSON.stringify(actual)} != ${JSON.stringify(expected)}`);
+      }
     }
-  }
-  for (const [bits, expected] of cases32) {
-    const length = format32Bits(bits, buffer);
-    if (length > 32) throw new Error(`${mode} f32 length ${length} exceeds buffer capacity`);
-    const actual = String.fromCharCode(...new Uint16Array(memory.buffer, buffer, length));
-    if (actual !== expected) {
-      throw new Error(`${mode} f32 0x${bits.toString(16)}: ${JSON.stringify(actual)} != ${JSON.stringify(expected)}`);
+    for (const [bits, expected] of cases32) {
+      const length = format32(bits, buffer);
+      if (length > 32) throw new Error(`${mode} ${label} f32 length ${length} exceeds buffer capacity`);
+      const actual = String.fromCharCode(...new Uint16Array(memory.buffer, buffer, length));
+      if (actual !== expected) {
+        throw new Error(`${mode} ${label} f32 0x${bits.toString(16)}: ${JSON.stringify(actual)} != ${JSON.stringify(expected)}`);
+      }
     }
   }
 }
