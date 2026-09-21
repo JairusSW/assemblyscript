@@ -983,6 +983,20 @@ export function dtoa_buffered(buffer: usize, value: f64): u32 {
       store<u16>(buf, CharCode.MINUS);
       buf += 2;
     }
+    let q = binExp - FLOAT_EXP_OFFSET;
+    if (q >= -FLOAT_SIGNIFICAND_SIZE && q < 24) {
+      let c = binSig | FLOAT_HIDDEN_BIT;
+      let intValue: u64 = 0;
+      if (q < 0) {
+        let shift = -q;
+        let mask = ((<u64>1) << shift) - 1;
+        if ((c & mask) == 0) intValue = c >> shift;
+      } else {
+        intValue = c << q;
+        if (intValue > 16777216) intValue = 0;
+      }
+      if (intValue != 0) return finishInteger(writeUInt16(buf, intValue), dotZero);
+    }
     toDecimalFloat(binSig | FLOAT_HIDDEN_BIT, binExp, binSig != 0);
   }
 

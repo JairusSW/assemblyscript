@@ -31,7 +31,7 @@
  (global $~lib/util/dtoa/gDigHi (mut i64) (i64.const 0))
  (global $~lib/util/dtoa/gDigits (mut i32) (i32.const 0))
  (global $resolve-elementaccess/buf (mut i32) (i32.const 0))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 37216))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 37376))
  (memory $0 1)
  (data $0 (i32.const 1036) ",")
  (data $0.1 (i32.const 1048) "\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h")
@@ -49,33 +49,41 @@
  (data $9.1 (i32.const 1496) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $10 (i32.const 1548) "<")
  (data $10.1 (i32.const 1560) "\02\00\00\00$\00\00\00~\00l\00i\00b\00/\00t\00y\00p\00e\00d\00a\00r\00r\00a\00y\00.\00t\00s")
- (data $12 (i32.const 1744) "p\\\ea{\ce2~\8f\1a\c7C\c6\b0\b7\96\e5\ae\05\03\05\'\c6\ab\b7\bf7\cf\d0\b8\d1\ef\92\fe%\e5\1a\8eO\19\eb2\ebP\e2\a4?\14\bc\f5\88\r\b5P\99v\96!\dbH\bb\1a\c2\bd\f0\b4\15\07\c9{\ce\97\c0]\11l:\96\0b\13\9a\c7\1b\e0\c3V\df\84\f6\06\e3L6\12\197\c5\9e\b5p+\a8\ad\c5\9d\97\"\81E@|o\fc\dfNg\04\cd\c9\f2\c9\e6\0b\b96\d7\07\8f\a1\85\t\94\f8x9?\81:\0f \f4\'\8f\cb\ce\c8\a5\19\90\b9\a5o\a5\a0\84\14@aQY\84\00\a1\ed\cc\ce\1b\c2\d3\00\b4W\n?\16h\a9\00\90\acn2x\86\87\00\80z\17\b7&\d7\d8\00\00b\ac\c5\ebx\ad\00\00\e8\89\04#\c7\8a\00\00@v:k\0b\de\00\00\00\c5.\bc\a2\b1\00\00\00\04\bf\c9\1b\8e\00\00\00\a01\a9_\e3\00\00\00\80\f4 \e6\b5\00\00\00\00*\e7\84\91\00\00\00\00\10\a5\d4\e8\00\00\00\00@\b7C\ba\00\00\00\00\00\f9\02\95\00\00\00\00\00(k\ee\00\00\00\00\00 \bc\be\00\00\00\00\00\80\96\98\00\00\00\00\00\00$\f4\00\00\00\00\00\00P\c3\00\00\00\00\00\00@\9c\00\00\00\00\00\00\00\fa\00\00\00\00\00\00\00\c8\00\00\00\00\00\00\00\a0\00\00\00\00\00\00\00\80\cd\cc\cc\cc\cc\cc\cc\cc\0b\d7\a3p=\n\d7\a3<\dfO\8d\97n\12\83,e\19\e2X\17\b7\d1$\84G\1bG\ac\c5\a7\b6il\af\05\bd7\86\bdBz\e5\d5\94\bf\d6\fd\cea\84\11w\cc\ab\98\a5\b46A_p\89\bf\d5\ed\bd\ce\fe\e6\db\ff\aa$\cb\0b\ff\eb\af\cc\88Po\t\cc\bc\8c\14\0e\b4KB\13.\e1\10\d8\\\t5\dc$\b4\da\ac\b0:\f7|\1d\90\\\e1M\c4\be\94\95\e6J\b4\a462\aaw\b8\08]\1d\92\8e\ee\92\93\a6a\95\b6}J\1e\ec\eb\1a\11\92d\08\e5\bc\ef{\datP\a0\1d\97\b2,\f7\ba\80\00\c9\f1(\8a\92\95\00\9am\c1S;uD\cd\14\be\9aR\c5\ee\d3\ae\87\96\f7\db\9dXv%\06\12\c6I~\e0\91\b7\d1t\9e\0e\ca\00\83\f2\b5\87\fd?;\9a5\f5\f7\d2\ca2\fc\14^\f7_B\a2\f5\fcCK,\b3\ce\81\bb\949E\ad\1e\b1\cf")
- (data $13 (i32.const 2360) "0\000\000\001\000\002\000\003\000\004\000\005\000\006\000\007\000\008\000\009\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\007\001\008\001\009\002\000\002\001\002\002\002\003\002\004\002\005\002\006\002\007\002\008\002\009\003\000\003\001\003\002\003\003\003\004\003\005\003\006\003\007\003\008\003\009\004\000\004\001\004\002\004\003\004\004\004\005\004\006\004\007\004\008\004\009\005\000\005\001\005\002\005\003\005\004\005\005\005\006\005\007\005\008\005\009\006\000\006\001\006\002\006\003\006\004\006\005\006\006\006\007\006\008\006\009\007\000\007\001\007\002\007\003\007\004\007\005\007\006\007\007\007\008\007\009\008\000\008\001\008\002\008\003\008\004\008\005\008\006\008\007\008\008\008\009\009\000\009\001\009\002\009\003\009\004\009\005\009\006\009\007\009\008\009\009")
- (data $14 (i32.const 2764) "\1c")
- (data $14.1 (i32.const 2776) "\02\00\00\00\06\00\00\001\00.\000")
- (data $15 (i32.const 2796) "L")
- (data $15.1 (i32.const 2808) "\02\00\00\000\00\00\00r\00e\00s\00o\00l\00v\00e\00-\00e\00l\00e\00m\00e\00n\00t\00a\00c\00c\00e\00s\00s\00.\00t\00s")
- (data $16 (i32.const 2876) "\1c")
- (data $16.1 (i32.const 2888) "\02\00\00\00\06\00\00\002\00.\000")
- (data $17 (i32.const 2908) "\1c")
- (data $17.1 (i32.const 2920) "\02\00\00\00\08\00\00\001\001\00.\000")
- (data $18 (i32.const 2940) "|")
- (data $18.1 (i32.const 2952) "\02\00\00\00d\00\00\00t\00o\00S\00t\00r\00i\00n\00g\00(\00)\00 \00r\00a\00d\00i\00x\00 \00a\00r\00g\00u\00m\00e\00n\00t\00 \00m\00u\00s\00t\00 \00b\00e\00 \00b\00e\00t\00w\00e\00e\00n\00 \002\00 \00a\00n\00d\00 \003\006")
- (data $19 (i32.const 3068) "<")
- (data $19.1 (i32.const 3080) "\02\00\00\00&\00\00\00~\00l\00i\00b\00/\00u\00t\00i\00l\00/\00n\00u\00m\00b\00e\00r\00.\00t\00s")
- (data $20 (i32.const 3132) "\1c")
- (data $20.1 (i32.const 3144) "\02\00\00\00\02\00\00\000")
- (data $21 (i32.const 3164) "\1c\04")
- (data $21.1 (i32.const 3176) "\02\00\00\00\00\04\00\000\000\000\001\000\002\000\003\000\004\000\005\000\006\000\007\000\008\000\009\000\00a\000\00b\000\00c\000\00d\000\00e\000\00f\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\007\001\008\001\009\001\00a\001\00b\001\00c\001\00d\001\00e\001\00f\002\000\002\001\002\002\002\003\002\004\002\005\002\006\002\007\002\008\002\009\002\00a\002\00b\002\00c\002\00d\002\00e\002\00f\003\000\003\001\003\002\003\003\003\004\003\005\003\006\003\007\003\008\003\009\003\00a\003\00b\003\00c\003\00d\003\00e\003\00f\004\000\004\001\004\002\004\003\004\004\004\005\004\006\004\007\004\008\004\009\004\00a\004\00b\004\00c\004\00d\004\00e\004\00f\005\000\005\001\005\002\005\003\005\004\005\005\005\006\005\007\005\008\005\009\005\00a\005\00b\005\00c\005\00d\005\00e\005\00f\006\000\006\001\006\002\006\003\006\004\006\005\006\006\006\007\006\008\006\009\006\00a\006\00b\006\00c\006\00d\006\00e\006\00f\007\000\007\001\007\002\007\003\007\004\007\005\007\006\007\007\007\008\007\009\007\00a\007\00b\007\00c\007\00d\007\00e\007\00f\008\000\008\001\008\002\008\003\008\004\008\005\008\006\008\007\008\008\008\009\008\00a\008\00b\008\00c\008\00d\008\00e\008\00f\009\000\009\001\009\002\009\003\009\004\009\005\009\006\009\007\009\008\009\009\009\00a\009\00b\009\00c\009\00d\009\00e\009\00f\00a\000\00a\001\00a\002\00a\003\00a\004\00a\005\00a\006\00a\007\00a\008\00a\009\00a\00a\00a\00b\00a\00c\00a\00d\00a\00e\00a\00f\00b\000\00b\001\00b\002\00b\003\00b\004\00b\005\00b\006\00b\007\00b\008\00b\009\00b\00a\00b\00b\00b\00c\00b\00d\00b\00e\00b\00f\00c\000\00c\001\00c\002\00c\003\00c\004\00c\005\00c\006\00c\007\00c\008\00c\009\00c\00a\00c\00b\00c\00c\00c\00d\00c\00e\00c\00f\00d\000\00d\001\00d\002\00d\003\00d\004\00d\005\00d\006\00d\007\00d\008\00d\009\00d\00a\00d\00b\00d\00c\00d\00d\00d\00e\00d\00f\00e\000\00e\001\00e\002\00e\003\00e\004\00e\005\00e\006\00e\007\00e\008\00e\009\00e\00a\00e\00b\00e\00c\00e\00d\00e\00e\00e\00f\00f\000\00f\001\00f\002\00f\003\00f\004\00f\005\00f\006\00f\007\00f\008\00f\009\00f\00a\00f\00b\00f\00c\00f\00d\00f\00e\00f\00f")
- (data $22 (i32.const 4220) "\\")
- (data $22.1 (i32.const 4232) "\02\00\00\00H\00\00\000\001\002\003\004\005\006\007\008\009\00a\00b\00c\00d\00e\00f\00g\00h\00i\00j\00k\00l\00m\00n\00o\00p\00q\00r\00s\00t\00u\00v\00w\00x\00y\00z")
- (data $23 (i32.const 4316) "\1c")
- (data $23.1 (i32.const 4328) "\02\00\00\00\02\00\00\001")
- (data $24 (i32.const 4348) "\1c")
- (data $24.1 (i32.const 4360) "\02\00\00\00\02\00\00\002")
- (data $25 (i32.const 4380) "\1c")
- (data $25.1 (i32.const 4392) "\02\00\00\00\04\00\00\001\001")
- (data $26 (i32.const 4416) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\01\19\00\00A\00\00\00A")
+ (data $11 (i32.const 1612) "\1c")
+ (data $11.1 (i32.const 1624) "\02\00\00\00\06\00\00\000\00.\000")
+ (data $12 (i32.const 1644) "\1c")
+ (data $12.1 (i32.const 1656) "\02\00\00\00\06\00\00\00N\00a\00N")
+ (data $13 (i32.const 1676) ",")
+ (data $13.1 (i32.const 1688) "\02\00\00\00\12\00\00\00-\00I\00n\00f\00i\00n\00i\00t\00y")
+ (data $14 (i32.const 1724) ",")
+ (data $14.1 (i32.const 1736) "\02\00\00\00\10\00\00\00I\00n\00f\00i\00n\00i\00t\00y")
+ (data $16 (i32.const 1904) "p\\\ea{\ce2~\8f\1a\c7C\c6\b0\b7\96\e5\ae\05\03\05\'\c6\ab\b7\bf7\cf\d0\b8\d1\ef\92\fe%\e5\1a\8eO\19\eb2\ebP\e2\a4?\14\bc\f5\88\r\b5P\99v\96!\dbH\bb\1a\c2\bd\f0\b4\15\07\c9{\ce\97\c0]\11l:\96\0b\13\9a\c7\1b\e0\c3V\df\84\f6\06\e3L6\12\197\c5\9e\b5p+\a8\ad\c5\9d\97\"\81E@|o\fc\dfNg\04\cd\c9\f2\c9\e6\0b\b96\d7\07\8f\a1\85\t\94\f8x9?\81:\0f \f4\'\8f\cb\ce\c8\a5\19\90\b9\a5o\a5\a0\84\14@aQY\84\00\a1\ed\cc\ce\1b\c2\d3\00\b4W\n?\16h\a9\00\90\acn2x\86\87\00\80z\17\b7&\d7\d8\00\00b\ac\c5\ebx\ad\00\00\e8\89\04#\c7\8a\00\00@v:k\0b\de\00\00\00\c5.\bc\a2\b1\00\00\00\04\bf\c9\1b\8e\00\00\00\a01\a9_\e3\00\00\00\80\f4 \e6\b5\00\00\00\00*\e7\84\91\00\00\00\00\10\a5\d4\e8\00\00\00\00@\b7C\ba\00\00\00\00\00\f9\02\95\00\00\00\00\00(k\ee\00\00\00\00\00 \bc\be\00\00\00\00\00\80\96\98\00\00\00\00\00\00$\f4\00\00\00\00\00\00P\c3\00\00\00\00\00\00@\9c\00\00\00\00\00\00\00\fa\00\00\00\00\00\00\00\c8\00\00\00\00\00\00\00\a0\00\00\00\00\00\00\00\80\cd\cc\cc\cc\cc\cc\cc\cc\0b\d7\a3p=\n\d7\a3<\dfO\8d\97n\12\83,e\19\e2X\17\b7\d1$\84G\1bG\ac\c5\a7\b6il\af\05\bd7\86\bdBz\e5\d5\94\bf\d6\fd\cea\84\11w\cc\ab\98\a5\b46A_p\89\bf\d5\ed\bd\ce\fe\e6\db\ff\aa$\cb\0b\ff\eb\af\cc\88Po\t\cc\bc\8c\14\0e\b4KB\13.\e1\10\d8\\\t5\dc$\b4\da\ac\b0:\f7|\1d\90\\\e1M\c4\be\94\95\e6J\b4\a462\aaw\b8\08]\1d\92\8e\ee\92\93\a6a\95\b6}J\1e\ec\eb\1a\11\92d\08\e5\bc\ef{\datP\a0\1d\97\b2,\f7\ba\80\00\c9\f1(\8a\92\95\00\9am\c1S;uD\cd\14\be\9aR\c5\ee\d3\ae\87\96\f7\db\9dXv%\06\12\c6I~\e0\91\b7\d1t\9e\0e\ca\00\83\f2\b5\87\fd?;\9a5\f5\f7\d2\ca2\fc\14^\f7_B\a2\f5\fcCK,\b3\ce\81\bb\949E\ad\1e\b1\cf")
+ (data $17 (i32.const 2520) "0\000\000\001\000\002\000\003\000\004\000\005\000\006\000\007\000\008\000\009\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\007\001\008\001\009\002\000\002\001\002\002\002\003\002\004\002\005\002\006\002\007\002\008\002\009\003\000\003\001\003\002\003\003\003\004\003\005\003\006\003\007\003\008\003\009\004\000\004\001\004\002\004\003\004\004\004\005\004\006\004\007\004\008\004\009\005\000\005\001\005\002\005\003\005\004\005\005\005\006\005\007\005\008\005\009\006\000\006\001\006\002\006\003\006\004\006\005\006\006\006\007\006\008\006\009\007\000\007\001\007\002\007\003\007\004\007\005\007\006\007\007\007\008\007\009\008\000\008\001\008\002\008\003\008\004\008\005\008\006\008\007\008\008\008\009\009\000\009\001\009\002\009\003\009\004\009\005\009\006\009\007\009\008\009\009")
+ (data $18 (i32.const 2924) "\1c")
+ (data $18.1 (i32.const 2936) "\02\00\00\00\06\00\00\001\00.\000")
+ (data $19 (i32.const 2956) "L")
+ (data $19.1 (i32.const 2968) "\02\00\00\000\00\00\00r\00e\00s\00o\00l\00v\00e\00-\00e\00l\00e\00m\00e\00n\00t\00a\00c\00c\00e\00s\00s\00.\00t\00s")
+ (data $20 (i32.const 3036) "\1c")
+ (data $20.1 (i32.const 3048) "\02\00\00\00\06\00\00\002\00.\000")
+ (data $21 (i32.const 3068) "\1c")
+ (data $21.1 (i32.const 3080) "\02\00\00\00\08\00\00\001\001\00.\000")
+ (data $22 (i32.const 3100) "|")
+ (data $22.1 (i32.const 3112) "\02\00\00\00d\00\00\00t\00o\00S\00t\00r\00i\00n\00g\00(\00)\00 \00r\00a\00d\00i\00x\00 \00a\00r\00g\00u\00m\00e\00n\00t\00 \00m\00u\00s\00t\00 \00b\00e\00 \00b\00e\00t\00w\00e\00e\00n\00 \002\00 \00a\00n\00d\00 \003\006")
+ (data $23 (i32.const 3228) "<")
+ (data $23.1 (i32.const 3240) "\02\00\00\00&\00\00\00~\00l\00i\00b\00/\00u\00t\00i\00l\00/\00n\00u\00m\00b\00e\00r\00.\00t\00s")
+ (data $24 (i32.const 3292) "\1c")
+ (data $24.1 (i32.const 3304) "\02\00\00\00\02\00\00\000")
+ (data $25 (i32.const 3324) "\1c\04")
+ (data $25.1 (i32.const 3336) "\02\00\00\00\00\04\00\000\000\000\001\000\002\000\003\000\004\000\005\000\006\000\007\000\008\000\009\000\00a\000\00b\000\00c\000\00d\000\00e\000\00f\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\007\001\008\001\009\001\00a\001\00b\001\00c\001\00d\001\00e\001\00f\002\000\002\001\002\002\002\003\002\004\002\005\002\006\002\007\002\008\002\009\002\00a\002\00b\002\00c\002\00d\002\00e\002\00f\003\000\003\001\003\002\003\003\003\004\003\005\003\006\003\007\003\008\003\009\003\00a\003\00b\003\00c\003\00d\003\00e\003\00f\004\000\004\001\004\002\004\003\004\004\004\005\004\006\004\007\004\008\004\009\004\00a\004\00b\004\00c\004\00d\004\00e\004\00f\005\000\005\001\005\002\005\003\005\004\005\005\005\006\005\007\005\008\005\009\005\00a\005\00b\005\00c\005\00d\005\00e\005\00f\006\000\006\001\006\002\006\003\006\004\006\005\006\006\006\007\006\008\006\009\006\00a\006\00b\006\00c\006\00d\006\00e\006\00f\007\000\007\001\007\002\007\003\007\004\007\005\007\006\007\007\007\008\007\009\007\00a\007\00b\007\00c\007\00d\007\00e\007\00f\008\000\008\001\008\002\008\003\008\004\008\005\008\006\008\007\008\008\008\009\008\00a\008\00b\008\00c\008\00d\008\00e\008\00f\009\000\009\001\009\002\009\003\009\004\009\005\009\006\009\007\009\008\009\009\009\00a\009\00b\009\00c\009\00d\009\00e\009\00f\00a\000\00a\001\00a\002\00a\003\00a\004\00a\005\00a\006\00a\007\00a\008\00a\009\00a\00a\00a\00b\00a\00c\00a\00d\00a\00e\00a\00f\00b\000\00b\001\00b\002\00b\003\00b\004\00b\005\00b\006\00b\007\00b\008\00b\009\00b\00a\00b\00b\00b\00c\00b\00d\00b\00e\00b\00f\00c\000\00c\001\00c\002\00c\003\00c\004\00c\005\00c\006\00c\007\00c\008\00c\009\00c\00a\00c\00b\00c\00c\00c\00d\00c\00e\00c\00f\00d\000\00d\001\00d\002\00d\003\00d\004\00d\005\00d\006\00d\007\00d\008\00d\009\00d\00a\00d\00b\00d\00c\00d\00d\00d\00e\00d\00f\00e\000\00e\001\00e\002\00e\003\00e\004\00e\005\00e\006\00e\007\00e\008\00e\009\00e\00a\00e\00b\00e\00c\00e\00d\00e\00e\00e\00f\00f\000\00f\001\00f\002\00f\003\00f\004\00f\005\00f\006\00f\007\00f\008\00f\009\00f\00a\00f\00b\00f\00c\00f\00d\00f\00e\00f\00f")
+ (data $26 (i32.const 4380) "\\")
+ (data $26.1 (i32.const 4392) "\02\00\00\00H\00\00\000\001\002\003\004\005\006\007\008\009\00a\00b\00c\00d\00e\00f\00g\00h\00i\00j\00k\00l\00m\00n\00o\00p\00q\00r\00s\00t\00u\00v\00w\00x\00y\00z")
+ (data $27 (i32.const 4476) "\1c")
+ (data $27.1 (i32.const 4488) "\02\00\00\00\02\00\00\001")
+ (data $28 (i32.const 4508) "\1c")
+ (data $28.1 (i32.const 4520) "\02\00\00\00\02\00\00\002")
+ (data $29 (i32.const 4540) "\1c")
+ (data $29.1 (i32.const 4552) "\02\00\00\00\04\00\00\001\001")
+ (data $30 (i32.const 4576) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\01\19\00\00A\00\00\00A")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/__visit (param $0 i32)
@@ -422,11 +430,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 4608
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37408
+   i32.const 37456
    i32.const 1
    i32.const 1
    call $~lib/builtins/abort
@@ -470,11 +478,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 4608
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37408
+   i32.const 37456
    i32.const 1
    i32.const 1
    call $~lib/builtins/abort
@@ -525,11 +533,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 4608
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37408
+   i32.const 37456
    i32.const 1
    i32.const 1
    call $~lib/builtins/abort
@@ -683,11 +691,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 4608
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37408
+   i32.const 37456
    i32.const 1
    i32.const 1
    call $~lib/builtins/abort
@@ -731,11 +739,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 4608
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37408
+   i32.const 37456
    i32.const 1
    i32.const 1
    call $~lib/builtins/abort
@@ -1204,7 +1212,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 37216
+    i32.const 37376
     i32.lt_u
     i32.and
     i32.eqz
@@ -1253,7 +1261,7 @@
    i32.const 1
   else
    local.get $1
-   i32.const 4416
+   i32.const 4576
    i32.load
    i32.gt_u
    if
@@ -1267,7 +1275,7 @@
    local.get $1
    i32.const 2
    i32.shl
-   i32.const 4420
+   i32.const 4580
    i32.add
    i32.load
    i32.const 32
@@ -1338,11 +1346,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 4608
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37408
+   i32.const 37456
    i32.const 1
    i32.const 1
    call $~lib/builtins/abort
@@ -1359,7 +1367,7 @@
     i32.const 4
     i32.add
     global.set $~lib/memory/__stack_pointer
-    i32.const 3152
+    i32.const 3312
     local.set $0
     br $__inlined_func$~lib/util/number/utoa32$77
    end
@@ -1433,7 +1441,7 @@
      i32.div_u
      i32.const 2
      i32.shl
-     i32.const 2360
+     i32.const 2520
      i32.add
      i64.load32_u
      local.get $2
@@ -1441,7 +1449,7 @@
      i32.rem_u
      i32.const 2
      i32.shl
-     i32.const 2360
+     i32.const 2520
      i32.add
      i64.load32_u
      i64.const 32
@@ -1468,7 +1476,7 @@
     i32.rem_u
     i32.const 2
     i32.shl
-    i32.const 2360
+    i32.const 2520
     i32.add
     i32.load
     i32.store
@@ -1491,7 +1499,7 @@
     local.get $1
     i32.const 2
     i32.shl
-    i32.const 2360
+    i32.const 2520
     i32.add
     i32.load
     i32.store
@@ -1523,11 +1531,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 4608
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37408
+   i32.const 37456
    i32.const 1
    i32.const 1
    call $~lib/builtins/abort
@@ -1536,24 +1544,69 @@
   global.get $~lib/memory/__stack_pointer
   i32.const 0
   i32.store
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  call $~lib/util/dtoa/ftoa_buffered
-  i32.const 1
-  i32.shl
-  local.tee $2
-  i32.const 2
-  call $~lib/rt/itcms/__new
-  local.tee $1
-  i32.store
-  local.get $1
-  i32.const 1616
-  local.get $2
-  memory.copy
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
+  block $__inlined_func$~lib/util/number/dtoa<f32>$75
+   local.get $0
+   f32.const 0
+   f32.eq
+   if
+    global.get $~lib/memory/__stack_pointer
+    i32.const 4
+    i32.add
+    global.set $~lib/memory/__stack_pointer
+    i32.const 1632
+    local.set $1
+    br $__inlined_func$~lib/util/number/dtoa<f32>$75
+   end
+   local.get $0
+   local.get $0
+   f32.sub
+   f32.const 0
+   f32.ne
+   if
+    local.get $0
+    local.get $0
+    f32.ne
+    if
+     global.get $~lib/memory/__stack_pointer
+     i32.const 4
+     i32.add
+     global.set $~lib/memory/__stack_pointer
+     i32.const 1664
+     local.set $1
+     br $__inlined_func$~lib/util/number/dtoa<f32>$75
+    end
+    global.get $~lib/memory/__stack_pointer
+    i32.const 4
+    i32.add
+    global.set $~lib/memory/__stack_pointer
+    i32.const 1696
+    i32.const 1744
+    local.get $0
+    f32.const 0
+    f32.lt
+    select
+    local.set $1
+    br $__inlined_func$~lib/util/number/dtoa<f32>$75
+   end
+   global.get $~lib/memory/__stack_pointer
+   local.get $0
+   call $~lib/util/dtoa/ftoa_buffered
+   i32.const 1
+   i32.shl
+   local.tee $2
+   i32.const 2
+   call $~lib/rt/itcms/__new
+   local.tee $1
+   i32.store
+   local.get $1
+   i32.const 1776
+   local.get $2
+   memory.copy
+   global.get $~lib/memory/__stack_pointer
+   i32.const 4
+   i32.add
+   global.set $~lib/memory/__stack_pointer
+  end
   local.get $1
  )
  (func $~lib/rt/tlsf/searchBlock (param $0 i32) (param $1 i32) (result i32)
@@ -1704,10 +1757,10 @@
   if
    unreachable
   end
-  i32.const 37216
+  i32.const 37376
   i32.const 0
   i32.store
-  i32.const 38784
+  i32.const 38944
   i32.const 0
   i32.store
   loop $for-loop|0
@@ -1718,7 +1771,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 37216
+    i32.const 37376
     i32.add
     i32.const 0
     i32.store offset=4
@@ -1736,7 +1789,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 37216
+      i32.const 37376
       i32.add
       i32.const 0
       i32.store offset=96
@@ -1754,14 +1807,14 @@
     br $for-loop|0
    end
   end
-  i32.const 37216
-  i32.const 38788
+  i32.const 37376
+  i32.const 38948
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 37216
+  i32.const 37376
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/tlsf/addMemory (param $0 i32) (param $1 i32) (param $2 i64)
@@ -1899,9 +1952,9 @@
   call $~lib/rt/itcms/__visit
   i32.const 1168
   call $~lib/rt/itcms/__visit
-  i32.const 3184
+  i32.const 3344
   call $~lib/rt/itcms/__visit
-  i32.const 4240
+  i32.const 4400
   call $~lib/rt/itcms/__visit
   global.get $~lib/rt/itcms/pinSpace
   local.tee $1
@@ -2003,11 +2056,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 4608
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37408
+   i32.const 37456
    i32.const 1
    i32.const 1
    call $~lib/builtins/abort
@@ -2101,16 +2154,16 @@
  )
  (func $~lib/util/dtoa/ftoa_buffered (param $0 f32) (result i32)
   (local $1 i32)
-  (local $2 i64)
+  (local $2 i32)
   (local $3 i64)
   (local $4 i32)
-  (local $5 i32)
+  (local $5 i64)
   (local $6 i32)
   (local $7 i32)
-  (local $8 i64)
+  (local $8 i32)
   (local $9 i64)
   (local $10 i64)
-  (local $11 i32)
+  (local $11 i64)
   local.get $0
   i32.reinterpret_f32
   local.tee $1
@@ -2123,7 +2176,7 @@
   i32.const 8388607
   i32.and
   i64.extend_i32_u
-  local.set $10
+  local.set $11
   local.get $1
   i32.const 31
   i32.shr_u
@@ -2137,23 +2190,371 @@
    if
     local.get $1
     if (result i32)
-     i32.const 1616
+     i32.const 1776
      i32.const 45
      i32.store16
-     i32.const 1618
+     i32.const 1778
     else
-     i32.const 1616
+     i32.const 1776
     end
-    local.set $5
-    local.get $10
+    local.set $1
+    local.get $4
+    i32.const 150
+    i32.sub
+    local.tee $2
+    i32.const 24
+    i32.lt_s
+    local.get $2
+    i32.const -23
+    i32.ge_s
+    i32.and
+    if
+     local.get $11
+     i64.const 8388608
+     i64.or
+     local.set $5
+     local.get $2
+     i32.const 0
+     i32.lt_s
+     if (result i64)
+      local.get $5
+      i32.const 0
+      local.get $2
+      i32.sub
+      i64.extend_i32_s
+      local.tee $3
+      i64.shr_u
+      i64.const 0
+      i64.const 1
+      local.get $3
+      i64.shl
+      i64.const 1
+      i64.sub
+      local.get $5
+      i64.and
+      i64.eqz
+      select
+     else
+      local.get $5
+      local.get $2
+      i64.extend_i32_s
+      i64.shl
+      local.tee $3
+      i64.const 16777216
+      i64.gt_u
+      if (result i64)
+       i64.const 0
+      else
+       local.get $3
+      end
+     end
+     local.tee $3
+     i64.const 0
+     i64.ne
+     if
+      local.get $1
+      local.get $3
+      i64.const 1000000000000000
+      i64.lt_u
+      if (result i32)
+       block $~lib/util/dtoa/decimalLen15|inlined.0 (result i32)
+        local.get $3
+        i64.const 100000000
+        i64.lt_u
+        if
+         local.get $3
+         i64.const 10000
+         i64.lt_u
+         if
+          local.get $3
+          i64.const 10
+          i64.ge_u
+          i32.const 1
+          i32.add
+          local.get $3
+          i64.const 100
+          i64.lt_u
+          br_if $~lib/util/dtoa/decimalLen15|inlined.0
+          drop
+          local.get $3
+          i64.const 1000
+          i64.ge_u
+          i32.const 3
+          i32.add
+          br $~lib/util/dtoa/decimalLen15|inlined.0
+         end
+         local.get $3
+         i64.const 100000
+         i64.ge_u
+         i32.const 5
+         i32.add
+         local.get $3
+         i64.const 1000000
+         i64.lt_u
+         br_if $~lib/util/dtoa/decimalLen15|inlined.0
+         drop
+         local.get $3
+         i64.const 10000000
+         i64.ge_u
+         i32.const 7
+         i32.add
+         br $~lib/util/dtoa/decimalLen15|inlined.0
+        end
+        local.get $3
+        i64.const 1000000000000
+        i64.lt_u
+        if
+         local.get $3
+         i64.const 1000000000
+         i64.ge_u
+         i32.const 9
+         i32.add
+         local.get $3
+         i64.const 10000000000
+         i64.lt_u
+         br_if $~lib/util/dtoa/decimalLen15|inlined.0
+         drop
+         local.get $3
+         i64.const 100000000000
+         i64.ge_u
+         i32.const 11
+         i32.add
+         br $~lib/util/dtoa/decimalLen15|inlined.0
+        end
+        local.get $3
+        i64.const 10000000000000
+        i64.ge_u
+        i32.const 13
+        i32.add
+        local.get $3
+        i64.const 100000000000000
+        i64.lt_u
+        br_if $~lib/util/dtoa/decimalLen15|inlined.0
+        drop
+        i32.const 15
+       end
+      else
+       i32.const 16
+      end
+      local.tee $2
+      i32.const 1
+      i32.shl
+      i32.add
+      local.set $7
+      local.get $3
+      i64.const 100
+      i64.ge_u
+      if
+       local.get $7
+       i32.const 4
+       i32.sub
+       local.tee $7
+       local.get $3
+       local.get $3
+       i64.const 100
+       i64.div_u
+       local.tee $3
+       i64.const 100
+       i64.mul
+       i64.sub
+       i32.wrap_i64
+       i32.const 2
+       i32.shl
+       i32.const 2520
+       i32.add
+       i32.load
+       i32.store
+      end
+      local.get $3
+      i64.const 100
+      i64.ge_u
+      if
+       local.get $7
+       i32.const 4
+       i32.sub
+       local.tee $7
+       local.get $3
+       local.get $3
+       i64.const 100
+       i64.div_u
+       local.tee $3
+       i64.const 100
+       i64.mul
+       i64.sub
+       i32.wrap_i64
+       i32.const 2
+       i32.shl
+       i32.const 2520
+       i32.add
+       i32.load
+       i32.store
+      end
+      local.get $3
+      i64.const 100
+      i64.ge_u
+      if
+       local.get $7
+       i32.const 4
+       i32.sub
+       local.tee $7
+       local.get $3
+       local.get $3
+       i64.const 100
+       i64.div_u
+       local.tee $3
+       i64.const 100
+       i64.mul
+       i64.sub
+       i32.wrap_i64
+       i32.const 2
+       i32.shl
+       i32.const 2520
+       i32.add
+       i32.load
+       i32.store
+      end
+      local.get $3
+      i64.const 100
+      i64.ge_u
+      if
+       local.get $7
+       i32.const 4
+       i32.sub
+       local.tee $7
+       local.get $3
+       local.get $3
+       i64.const 100
+       i64.div_u
+       local.tee $3
+       i64.const 100
+       i64.mul
+       i64.sub
+       i32.wrap_i64
+       i32.const 2
+       i32.shl
+       i32.const 2520
+       i32.add
+       i32.load
+       i32.store
+      end
+      local.get $3
+      i64.const 100
+      i64.ge_u
+      if
+       local.get $7
+       i32.const 4
+       i32.sub
+       local.tee $7
+       local.get $3
+       local.get $3
+       i64.const 100
+       i64.div_u
+       local.tee $3
+       i64.const 100
+       i64.mul
+       i64.sub
+       i32.wrap_i64
+       i32.const 2
+       i32.shl
+       i32.const 2520
+       i32.add
+       i32.load
+       i32.store
+      end
+      local.get $3
+      i64.const 100
+      i64.ge_u
+      if
+       local.get $7
+       i32.const 4
+       i32.sub
+       local.tee $7
+       local.get $3
+       local.get $3
+       i64.const 100
+       i64.div_u
+       local.tee $3
+       i64.const 100
+       i64.mul
+       i64.sub
+       i32.wrap_i64
+       i32.const 2
+       i32.shl
+       i32.const 2520
+       i32.add
+       i32.load
+       i32.store
+      end
+      local.get $3
+      i64.const 100
+      i64.ge_u
+      if
+       local.get $7
+       i32.const 4
+       i32.sub
+       local.get $3
+       local.get $3
+       i64.const 100
+       i64.div_u
+       local.tee $3
+       i64.const 100
+       i64.mul
+       i64.sub
+       i32.wrap_i64
+       i32.const 2
+       i32.shl
+       i32.const 2520
+       i32.add
+       i32.load
+       i32.store
+      end
+      local.get $3
+      i64.const 10
+      i64.ge_u
+      if
+       local.get $1
+       local.get $3
+       i32.wrap_i64
+       i32.const 2
+       i32.shl
+       i32.const 2520
+       i32.add
+       i32.load
+       i32.store
+      else
+       local.get $1
+       local.get $3
+       i32.wrap_i64
+       i32.const 48
+       i32.add
+       i32.store16
+      end
+      local.get $1
+      local.get $2
+      i32.const 1
+      i32.shl
+      i32.add
+      local.tee $1
+      i32.const 46
+      i32.store16
+      local.get $1
+      i32.const 48
+      i32.store16 offset=2
+      local.get $1
+      i32.const 4
+      i32.add
+      br $~lib/util/dtoa/formatDecodedFloat|inlined.0
+     end
+    end
+    local.get $11
     i64.const 8388608
     i64.or
-    local.set $9
+    local.set $10
     local.get $4
     i32.const 150
     i32.sub
     local.set $6
-    local.get $10
+    local.get $11
     i64.const 0
     i64.ne
     local.tee $4
@@ -2167,7 +2568,7 @@
      i32.mul
      i32.const 12
      i32.shr_s
-     local.tee $11
+     local.tee $7
      i32.sub
      i32.const 1701
      i32.mul
@@ -2185,7 +2586,7 @@
      i32.sub
      i32.const 12
      i32.shr_s
-     local.tee $11
+     local.tee $7
      i32.const -1701
      i32.mul
      i32.const 1701
@@ -2194,90 +2595,90 @@
      i32.shr_s
      i32.add
     end
-    local.set $1
-    local.get $11
+    local.set $2
+    local.get $7
     i32.const 3
     i32.shl
-    i32.const 2104
+    i32.const 2264
     i32.add
     i64.load
-    local.tee $3
+    local.tee $5
     i64.const 4294967295
     i64.and
-    local.get $9
+    local.get $10
     i64.mul
-    local.set $2
-    local.get $3
+    local.set $3
+    local.get $5
     i64.const 32
     i64.shr_u
-    local.get $9
+    local.get $10
     i64.mul
-    local.get $2
+    local.get $3
     i64.const 32
     i64.shr_u
     i64.add
     i64.const 8
     i64.shl
-    local.get $2
+    local.get $3
     i64.const 4294967295
     i64.and
     i64.const 24
     i64.shr_u
     i64.or
     i64.const 40
-    local.get $1
+    local.get $2
     i64.extend_i32_s
-    local.tee $2
+    local.tee $3
     i64.sub
     i64.shr_u
-    local.tee $8
+    local.tee $9
     i64.const 68719476735
     i64.and
-    local.set $10
+    local.set $11
     i64.const 1
-    local.get $9
+    local.get $10
     i64.const 1
     i64.and
     i64.sub
-    local.get $3
+    local.get $5
     i64.const 65
-    local.get $2
+    local.get $3
     i64.sub
     i64.shr_u
     i64.add
-    local.tee $3
-    local.get $8
+    local.tee $5
+    local.get $9
     i64.add
     i64.const 36
     i64.shr_u
-    local.set $2
-    local.get $10
+    local.set $3
+    local.get $11
     i64.const 5
     i64.mul
     i64.const 17179869177
     i64.add
-    local.get $10
+    local.get $11
     i64.const 32
     i64.shr_u
     i64.add
     i64.const 35
     i64.shr_u
     i32.wrap_i64
-    local.set $7
+    local.set $8
     local.get $4
     if (result i32)
-     local.get $2
-     local.get $8
      local.get $3
+     local.get $9
+     local.get $5
      i64.sub
      i64.const 36
      i64.shr_u
      i64.gt_u
     else
-     local.get $7
+     local.get $8
      i32.const 1
      i32.add
-     local.get $7
+     local.get $8
      local.get $6
      i32.const 64
      i32.eq
@@ -2290,10 +2691,10 @@
      i32.eq
      i32.or
      select
-     local.set $7
-     local.get $2
-     local.get $8
+     local.set $8
      local.get $3
+     local.get $9
+     local.get $5
      i64.const 1
      i64.shr_u
      i64.sub
@@ -2301,41 +2702,41 @@
      i64.shr_u
      i64.gt_u
     end
-    local.get $2
+    local.get $3
     global.set $~lib/util/dtoa/gSig
-    local.get $11
-    global.set $~lib/util/dtoa/gExp
     local.get $7
+    global.set $~lib/util/dtoa/gExp
+    local.get $8
     global.set $~lib/util/dtoa/gLastDigit
     i32.eqz
     global.set $~lib/util/dtoa/gHasLastDigit
    else
     local.get $4
     if
-     local.get $10
+     local.get $11
      i64.const 0
      i64.ne
      if
-      i32.const 1616
+      i32.const 1776
       i32.const 78
       i32.store16
-      i32.const 1618
+      i32.const 1778
       i32.const 97
       i32.store16
-      i32.const 1620
+      i32.const 1780
       i32.const 78
       i32.store16
-      i32.const 1622
+      i32.const 1782
       br $~lib/util/dtoa/formatDecodedFloat|inlined.0
      end
      local.get $1
      if (result i32)
-      i32.const 1616
+      i32.const 1776
       i32.const 45
       i32.store16
-      i32.const 1618
+      i32.const 1778
      else
-      i32.const 1616
+      i32.const 1776
      end
      local.tee $1
      i64.const 29555310648492105
@@ -2348,51 +2749,51 @@
      i32.add
      br $~lib/util/dtoa/formatDecodedFloat|inlined.0
     end
-    local.get $10
+    local.get $11
     i64.eqz
     if
-     i32.const 1616
+     i32.const 1776
      i32.const 48
      i32.store16
-     i32.const 1618
+     i32.const 1778
      i32.const 46
      i32.store16
-     i32.const 1620
+     i32.const 1780
      i32.const 48
      i32.store16
-     i32.const 1622
+     i32.const 1782
      br $~lib/util/dtoa/formatDecodedFloat|inlined.0
     end
     local.get $1
     if (result i32)
-     i32.const 1616
+     i32.const 1776
      i32.const 45
      i32.store16
-     i32.const 1618
+     i32.const 1778
     else
-     i32.const 1616
+     i32.const 1776
     end
-    local.set $5
-    i32.const 1744
+    local.set $1
+    i32.const 1904
     i64.load
-    local.tee $3
+    local.tee $5
     i64.const 4294967295
     i64.and
-    local.get $10
+    local.get $11
     i64.mul
-    local.set $2
-    local.get $3
+    local.set $3
+    local.get $5
     i64.const 32
     i64.shr_u
-    local.get $10
+    local.get $11
     i64.mul
-    local.get $2
+    local.get $3
     i64.const 32
     i64.shr_u
     i64.add
     i64.const 8
     i64.shl
-    local.get $2
+    local.get $3
     i64.const 4294967295
     i64.and
     i64.const 24
@@ -2400,34 +2801,34 @@
     i64.or
     i64.const 6
     i64.shr_u
-    local.tee $9
+    local.tee $10
     i64.const 68719476735
     i64.and
-    local.set $8
-    local.get $9
-    i64.const 1
+    local.set $9
     local.get $10
+    i64.const 1
+    local.get $11
     i64.const 1
     i64.and
     i64.sub
-    local.get $3
+    local.get $5
     i64.const 31
     i64.shr_u
     i64.add
-    local.tee $3
+    local.tee $5
     i64.add
     i64.const 36
     i64.shr_u
-    local.tee $2
+    local.tee $3
     global.set $~lib/util/dtoa/gSig
     i32.const -45
     global.set $~lib/util/dtoa/gExp
-    local.get $8
+    local.get $9
     i64.const 5
     i64.mul
     i64.const 17179869177
     i64.add
-    local.get $8
+    local.get $9
     i64.const 32
     i64.shr_u
     i64.add
@@ -2435,12 +2836,12 @@
     i64.shr_u
     i32.wrap_i64
     global.set $~lib/util/dtoa/gLastDigit
-    local.get $9
-    local.get $3
+    local.get $10
+    local.get $5
     i64.sub
     i64.const 36
     i64.shr_u
-    local.get $2
+    local.get $3
     i64.ge_u
     global.set $~lib/util/dtoa/gHasLastDigit
     global.get $~lib/util/dtoa/gSig
@@ -2452,18 +2853,18 @@
     global.get $~lib/util/dtoa/gHasLastDigit
     select
     i64.add
-    local.set $2
+    local.set $3
     i32.const -45
     local.set $7
     loop $while-continue|0
-     local.get $2
+     local.get $3
      i64.const 10000000
      i64.lt_u
      if
-      local.get $2
+      local.get $3
       i64.const 10
       i64.mul
-      local.set $2
+      local.set $3
       local.get $7
       i32.const 1
       i32.sub
@@ -2471,38 +2872,38 @@
       br $while-continue|0
      end
     end
-    local.get $2
-    local.get $2
+    local.get $3
+    local.get $3
     i64.const 10
     i64.div_u
-    local.tee $2
+    local.tee $3
     i64.const 10
     i64.mul
     i64.sub
     i32.wrap_i64
-    local.set $1
-    local.get $2
+    local.set $2
+    local.get $3
     global.set $~lib/util/dtoa/gSig
     local.get $7
     global.set $~lib/util/dtoa/gExp
-    local.get $1
+    local.get $2
     global.set $~lib/util/dtoa/gLastDigit
-    local.get $1
+    local.get $2
     i32.const 0
     i32.ne
     global.set $~lib/util/dtoa/gHasLastDigit
    end
    global.get $~lib/util/dtoa/gHasLastDigit
-   local.set $4
+   local.set $8
    global.get $~lib/util/dtoa/gSig
    i64.const 10000000
    i64.ge_u
-   local.tee $6
+   local.tee $7
    global.get $~lib/util/dtoa/gExp
    i32.const 7
    i32.add
    i32.add
-   local.set $11
+   local.set $6
    global.get $~lib/util/dtoa/gSig
    i64.const 1000000
    i64.lt_u
@@ -2513,28 +2914,28 @@
     global.get $~lib/util/dtoa/gLastDigit
     i64.extend_i32_s
     i64.const 0
-    local.get $4
+    local.get $8
     select
     i64.add
     global.set $~lib/util/dtoa/gSig
-    local.get $11
+    i32.const 0
+    local.set $8
+    local.get $6
     i32.const 1
     i32.sub
-    local.set $11
-    i32.const 0
-    local.set $4
+    local.set $6
    end
    global.get $~lib/util/dtoa/gSig
-   local.tee $2
+   local.tee $3
    i64.const 109951163
    i64.mul
    i64.const 40
    i64.shr_u
    i64.const 4294957296
    i64.mul
-   local.get $2
+   local.get $3
    i64.add
-   local.tee $2
+   local.tee $3
    i64.const 5243
    i64.mul
    i64.const 19
@@ -2543,9 +2944,9 @@
    i64.and
    i64.const 65436
    i64.mul
-   local.get $2
+   local.get $3
    i64.add
-   local.tee $2
+   local.tee $3
    i64.const 103
    i64.mul
    i64.const 10
@@ -2554,25 +2955,25 @@
    i64.and
    i64.const 246
    i64.mul
-   local.get $2
+   local.get $3
    i64.add
-   local.tee $3
+   local.tee $5
    i64.const 8
    i64.shr_u
    i64.const 71777214294589695
    i64.and
-   local.get $3
+   local.get $5
    i64.const 71777214294589695
    i64.and
    i64.const 8
    i64.shl
    i64.or
-   local.tee $2
+   local.tee $3
    i64.const 16
    i64.shr_u
    i64.const 281470681808895
    i64.and
-   local.get $2
+   local.get $3
    i64.const 281470681808895
    i64.and
    i64.const 16
@@ -2586,7 +2987,7 @@
    i64.add
    global.set $~lib/util/dtoa/gDigHi
    i64.const 70
-   local.get $3
+   local.get $5
    i64.const 1
    i64.shl
    i64.const 1
@@ -2597,348 +2998,350 @@
    i64.shr_u
    i32.wrap_i64
    global.set $~lib/util/dtoa/gDigits
-   local.get $11
+   local.get $6
    i32.const 20
    i32.le_s
-   local.get $11
+   local.get $6
    i32.const -6
    i32.ge_s
    i32.and
    if
-    local.get $11
+    local.get $6
     i32.const 0
     i32.lt_s
     if
-     local.get $5
+     local.get $1
      i64.const 13511005043687472
      i64.store
-     local.get $5
+     local.get $1
      i64.const 13511005043687472
      i64.store offset=8
     end
     global.get $~lib/util/dtoa/gLastDigit
     i32.const 0
-    local.get $4
+    local.get $8
     select
     i32.const 48
     i32.add
     i64.extend_i32_s
-    local.set $8
+    local.set $9
     global.get $~lib/util/dtoa/gDigHi
-    local.set $3
-    local.get $6
+    local.set $5
+    local.get $7
     i32.eqz
     if
-     local.get $8
+     local.get $9
      i64.const 56
      i64.shl
-     local.get $3
+     local.get $5
      i64.const 8
      i64.shr_u
      i64.or
-     local.set $3
+     local.set $5
     end
+    local.get $1
+    local.set $4
     i32.const 8
     global.get $~lib/util/dtoa/gDigits
-    local.get $6
+    local.get $7
     i32.sub
-    local.get $4
+    local.get $8
     select
-    local.set $1
+    local.set $2
     block $~lib/util/dtoa/writeFixedFloat|inlined.0 (result i32)
-     local.get $11
+     local.get $6
      i32.const 8
      i32.ge_s
      if
+      local.get $1
       local.get $5
-      local.get $3
       i64.const 4294967295
       i64.and
-      local.tee $2
+      local.tee $3
       i64.const 16
       i64.shl
-      local.get $2
+      local.get $3
       i64.or
       i64.const 281470681808895
       i64.and
-      local.tee $2
+      local.tee $3
       i64.const 8
       i64.shl
-      local.get $2
+      local.get $3
       i64.or
       i64.const 71777214294589695
       i64.and
       i64.store
+      local.get $1
       local.get $5
-      local.get $3
       i64.const 32
       i64.shr_u
-      local.tee $2
+      local.tee $3
       i64.const 16
       i64.shl
-      local.get $2
+      local.get $3
       i64.or
       i64.const 281470681808895
       i64.and
-      local.tee $2
+      local.tee $3
       i64.const 8
       i64.shl
-      local.get $2
+      local.get $3
       i64.or
       i64.const 71777214294589695
       i64.and
       i64.store offset=8
-      local.get $6
+      local.get $7
       if
-       local.get $5
-       local.get $8
+       local.get $1
+       local.get $9
        i64.store16 offset=16
       end
-      local.get $5
-      local.get $11
+      local.get $4
+      local.get $6
       i32.const 1
       i32.add
       i32.const 1
       i32.shl
       i32.add
-      local.set $1
-      local.get $5
-      local.get $6
+      local.set $2
+      local.get $4
+      local.get $7
       i32.const 8
       i32.add
       i32.const 1
       i32.shl
       i32.add
-      local.set $7
+      local.set $1
       loop $for-loop|1
        local.get $1
-       local.get $7
-       i32.gt_u
+       local.get $2
+       i32.lt_u
        if
-        local.get $7
+        local.get $1
         i64.const 13511005043687472
         i64.store
-        local.get $7
+        local.get $1
         i64.const 13511005043687472
         i64.store offset=8
-        local.get $7
+        local.get $1
         i32.const 16
         i32.add
-        local.set $7
+        local.set $1
         br $for-loop|1
        end
       end
-      local.get $1
+      local.get $2
       i32.const 46
       i32.store16
-      local.get $1
+      local.get $2
       i32.const 48
       i32.store16 offset=2
-      local.get $1
+      local.get $2
       i32.const 4
       i32.add
       br $~lib/util/dtoa/writeFixedFloat|inlined.0
      end
-     local.get $1
-     local.get $6
+     local.get $2
+     local.get $7
      i32.add
-     local.set $1
-     local.get $11
+     local.set $2
+     local.get $6
      i32.const 0
      i32.ge_s
      if
-      local.get $1
+      local.get $2
       i32.const 1
       i32.add
-      local.get $11
+      local.get $6
       i32.const 1
       i32.add
-      local.tee $4
+      local.tee $1
       local.get $1
-      local.get $4
-      i32.gt_s
+      local.get $2
+      i32.lt_s
       select
-      local.set $1
+      local.set $2
      end
-     local.get $5
+     local.get $4
      i32.const 1
-     local.get $11
+     local.get $6
      i32.sub
-     local.get $11
+     local.get $6
      i32.const 31
      i32.shr_s
      i32.and
      i32.const 1
      i32.shl
      i32.add
-     local.tee $7
-     local.get $3
+     local.tee $8
+     local.get $5
      i64.const 4294967295
      i64.and
-     local.tee $2
+     local.tee $3
      i64.const 16
      i64.shl
-     local.get $2
+     local.get $3
      i64.or
      i64.const 281470681808895
      i64.and
-     local.tee $2
+     local.tee $3
      i64.const 8
      i64.shl
-     local.get $2
+     local.get $3
      i64.or
      i64.const 71777214294589695
      i64.and
      i64.store
-     local.get $7
-     local.get $3
+     local.get $8
+     local.get $5
      i64.const 32
      i64.shr_u
-     local.tee $2
+     local.tee $3
      i64.const 16
      i64.shl
-     local.get $2
+     local.get $3
      i64.or
      i64.const 281470681808895
      i64.and
-     local.tee $2
+     local.tee $3
      i64.const 8
      i64.shl
-     local.get $2
+     local.get $3
      i64.or
      i64.const 71777214294589695
      i64.and
      i64.store offset=8
-     local.get $6
+     local.get $7
      if
-      local.get $7
       local.get $8
+      local.get $9
       i64.store16 offset=16
      end
-     local.get $11
+     local.get $6
      i32.const 0
      i32.ge_s
      if
-      local.get $8
+      local.get $9
       i64.const 0
-      local.get $6
+      local.get $7
       select
-      local.set $2
-      local.get $11
+      local.set $3
+      local.get $6
       i32.const 1
       i32.add
-      local.tee $6
+      local.tee $7
       i32.const 3
       i32.shl
-      local.tee $4
+      local.tee $1
       i32.const 64
       i32.lt_s
       if
-       local.get $2
+       local.get $3
        i64.const 64
-       local.get $4
+       local.get $1
        i64.extend_i32_s
-       local.tee $2
+       local.tee $3
        i64.sub
        i64.shl
+       local.get $5
        local.get $3
-       local.get $2
        i64.shr_u
        i64.or
-       local.set $2
+       local.set $3
       end
-      local.get $6
+      local.get $7
       i32.const 1
       i32.add
       i32.const 1
       i32.shl
-      local.get $7
+      local.get $8
       i32.add
-      local.tee $4
-      local.get $2
+      local.tee $1
+      local.get $3
       i64.const 4294967295
       i64.and
-      local.tee $3
+      local.tee $5
       i64.const 16
       i64.shl
-      local.get $3
+      local.get $5
       i64.or
       i64.const 281470681808895
       i64.and
-      local.tee $3
+      local.tee $5
       i64.const 8
       i64.shl
-      local.get $3
+      local.get $5
       i64.or
       i64.const 71777214294589695
       i64.and
       i64.store
-      local.get $4
-      local.get $2
+      local.get $1
+      local.get $3
       i64.const 32
       i64.shr_u
-      local.tee $2
+      local.tee $3
       i64.const 16
       i64.shl
-      local.get $2
+      local.get $3
       i64.or
       i64.const 281470681808895
       i64.and
-      local.tee $2
+      local.tee $3
       i64.const 8
       i64.shl
-      local.get $2
+      local.get $3
       i64.or
       i64.const 71777214294589695
       i64.and
       i64.store offset=8
+      local.get $8
       local.get $7
-      local.get $6
       i32.const 1
       i32.shl
       i32.add
       i32.const 46
       i32.store16
      else
-      local.get $5
+      local.get $4
       i32.const 46
       i32.store16 offset=2
      end
-     local.get $7
-     local.get $1
+     local.get $8
+     local.get $2
      i32.const 1
      i32.shl
      i32.add
-     local.set $7
-     local.get $1
-     local.get $11
+     local.set $1
+     local.get $2
+     local.get $6
      i32.const 1
      i32.add
      i32.eq
-     local.get $11
+     local.get $6
      i32.const 0
      i32.ge_s
      i32.and
      if
-      local.get $7
+      local.get $1
       i32.const 46
       i32.store16
-      local.get $7
+      local.get $1
       i32.const 48
       i32.store16 offset=2
-      local.get $7
+      local.get $1
       i32.const 4
       i32.add
       br $~lib/util/dtoa/writeFixedFloat|inlined.0
      end
      loop $while-continue|2
-      local.get $7
-      local.get $5
+      local.get $1
+      local.get $4
       i32.const 2
       i32.add
       i32.gt_u
       if (result i32)
-       local.get $7
+       local.get $1
        i32.const 2
        i32.sub
        i32.load16_u
@@ -2948,102 +3351,102 @@
        i32.const 0
       end
       if
-       local.get $7
+       local.get $1
        i32.const 2
        i32.sub
-       local.set $7
+       local.set $1
        br $while-continue|2
       end
      end
-     local.get $7
+     local.get $1
      i32.const 2
      i32.sub
      i32.load16_u
      i32.const 46
      i32.eq
      if (result i32)
-      local.get $7
+      local.get $1
       i32.const 48
       i32.store16
-      local.get $7
+      local.get $1
       i32.const 2
       i32.add
      else
-      local.get $7
+      local.get $1
      end
     end
     br $~lib/util/dtoa/formatDecodedFloat|inlined.0
    end
-   local.get $5
-   local.tee $1
-   local.get $6
+   local.get $1
+   local.tee $2
+   local.get $7
    i32.const 1
    i32.shl
    i32.add
-   local.tee $5
+   local.tee $1
    global.get $~lib/util/dtoa/gDigHi
-   local.tee $3
+   local.tee $5
    i64.const 4294967295
    i64.and
-   local.tee $2
+   local.tee $3
    i64.const 16
    i64.shl
-   local.get $2
+   local.get $3
    i64.or
    i64.const 281470681808895
    i64.and
-   local.tee $2
+   local.tee $3
    i64.const 8
    i64.shl
-   local.get $2
+   local.get $3
    i64.or
    i64.const 71777214294589695
    i64.and
    i64.store
+   local.get $1
    local.get $5
-   local.get $3
    i64.const 32
    i64.shr_u
-   local.tee $2
+   local.tee $3
    i64.const 16
    i64.shl
-   local.get $2
+   local.get $3
    i64.or
    i64.const 281470681808895
    i64.and
-   local.tee $2
+   local.tee $3
    i64.const 8
    i64.shl
-   local.get $2
+   local.get $3
    i64.or
    i64.const 71777214294589695
    i64.and
    i64.store offset=8
-   local.get $5
+   local.get $1
    global.get $~lib/util/dtoa/gLastDigit
    i32.const 48
    i32.add
    i32.store16 offset=16
-   local.get $5
+   local.get $1
    i32.const 9
    global.get $~lib/util/dtoa/gDigits
-   local.get $6
+   local.get $7
    i32.eqz
    i32.add
-   local.get $4
+   local.get $8
    select
    i32.const 1
    i32.shl
    i32.add
-   local.set $5
+   local.set $1
    loop $while-continue|3
-    local.get $5
     local.get $1
+    local.get $2
     i32.const 4
     i32.add
     i32.gt_u
     if (result i32)
-     local.get $5
+     local.get $1
      i32.const 2
      i32.sub
      i32.load16_u
@@ -3053,34 +3456,34 @@
      i32.const 0
     end
     if
-     local.get $5
+     local.get $1
      i32.const 2
      i32.sub
-     local.set $5
+     local.set $1
      br $while-continue|3
     end
    end
-   local.get $1
-   local.get $1
+   local.get $2
+   local.get $2
    i32.load16_u offset=2
    i32.store16
-   local.get $1
+   local.get $2
    i32.const 46
    i32.store16 offset=2
-   local.get $5
-   local.get $5
    local.get $1
+   local.get $1
+   local.get $2
    i32.const 4
    i32.add
    i32.eq
    i32.const 1
    i32.shl
    i32.sub
-   local.tee $4
+   local.tee $2
    i32.const 101
    i32.store16
-   local.get $4
-   local.get $11
+   local.get $2
+   local.get $6
    i32.const 31
    i32.shr_s
    local.tee $1
@@ -3089,22 +3492,22 @@
    i32.const 43
    i32.add
    i32.store16 offset=2
-   local.get $4
+   local.get $2
    i32.const 4
    i32.add
-   local.set $5
+   local.set $4
    block $~lib/util/dtoa/writeExponent|inlined.0 (result i32)
     local.get $1
-    local.get $11
+    local.get $6
     i32.xor
     local.get $1
     i32.sub
-    local.tee $4
+    local.tee $2
     i32.const 100
     i32.ge_s
     if
-     local.get $5
      local.get $4
+     local.get $2
      i32.const 5243
      i32.mul
      i32.const 19
@@ -3113,51 +3516,51 @@
      i32.const 48
      i32.add
      i32.store16
-     local.get $5
      local.get $4
+     local.get $2
      local.get $1
      i32.const 100
      i32.mul
      i32.sub
      i32.const 2
      i32.shl
-     i32.const 2360
+     i32.const 2520
      i32.add
      i32.load
      i32.store offset=2
-     local.get $5
+     local.get $4
      i32.const 6
      i32.add
      br $~lib/util/dtoa/writeExponent|inlined.0
     end
-    local.get $4
+    local.get $2
     i32.const 10
     i32.ge_s
     if
-     local.get $5
      local.get $4
+     local.get $2
      i32.const 2
      i32.shl
-     i32.const 2360
+     i32.const 2520
      i32.add
      i32.load
      i32.store
-     local.get $5
+     local.get $4
      i32.const 4
      i32.add
      br $~lib/util/dtoa/writeExponent|inlined.0
     end
-    local.get $5
     local.get $4
+    local.get $2
     i32.const 48
     i32.add
     i32.store16
-    local.get $5
+    local.get $4
     i32.const 2
     i32.add
    end
   end
-  i32.const 1616
+  i32.const 1776
   i32.sub
   i32.const 1
   i32.shr_u
@@ -3244,7 +3647,7 @@
      local.set $0
      loop $while-continue|0
       local.get $0
-      i32.const 37216
+      i32.const 37376
       i32.lt_u
       if
        local.get $0
@@ -3340,7 +3743,7 @@
      unreachable
     end
     local.get $0
-    i32.const 37216
+    i32.const 37376
     i32.lt_u
     if
      local.get $0
@@ -3363,7 +3766,7 @@
      i32.const 4
      i32.add
      local.tee $0
-     i32.const 37216
+     i32.const 37376
      i32.ge_u
      if
       global.get $~lib/rt/tlsf/ROOT
@@ -3431,7 +3834,7 @@
   global.set $~lib/memory/__stack_pointer
   block $folding-inner0
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 4608
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3441,7 +3844,7 @@
    memory.size
    i32.const 16
    i32.shl
-   i32.const 37216
+   i32.const 37376
    i32.sub
    i32.const 1
    i32.shr_u
@@ -3475,7 +3878,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 4608
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3531,12 +3934,12 @@
    local.get $0
    i32.store
    local.get $0
-   i32.const 2784
+   i32.const 2944
    call $~lib/string/String.__eq
    i32.eqz
    if
     i32.const 0
-    i32.const 2816
+    i32.const 2976
     i32.const 5
     i32.const 1
     call $~lib/builtins/abort
@@ -3555,12 +3958,12 @@
    local.get $0
    i32.store
    local.get $0
-   i32.const 2896
+   i32.const 3056
    call $~lib/string/String.__eq
    i32.eqz
    if
     i32.const 0
-    i32.const 2816
+    i32.const 2976
     i32.const 10
     i32.const 1
     call $~lib/builtins/abort
@@ -3597,12 +4000,12 @@
    local.get $0
    i32.store
    local.get $0
-   i32.const 2928
+   i32.const 3088
    call $~lib/string/String.__eq
    i32.eqz
    if
     i32.const 0
-    i32.const 2816
+    i32.const 2976
     i32.const 15
     i32.const 1
     call $~lib/builtins/abort
@@ -3635,7 +4038,7 @@
    f32.ne
    if
     i32.const 0
-    i32.const 2816
+    i32.const 2976
     i32.const 21
     i32.const 1
     call $~lib/builtins/abort
@@ -3646,7 +4049,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 4608
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3667,7 +4070,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 4608
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3733,12 +4136,12 @@
    local.get $0
    i32.store
    local.get $0
-   i32.const 4336
+   i32.const 4496
    call $~lib/string/String.__eq
    i32.eqz
    if
     i32.const 0
-    i32.const 2816
+    i32.const 2976
     i32.const 28
     i32.const 1
     call $~lib/builtins/abort
@@ -3757,12 +4160,12 @@
    local.get $0
    i32.store
    local.get $0
-   i32.const 4368
+   i32.const 4528
    call $~lib/string/String.__eq
    i32.eqz
    if
     i32.const 0
-    i32.const 2816
+    i32.const 2976
     i32.const 33
     i32.const 1
     call $~lib/builtins/abort
@@ -3799,12 +4202,12 @@
    local.get $0
    i32.store
    local.get $0
-   i32.const 4400
+   i32.const 4560
    call $~lib/string/String.__eq
    i32.eqz
    if
     i32.const 0
-    i32.const 2816
+    i32.const 2976
     i32.const 38
     i32.const 1
     call $~lib/builtins/abort
@@ -3837,7 +4240,7 @@
    i32.ne
    if
     i32.const 0
-    i32.const 2816
+    i32.const 2976
     i32.const 44
     i32.const 1
     call $~lib/builtins/abort
@@ -3849,8 +4252,8 @@
    global.set $~lib/memory/__stack_pointer
    return
   end
-  i32.const 37248
-  i32.const 37296
+  i32.const 37408
+  i32.const 37456
   i32.const 1
   i32.const 1
   call $~lib/builtins/abort

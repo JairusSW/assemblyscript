@@ -413,6 +413,11 @@ export function itoa64(value: i64, radix: i32): String {
 @lazy @inline const dtoa_buf = memory.data(128);
 
 export function dtoa<T extends number>(value: T): String {
+  if (value == 0) return "0.0";
+  if (!isFinite(value)) {
+    if (isNaN(value)) return "NaN";
+    return select<String>("-Infinity", "Infinity", value < 0);
+  }
   let len: u32;
   if (isFloat<T>() && sizeof<T>() == 4) {
     // @ts-ignore: type
