@@ -1312,7 +1312,16 @@ export function dtoa_buffered(buffer: usize, value: f64): u32 {
     toDecimalFloat(binSig, 1, true);
     let decSig = gSig * 10 + (gHasLastDigit ? gLastDigit : 0);
     let decExp = gExp;
-    while (<u64>decSig < THRESHOLD) {
+    // At most seven powers of ten are needed; apply them in 4, 2, 1 steps.
+    if (<u64>decSig < 10000) {
+      decSig *= 10000;
+      decExp -= 4;
+    }
+    if (<u64>decSig < 1000000) {
+      decSig *= 100;
+      decExp -= 2;
+    }
+    if (<u64>decSig < THRESHOLD) {
       decSig *= 10;
       --decExp;
     }

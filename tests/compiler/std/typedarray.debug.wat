@@ -7382,21 +7382,44 @@
     local.set $decSig
     global.get $~lib/util/dtoa/gExp
     local.set $decExp
-    loop $while-continue|0
+    local.get $decSig
+    i64.const 10000
+    i64.lt_u
+    if
      local.get $decSig
-     i64.const 10000000
-     i64.lt_u
-     if
-      local.get $decSig
-      i64.const 10
-      i64.mul
-      local.set $decSig
-      local.get $decExp
-      i32.const 1
-      i32.sub
-      local.set $decExp
-      br $while-continue|0
-     end
+     i64.const 10000
+     i64.mul
+     local.set $decSig
+     local.get $decExp
+     i32.const 4
+     i32.sub
+     local.set $decExp
+    end
+    local.get $decSig
+    i64.const 1000000
+    i64.lt_u
+    if
+     local.get $decSig
+     i64.const 100
+     i64.mul
+     local.set $decSig
+     local.get $decExp
+     i32.const 2
+     i32.sub
+     local.set $decExp
+    end
+    local.get $decSig
+    i64.const 10000000
+    i64.lt_u
+    if
+     local.get $decSig
+     i64.const 10
+     i64.mul
+     local.set $decSig
+     local.get $decExp
+     i32.const 1
+     i32.sub
+     local.set $decExp
     end
     local.get $decSig
     i64.const 10
@@ -8319,7 +8342,7 @@
       i32.shl
       i32.add
       local.set $z
-      loop $for-loop|1
+      loop $for-loop|0
        local.get $z
        local.get $endByte
        i32.lt_u
@@ -8386,7 +8409,7 @@
         i32.const 16
         i32.add
         local.set $z
-        br $for-loop|1
+        br $for-loop|0
        end
       end
       block $~lib/util/dtoa/finishInteger|inlined.2 (result i32)
@@ -8675,7 +8698,7 @@
       end
       br $~lib/util/dtoa/writeFixedFloat|inlined.0
      end
-     loop $while-continue|2
+     loop $while-continue|1
       local.get $end|137
       local.get $start|87
       i32.const 2
@@ -8696,7 +8719,7 @@
        i32.const 2
        i32.sub
        local.set $end|137
-       br $while-continue|2
+       br $while-continue|1
       end
      end
      local.get $end|137
@@ -8823,7 +8846,7 @@
     i32.shl
     i32.add
     local.set $buf|140
-    loop $while-continue|3
+    loop $while-continue|2
      local.get $buf|140
      local.get $start|141
      i32.const 4
@@ -8844,7 +8867,7 @@
       i32.const 2
       i32.sub
       local.set $buf|140
-      br $while-continue|3
+      br $while-continue|2
      end
     end
     local.get $start|141
