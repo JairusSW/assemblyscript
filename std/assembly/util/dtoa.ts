@@ -2,34 +2,34 @@ import { CharCode, POWERS10 } from "./string";
 import { DIGITS, MAX_DOUBLE_LENGTH } from "./number";
 
 // Fixed-point log significands shared by the dec-exp / binary-exp estimates below.
-const LOG10_2_SIGNIFICAND = 0x4D105; // ~(log10(2) * 2**20)
+@lazy @inline const LOG10_2_SIGNIFICAND = 0x4D105; // ~(log10(2) * 2**20)
 const LOG10_2_EXP = 20;
-const LOG2_POW10_SIGNIFICAND = 0x3526B; // ~(log2(10) * 2**16)
+@lazy @inline const LOG2_POW10_SIGNIFICAND = 0x3526B; // ~(log2(10) * 2**16)
 const LOG2_POW10_EXP = 16;
 
-const DIV10_EXP = 10;
+@lazy @inline const DIV10_EXP = 10;
 const DIV10_SIG: u64 = (1 << DIV10_EXP) / 10 + 1;
-const NEG10: u64 = (1 << 8) - 10;
+@lazy @inline const NEG10: u64 = (1 << 8) - 10;
 
-const DIV100_EXP = 19;
+@lazy @inline const DIV100_EXP = 19;
 const DIV100_SIG: u64 = (1 << DIV100_EXP) / 100 + 1;
-const NEG100: u64 = (1 << 16) - 100;
+@lazy @inline const NEG100: u64 = (1 << 16) - 100;
 
-const DIV10K_EXP = 40;
+@lazy @inline const DIV10K_EXP = 40;
 const DIV10K_SIG: u64 = ((<u64>1) << DIV10K_EXP) / 10000 + 1;
-const NEG10K: u64 = ((<u64>1) << 32) - 10000;
+@lazy @inline const NEG10K: u64 = ((<u64>1) << 32) - 10000;
 
-export const BCD_ZEROS: u64 = 0x3030303030303030;
+@lazy @inline export const BCD_ZEROS: u64 = 0x3030303030303030;
 
-export const DOUBLE_EXP_OFFSET = 1075; // exp_bias(1023) + num_sig_bits(52)
+@lazy @inline export const DOUBLE_EXP_OFFSET = 1075; // exp_bias(1023) + num_sig_bits(52)
 export const DOUBLE_SIGNIFICAND_SIZE = 52; // explicit mantissa bits
-export const DOUBLE_HIDDEN_BIT: u64 = (<u64>1) << DOUBLE_SIGNIFICAND_SIZE; // implicit leading 1
+@lazy @inline export const DOUBLE_HIDDEN_BIT: u64 = (<u64>1) << DOUBLE_SIGNIFICAND_SIZE; // implicit leading 1
 export const DOUBLE_SIGNIFICAND_MASK: u64 = DOUBLE_HIDDEN_BIT - 1;
-export const EXTRA_SHIFT = 6;
+@lazy @inline export const EXTRA_SHIFT = 6;
 export const BIASED_HALF: u64 = ((<u64>1) << 63) + 6;
-export const DOUBLE_MAX_DIGITS10 = 17;
+@lazy @inline export const DOUBLE_MAX_DIGITS10 = 17;
 // Fixed notation when decExp (= decimal-point position - 1) is in [-6, 20].
-export const MIN_FIXED_DEC_EXP = -6;
+@lazy @inline export const MIN_FIXED_DEC_EXP = -6;
 export const MAX_FIXED_DEC_EXP = 20;
 
 // Compact pow10 (Dougall Johnson's method, ported from vitaut/zmij)
@@ -37,7 +37,7 @@ export const MAX_FIXED_DEC_EXP = 20;
 
 // 28 normalized exact powers 10**0..10**27 - the within-stride minor factors.
 // @ts-ignore: decorator
-@lazy const POW10_MINOR = memory.data<u64>([
+@lazy @inline const POW10_MINOR = memory.data<u64>([
   0x8000000000000000, 0xa000000000000000, 0xc800000000000000, 0xfa00000000000000,
   0x9c40000000000000, 0xc350000000000000, 0xf424000000000000, 0x9896800000000000,
   0xbebc200000000000, 0xee6b280000000000, 0x9502f90000000000, 0xba43b74000000000,
@@ -49,7 +49,7 @@ export const MAX_FIXED_DEC_EXP = 20;
 
 // 23 full 128-bit anchors (hi, lo) spaced every 28 powers, covering 10**-303..10**313.
 // @ts-ignore: decorator
-@lazy const POW10_MAJOR = memory.data<u64>([
+@lazy @inline const POW10_MAJOR = memory.data<u64>([
   0xaf8e5410288e1b6f, 0x07ecf0ae5ee44dda, 0xb1442798f49ffb4a, 0x99cd11cfdf41779d,
   0xb2fe3f0b8599ef07, 0x861fa7e6dcb4aa15, 0xb4bca50b065abe63, 0x0fed077a756b53aa,
   0xb67f6455292cbf08, 0x1a3bc84c17b1d543, 0xb84687c269ef3bfb, 0x3d5d514f40eea742,
@@ -67,7 +67,7 @@ export const MAX_FIXED_DEC_EXP = 20;
 // One round-down fixup bit per power: bit (i & 31) of word (i >> 5) is subtracted
 // from the reconstructed low limb. 20 words cover all 618 powers.
 // @ts-ignore: decorator
-@lazy const POW10_FIXUPS = memory.data<u32>([
+@lazy @inline const POW10_FIXUPS = memory.data<u32>([
   0x0a4e363f, 0x00001840, 0x00006400, 0x24200040, 0x00000000,
   0x0c000000, 0x82c81380, 0x5e4ce01f, 0xd730f60f, 0x0000001b,
   0x00000000, 0xcdf7fffc, 0x6e8201d8, 0x40cd3fd1, 0xdb642501,
@@ -78,7 +78,7 @@ export const MAX_FIXED_DEC_EXP = 20;
 // the xjb64 +1 low-limb rounding folded in. One hi-only multiply covers both the
 // regular and power-of-two paths.
 // @ts-ignore: decorator
-@inline const POW10_FLOAT_HI = memory.data<u64>([
+@lazy @inline const POW10_FLOAT_HI = memory.data<u64>([
   0x8f7e32ce7bea5c70, 0xe596b7b0c643c71a, 0xb7abc627050305ae, 0x92efd1b8d0cf37bf,
   0xeb194f8e1ae525fe, 0xbc143fa4e250eb32, 0x96769950b50d88f5, 0xf0bdc21abb48db21,
   0xc097ce7bc90715b4, 0x9a130b963a6c115d, 0xf684df56c3e01bc7, 0xc5371912364ce306,
@@ -101,29 +101,29 @@ export const MAX_FIXED_DEC_EXP = 20;
   0xcfb11ead453994bb,
 ]);
 
-const FLOAT_EXP_OFFSET = 150; // exp_bias(127) + num_sig_bits(23)
+@lazy @inline const FLOAT_EXP_OFFSET = 150; // exp_bias(127) + num_sig_bits(23)
 const FLOAT_SIGNIFICAND_SIZE = 23; // explicit mantissa bits
-const FLOAT_HIDDEN_BIT: u64 = (<u64>1) << FLOAT_SIGNIFICAND_SIZE; // implicit leading 1
+@lazy @inline const FLOAT_HIDDEN_BIT: u64 = (<u64>1) << FLOAT_SIGNIFICAND_SIZE; // implicit leading 1
 const FLOAT_SIGNIFICAND_MASK: u32 = (<u32>1 << FLOAT_SIGNIFICAND_SIZE) - 1;
-const FLOAT_BIT = 36; // xjb's fixed-point split for the f32 core
+@lazy @inline const FLOAT_BIT = 36; // xjb's fixed-point split for the f32 core
 // xjb's c1, ASCII offset stripped so the `one` digit comes out numeric.
-const FLOAT_ONE_BIAS: u64 = ((<u64>1) << (FLOAT_BIT - 2)) - 7;
+@lazy @inline const FLOAT_ONE_BIAS: u64 = ((<u64>1) << (FLOAT_BIT - 2)) - 7;
 
-export const FLOAT_MAX_DIGITS10 = 9;
+@lazy @inline export const FLOAT_MAX_DIGITS10 = 9;
 
 // @ts-ignore: decorator
-@lazy export const SCRATCH = memory.data(128);
+@lazy @inline export const SCRATCH = memory.data(128);
 
 // Shared results where the caller needs more than one return value.
-export let gPow10Hi: u64 = 0;
+@lazy export let gPow10Hi: u64 = 0;
 let gBcdValue: u64 = 0;
-export let gDigHi: u64 = 0;
+@lazy export let gDigHi: u64 = 0;
 export let gDigLo: u64 = 0;
-export let gDigits: i32 = 0;
+@lazy export let gDigits: i32 = 0;
 export let gSig: i64 = 0;
-export let gExp: i32 = 0;
+@lazy export let gExp: i32 = 0;
 export let gLastDigit: i32 = 0;
-export let gHasLastDigit: bool = false;
+@lazy export let gHasLastDigit: bool = false;
 
 // High 64 bits of the 128-bit product x * y. Matches umul128.
 // @ts-ignore: decorator
