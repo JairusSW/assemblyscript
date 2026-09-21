@@ -146,10 +146,10 @@ export let gLastDigit: i32 = 0;
 
 // Returns (x * y + c) >> 64.
 // @ts-ignore: decorator
-@inline export function umul64hiCarry(x: u64, y: u64, c: u64): u64 {
-  let lo = x * y;
-  let hi = umul64hi(x, y);
-  return hi + u64(lo + c < lo);
+@inline export function umul64hiCarry(a: u64, b: u64, carry: u64): u64 {
+  let lo = a * b;
+  let hi = umul64hi(a, b);
+  return hi + u64(lo + carry < lo);
 }
 
 // floor(log10(2**bin_exp)). (The f64 path only ever needs the regular form; the
@@ -344,6 +344,16 @@ function toBcd8(value: u64): i32 {
   return buf + 16;
 }
 
+// @ts-ignore: decorator
+@inline function finishInteger(end: usize, dotZero: bool): usize {
+  if (dotZero) {
+    store<u16>(end, CharCode.DOT);
+    store<u16>(end, CharCode._0, 2);
+    end += 4;
+  }
+  return end;
+}
+
 // f64 fixed-notation layout: a full 16-digit block (gDigHi:gDigLo) plus a 17th
 // digit (always, so no leading-'0' fold or bcdSize param like the f32 path).
 // @ts-ignore: decorator
@@ -352,11 +362,13 @@ function toBcd8(value: u64): i32 {
   start: usize,
   decExp: i32,
   hasLastDigit: bool,
+  dotZero: bool,
 ): usize {
   if (decExp < 0) writeUnpacked8(start, BCD_ZEROS);
   let lastDigitChar = <u64>(CharCode._0 + (hasLastDigit ? gLastDigit : 0));
   let numDigits = hasLastDigit ? 16 : gDigits - 1;
-  let dHi = gDigHi, dLo = gDigLo;
+  let dHi = gDigHi;
+  let dLo = gDigLo;
 
   // decExp >= 16: integer rendered as significant digits then trailing zeros.
   if (decExp >= 16) {
@@ -367,7 +379,7 @@ function toBcd8(value: u64): i32 {
     for (let z = buf + (17 << 1); z < endByte; z += 16) {
       writeUnpacked8(z, BCD_ZEROS);
     }
-    return endByte;
+    return finishInteger(endByte, dotZero);
   }
 
   // Everything reaching here has a fractional part (exact integers < 1e16 are
@@ -412,10 +424,18 @@ function toBcd8(value: u64): i32 {
   }
 
   let end = buf + (endPos << 1);
+  if (decExp >= 0 && endPos == decExp + 1) return finishInteger(end, dotZero);
   while (end > start + 2 && load<u16>(end - 2) == CharCode._0) {
     end -= 2;
   }
-  if (load<u16>(end - 2) == CharCode.DOT) end -= 2;
+  if (load<u16>(end - 2) == CharCode.DOT) {
+    if (dotZero) {
+      store<u16>(end, CharCode._0);
+      end += 2;
+    } else {
+      end -= 2;
+    }
+  }
   return end;
 }
 
@@ -582,17 +602,17 @@ function toBcd8(value: u64): i32 {
 @inline function decimalLen15(v: u64): i32 {
   if (v < 100000000) {
     if (v < 10000) {
-      if (v < 100) return v < 10 ? 1 : 2;
-      return v < 1000 ? 3 : 4;
+      if (v < 100) return 1 + i32(v >= 10);
+      return 3 + i32(v >= 1000);
     }
-    if (v < 1000000) return v < 100000 ? 5 : 6;
-    return v < 10000000 ? 7 : 8;
+    if (v < 1000000) return 5 + i32(v >= 100000);
+    return 7 + i32(v >= 10000000);
   }
   if (v < 1000000000000) {
-    if (v < 10000000000) return v < 1000000000 ? 9 : 10;
-    return v < 100000000000 ? 11 : 12;
+    if (v < 10000000000) return 9 + i32(v >= 1000000000);
+    return 11 + i32(v >= 100000000000);
   }
-  if (v < 100000000000000) return v < 10000000000000 ? 13 : 14;
+  if (v < 100000000000000) return 13 + i32(v >= 10000000000000);
   return 15;
 }
 
@@ -606,7 +626,43 @@ function toBcd8(value: u64): i32 {
   let len = decimalLen16(value);
   let p = buf + (<usize>len << 1);
   let v = value;
-  while (v >= 100) {
+  if (v >= 100) {
+    let q = v / 100;
+    p -= 4;
+    store<u32>(p, load<u32>(DIGITS + (<usize>(v - q * 100) << alignof<u32>())));
+    v = q;
+  }
+  if (v >= 100) {
+    let q = v / 100;
+    p -= 4;
+    store<u32>(p, load<u32>(DIGITS + (<usize>(v - q * 100) << alignof<u32>())));
+    v = q;
+  }
+  if (v >= 100) {
+    let q = v / 100;
+    p -= 4;
+    store<u32>(p, load<u32>(DIGITS + (<usize>(v - q * 100) << alignof<u32>())));
+    v = q;
+  }
+  if (v >= 100) {
+    let q = v / 100;
+    p -= 4;
+    store<u32>(p, load<u32>(DIGITS + (<usize>(v - q * 100) << alignof<u32>())));
+    v = q;
+  }
+  if (v >= 100) {
+    let q = v / 100;
+    p -= 4;
+    store<u32>(p, load<u32>(DIGITS + (<usize>(v - q * 100) << alignof<u32>())));
+    v = q;
+  }
+  if (v >= 100) {
+    let q = v / 100;
+    p -= 4;
+    store<u32>(p, load<u32>(DIGITS + (<usize>(v - q * 100) << alignof<u32>())));
+    v = q;
+  }
+  if (v >= 100) {
     let q = v / 100;
     p -= 4;
     store<u32>(p, load<u32>(DIGITS + (<usize>(v - q * 100) << alignof<u32>())));
@@ -639,7 +695,7 @@ function toBcd8(value: u64): i32 {
 }
 
 // @ts-ignore: decorator
-@inline function formatDecodedDouble(buf: usize, bits: u64, binExp: i32, binSig: u64): usize {
+@inline function formatDecodedDouble(buf: usize, bits: u64, binExp: i32, binSig: u64, dotZero: bool): usize {
   let neg = bits >> 63 != 0;
   let threshold: u64 = 1000000000000000;
 
@@ -653,7 +709,7 @@ function toBcd8(value: u64): i32 {
     // +/-0 -> "0"
     if (binSig == 0) {
       store<u16>(buf, CharCode._0);
-      return buf + 2;
+      return finishInteger(buf + 2, dotZero);
     }
   }
 
@@ -675,7 +731,7 @@ function toBcd8(value: u64): i32 {
       intValue = c << q;
       if (intValue >= 10000000000000000) intValue = 0;
     }
-    if (intValue != 0) return writeUInt16(buf, intValue);
+    if (intValue != 0) return finishInteger(writeUInt16(buf, intValue), dotZero);
   }
 
   if (isNormal) {
@@ -691,16 +747,16 @@ function toBcd8(value: u64): i32 {
   let start = buf;
   toDigits64(<u64>gSig);
   if (decExp >= MIN_FIXED_DEC_EXP && decExp <= MAX_FIXED_DEC_EXP)
-    return writeFixed(buf, start, decExp, hasLastDigit);
+    return writeFixed(buf, start, decExp, hasLastDigit, dotZero);
   return writeExpNotation(buf, start, decExp, hasLastDigit, hasExtraDigit, 16);
 }
 
 // @ts-ignore: decorator
-@inline function formatDouble(buf: usize, value: f64): usize {
+@inline function formatDouble(buf: usize, value: f64, dotZero: bool): usize {
   let bits = reinterpret<u64>(value);
   let binExp = <i32>((bits << 1) >> 53);
   let binSig = bits & DOUBLE_SIGNIFICAND_MASK;
-  return formatDecodedDouble(buf, bits, binExp, binSig);
+  return formatDecodedDouble(buf, bits, binExp, binSig, dotZero);
 }
 
 export function dtoa(value: f64): string {
@@ -714,11 +770,11 @@ export function dtoa(value: f64): string {
   }
   if ((bits << 1) == 0) return "0";
 
-  return scratchString(formatDecodedDouble(SCRATCH, bits, exp, sig) - SCRATCH);
+  return scratchString(formatDecodedDouble(SCRATCH, bits, exp, sig, false) - SCRATCH);
 }
 
 export function dtoa_buffered(buffer: usize, value: f64): u32 {
-  return <u32>((formatDouble(buffer, value) - buffer) >> 1);
+  return <u32>((formatDouble(buffer, value, true) - buffer) >> 1);
 }
 
 // @ts-ignore: decorator
@@ -735,10 +791,13 @@ export function dtoa_buffered(buffer: usize, value: f64): u32 {
 // to_digits<32>: a single u64 of 8 ASCII digits (value < 1e8).
 // @ts-ignore: decorator
 @inline export function toDigits32(value: u64): void {
-  if (ASC_FEATURE_SIMD) return toDigits32Simd(value);
-  let length = toBcd8(value);
-  gDigHi = gBcdValue + BCD_ZEROS;
-  gDigits = length;
+  if (ASC_FEATURE_SIMD) {
+    toDigits32Simd(value);
+  } else {
+    let length = toBcd8(value);
+    gDigHi = gBcdValue + BCD_ZEROS;
+    gDigits = length;
+  }
 }
 
 // Fixed-notation tail: 8-digit significand block (gDigHi) plus an optional 9th
@@ -750,10 +809,11 @@ export function dtoa_buffered(buffer: usize, value: f64): u32 {
   decExp: i32,
   hasLastDigit: bool,
   hasExtraDigit: bool,
+  dotZero: bool,
 ): usize {
   if (decExp < 0) writeUnpacked8(start, BCD_ZEROS);
   let lastDigitChar = <u64>(CharCode._0 + (hasLastDigit ? gLastDigit : 0));
-  let numDigits = hasLastDigit ? 8 : gDigits - 1;
+  let numDigits = hasLastDigit ? 8 : gDigits - i32(hasExtraDigit);
 
   // !hasExtraDigit: gSig has a leading '0'; shift it out and fold the last digit
   // into the freed low slot, so the block is exactly 8 chars (no memmove).
@@ -771,7 +831,7 @@ export function dtoa_buffered(buffer: usize, value: f64): u32 {
     for (let z = buf + (sig << 1); z < endByte; z += 16) {
       writeUnpacked8(z, BCD_ZEROS);
     }
-    return endByte;
+    return finishInteger(endByte, dotZero);
   }
 
   let n = numDigits + i32(hasExtraDigit);
@@ -801,10 +861,18 @@ export function dtoa_buffered(buffer: usize, value: f64): u32 {
   }
 
   let end = buf + (endPos << 1);
+  if (decExp >= 0 && endPos == decExp + 1) return finishInteger(end, dotZero);
   while (end > start + 2 && load<u16>(end - 2) == CharCode._0) {
     end -= 2;
   }
-  if (load<u16>(end - 2) == CharCode.DOT) end -= 2;
+  if (load<u16>(end - 2) == CharCode.DOT) {
+    if (dotZero) {
+      store<u16>(end, CharCode._0);
+      end += 2;
+    } else {
+      end -= 2;
+    }
+  }
   return end;
 }
 
@@ -821,7 +889,7 @@ export function dtoa_buffered(buffer: usize, value: f64): u32 {
   buf += usize(hasExtraDigit) << 1;
   writeUnpacked8(buf, gDigHi);
   store<u16>(buf + 16, <u32>(CharCode._0 + gLastDigit));
-  buf += (hasLastDigit ? 9 : gDigits) << 1;
+  buf += (hasLastDigit ? 9 : gDigits + i32(!hasExtraDigit)) << 1;
   while (buf > start + 4 && load<u16>(buf - 2) == CharCode._0) {
     buf -= 2;
   }
@@ -879,7 +947,7 @@ export function dtoa_buffered(buffer: usize, value: f64): u32 {
 }
 
 // @ts-ignore: decorator
-@inline function formatDecodedFloat(buf: usize, bits: u32, binExp: i32, binSig: u64): usize {
+@inline function formatDecodedFloat(buf: usize, bits: u32, binExp: i32, binSig: u64, dotZero: bool): usize {
   let neg = bits >> 31 != 0;
   const THRESHOLD: u64 = 10000000;
 
@@ -891,7 +959,7 @@ export function dtoa_buffered(buffer: usize, value: f64): u32 {
     }
     if (binSig == 0) {
       store<u16>(buf, CharCode._0);
-      return buf + 2;
+      return finishInteger(buf + 2, dotZero);
     }
     if (neg) {
       store<u16>(buf, CharCode.MINUS);
@@ -932,7 +1000,7 @@ export function dtoa_buffered(buffer: usize, value: f64): u32 {
   toDigits32(<u64>gSig);
 
   if (decExp >= MIN_FIXED_DEC_EXP && decExp <= MAX_FIXED_DEC_EXP)
-    return writeFixedFloat(buf, start, decExp, hasLastDigit, hasExtraDigit);
+    return writeFixedFloat(buf, start, decExp, hasLastDigit, hasExtraDigit, dotZero);
   return writeExpNotationFloat(buf, start, decExp, hasLastDigit, hasExtraDigit);
 }
 
@@ -947,12 +1015,12 @@ export function ftoa(value: f32): string {
   }
   if ((bits << 1) == 0) return "0";
 
-  return scratchString(formatDecodedFloat(SCRATCH, bits, exp, sig) - SCRATCH);
+  return scratchString(formatDecodedFloat(SCRATCH, bits, exp, sig, false) - SCRATCH);
 }
 
 export function ftoa_buffered(buffer: usize, value: f32): u32 {
   let bits = reinterpret<u32>(value);
   let binExp = <i32>((bits << 1) >> 24);
   let binSig = <u64>(bits & FLOAT_SIGNIFICAND_MASK);
-  return <u32>((formatDecodedFloat(buffer, bits, binExp, binSig) - buffer) >> 1);
+  return <u32>((formatDecodedFloat(buffer, bits, binExp, binSig, true) - buffer) >> 1);
 }

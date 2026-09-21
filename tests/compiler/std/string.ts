@@ -798,6 +798,12 @@ assert(dtoa(-2.109808898695963e+16) == "-21098088986959630.0");
 assert(dtoa(-0.0000010471975511965976) == "-0.0000010471975511965976");
 assert(dtoa(0.1 + 0.2) == "0.30000000000000004");
 
+// f32 significands with a leading zero in the eight-digit formatter block.
+assert(dtoa(reinterpret<f32>(0xb874bd31)) == "-0.00005835033");
+assert(dtoa(reinterpret<f32>(0x6d594b6b)) == "4.203089e+27");
+assert(dtoa(reinterpret<f32>(0xc2b52751)) == "-90.57679");
+assert(dtoa(reinterpret<f32>(0x4c8d5cd0)) == "74114690.0");
+
 
 // concat
 

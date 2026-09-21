@@ -2,8 +2,7 @@
 
 import { idof } from "../builtins";
 import { CharCode } from "./string";
-import { dtoa_buffered as dtoa_buffered_double } from "./dtoa";
-import { ftoa_buffered as ftoa_buffered_single } from "./dtoa";
+import * as floatFormat from "./dtoa";
 
 // >= 32 code units (64 bytes) per value
 // @ts-ignore: decorator
@@ -413,32 +412,15 @@ export function itoa64(value: i64, radix: i32): String {
 // @ts-ignore: decorator
 @lazy @inline const dtoa_buf = memory.data(128);
 
-// dtoa emits ECMAScript-exact output, but we add a .0 suffix to easily distinguish between integers and floats.
-// @ts-ignore: decorator
-@inline
-function dtoa_dotZero(buffer: usize, len: u32): u32 {
-  let p = buffer;
-  let end = buffer + (<usize>len << 1);
-  while (p < end) {
-    let c = <i32>load<u16>(p);
-    if ((c < CharCode._0 || c > CharCode._9) && c != CharCode.MINUS) return len;
-    p += 2;
-  }
-  store<u16>(end, CharCode.DOT);
-  store<u16>(end, CharCode._0, 2);
-  return len + 2;
-}
-
 export function dtoa<T extends number>(value: T): String {
   let len: u32;
   if (isFloat<T>() && sizeof<T>() == 4) {
     // @ts-ignore: type
-    len = ftoa_buffered_single(dtoa_buf, <f32>value);
+    len = floatFormat.ftoa_buffered(dtoa_buf, <f32>value);
   } else {
     // @ts-ignore: type
-    len = dtoa_buffered_double(dtoa_buf, <f64>value);
+    len = floatFormat.dtoa_buffered(dtoa_buf, <f64>value);
   }
-  len = dtoa_dotZero(dtoa_buf, len);
   let size = <usize>len << 1;
   let result = changetype<String>(__new(size, idof<String>()));
   memory.copy(changetype<usize>(result), dtoa_buf, size);
@@ -527,10 +509,10 @@ export function dtoa_buffered<T extends number>(buffer: usize, value: T): u32 {
   let len: u32;
   if (isFloat<T>() && sizeof<T>() == 4) {
     // @ts-ignore: type
-    len = ftoa_buffered_single(buffer, <f32>value);
+    len = floatFormat.ftoa_buffered(buffer, <f32>value);
   } else {
     // @ts-ignore: type
-    len = dtoa_buffered_double(buffer, <f64>value);
+    len = floatFormat.dtoa_buffered(buffer, <f64>value);
   }
-  return dtoa_dotZero(buffer, len);
+  return len;
 }
