@@ -35,18 +35,6 @@ import { DIGITS, MAX_DOUBLE_LENGTH } from "./number";
 // Compact pow10 (Dougall Johnson's method, ported from vitaut/zmij)
 // 10**i = top-128-bits(major[(i+10)/28] * minor[(i+10)%28]) minus a per-power round-down bit.
 
-// 28 normalized exact powers 10**0..10**27 - the within-stride minor factors.
-// @ts-ignore: decorator
-@lazy @inline const POW10_MINOR = memory.data<u64>([
-  0x8000000000000000, 0xa000000000000000, 0xc800000000000000, 0xfa00000000000000,
-  0x9c40000000000000, 0xc350000000000000, 0xf424000000000000, 0x9896800000000000,
-  0xbebc200000000000, 0xee6b280000000000, 0x9502f90000000000, 0xba43b74000000000,
-  0xe8d4a51000000000, 0x9184e72a00000000, 0xb5e620f480000000, 0xe35fa931a0000000,
-  0x8e1bc9bf04000000, 0xb1a2bc2ec5000000, 0xde0b6b3a76400000, 0x8ac7230489e80000,
-  0xad78ebc5ac620000, 0xd8d726b7177a8000, 0x878678326eac9000, 0xa968163f0a57b400,
-  0xd3c21bcecceda100, 0x84595161401484a0, 0xa56fa5b99019a5c8, 0xcecb8f27f4200f3a,
-]);
-
 // 23 full 128-bit anchors (hi, lo) spaced every 28 powers, covering 10**-303..10**313.
 // @ts-ignore: decorator
 @lazy @inline const POW10_MAJOR = memory.data<u64>([
@@ -74,11 +62,11 @@ import { DIGITS, MAX_DOUBLE_LENGTH } from "./number";
   0x00000d0d, 0x14042400, 0x53713840, 0x11781db4, 0x00000000,
 ]);
 
-// hi-only significand of 10**i, 77 entries (index = 45 + k, k in [-45,31]) with
-// the xjb64 +1 low-limb rounding folded in. One hi-only multiply covers both the
-// regular and power-of-two paths.
+// Shared normalized powers for f32 and common f64 exponents. The first 77
+// limbs are high, and the next 77 are low. Entry t is power index 337 - t.
+// The high limb is rounded up exactly when its low limb is nonzero.
 // @ts-ignore: decorator
-@lazy @inline const POW10_FLOAT_HI = memory.data<u64>([
+@lazy @inline const POW10_SHARED = memory.data<u64>([
   0x8f7e32ce7bea5c70, 0xe596b7b0c643c71a, 0xb7abc627050305ae, 0x92efd1b8d0cf37bf,
   0xeb194f8e1ae525fe, 0xbc143fa4e250eb32, 0x96769950b50d88f5, 0xf0bdc21abb48db21,
   0xc097ce7bc90715b4, 0x9a130b963a6c115d, 0xf684df56c3e01bc7, 0xc5371912364ce306,
@@ -98,33 +86,26 @@ import { DIGITS, MAX_DOUBLE_LENGTH } from "./number";
   0xbce5086492111aeb, 0x971da05074da7bef, 0xf1c90080baf72cb2, 0xc16d9a0095928a28,
   0x9abe14cd44753b53, 0xf79687aed3eec552, 0xc612062576589ddb, 0x9e74d1b791e07e49,
   0xfd87b5f28300ca0e, 0xcad2f7f5359a3b3f, 0xa2425ff75e14fc32, 0x81ceb32c4b43fcf5,
-  0xcfb11ead453994bb,
-]);
-
-// Low limbs shared with the f32 power range (entry t is power index 337 - t).
-// f32's high limb is rounded up exactly when the corresponding low limb is nonzero.
-// @ts-ignore: decorator
-@lazy @inline const POW10_FLOAT_LO = memory.data<u64>([
-  0xe4820023a2000000, 0x6d9ccd05d0000000, 0xf14a3d9e40000000, 0x5aa1cae500000000,
-  0x5dcfab0800000000, 0x17d955a000000000, 0x1314448000000000, 0x1e86d40000000000,
-  0x4b9f100000000000, 0x3c7f400000000000, 0xc732000000000000, 0x6c28000000000000,
-  0xf020000000000000, 0x4d00000000000000, 0xa400000000000000, 0x5000000000000000,
-  0x4000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
+  0xcfb11ead453994bb, 0xe4820023a2000000, 0x6d9ccd05d0000000, 0xf14a3d9e40000000,
+  0x5aa1cae500000000, 0x5dcfab0800000000, 0x17d955a000000000, 0x1314448000000000,
+  0x1e86d40000000000, 0x4b9f100000000000, 0x3c7f400000000000, 0xc732000000000000,
+  0x6c28000000000000, 0xf020000000000000, 0x4d00000000000000, 0xa400000000000000,
+  0x5000000000000000, 0x4000000000000000, 0x0000000000000000, 0x0000000000000000,
   0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
   0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
   0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
   0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
   0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
   0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
-  0x0000000000000000, 0xcccccccccccccccc, 0x3d70a3d70a3d70a3, 0x645a1cac083126e9,
-  0xd3c36113404ea4a8, 0x0fcf80dc33721d53, 0xa63f9a49c2c1b10f, 0x3d32907604691b4c,
-  0xfdc20d2b36ba7c3d, 0x31680a88f8953030, 0xb573440e5a884d1b, 0xf78f69a51539d748,
-  0xf93f87b7442e45d3, 0x2865a5f206b06fb9, 0x538484c19ef38c94, 0x0f9d37014bf60a10,
-  0x4c2ebe687989a9b3, 0x09befeb9fad487c2, 0x3aff322e62439fcf, 0x2b31e9e3d06c32e5,
-  0x88f4bb1ca6bcf584, 0xd3f6fc16ebca5e03, 0x5324c68b12dd6338, 0x75b7053c0f178293,
-  0xc4926a9672793542, 0x3a83ddbd83f52204, 0x95364afe032a819d, 0x775ea264cf55347d,
-  0x8bca9d6e188853fc, 0x096ee45813a04330, 0xa1258379a94d028d, 0x80eacf948770ced7,
-  0x67de18eda5814af2
+  0x0000000000000000, 0x0000000000000000, 0xcccccccccccccccc, 0x3d70a3d70a3d70a3,
+  0x645a1cac083126e9, 0xd3c36113404ea4a8, 0x0fcf80dc33721d53, 0xa63f9a49c2c1b10f,
+  0x3d32907604691b4c, 0xfdc20d2b36ba7c3d, 0x31680a88f8953030, 0xb573440e5a884d1b,
+  0xf78f69a51539d748, 0xf93f87b7442e45d3, 0x2865a5f206b06fb9, 0x538484c19ef38c94,
+  0x0f9d37014bf60a10, 0x4c2ebe687989a9b3, 0x09befeb9fad487c2, 0x3aff322e62439fcf,
+  0x2b31e9e3d06c32e5, 0x88f4bb1ca6bcf584, 0xd3f6fc16ebca5e03, 0x5324c68b12dd6338,
+  0x75b7053c0f178293, 0xc4926a9672793542, 0x3a83ddbd83f52204, 0x95364afe032a819d,
+  0x775ea264cf55347d, 0x8bca9d6e188853fc, 0x096ee45813a04330, 0xa1258379a94d028d,
+  0x80eacf948770ced7, 0x67de18eda5814af2
 ]);
 
 @lazy @inline const FLOAT_EXP_OFFSET = 150; // exp_bias(127) + num_sig_bits(23)
@@ -197,22 +178,17 @@ import { DIGITS, MAX_DOUBLE_LENGTH } from "./number";
 // then the per-power fixup bit subtracted off the low limb.
 // @ts-ignore: decorator
 @inline function computePow10(i: i32): u64 {
-  if (ASC_OPTIMIZE_LEVEL >= 3 && ASC_SHRINK_LEVEL == 0 && i >= 261 && i <= 337) {
+  if (i >= 261 && i <= 337) {
     let t = 337 - i;
-    let lo = load<u64>(POW10_FLOAT_LO + (<usize>t << 3));
-    gPow10Hi = load<u64>(POW10_FLOAT_HI + (<usize>t << 3)) - u64(lo != 0);
+    let lo = load<u64>(POW10_SHARED + (<usize>(t + 77) << 3));
+    gPow10Hi = load<u64>(POW10_SHARED + (<usize>t << 3)) - u64(lo != 0);
     return lo;
   }
   let j = i + 10;
   let major = (j * 293) >>> 13; // exact j / 28 for j in [10,627]
   let minor = j - major * 28;
-  let m: u64;
-  if (ASC_OPTIMIZE_LEVEL >= 3 && ASC_SHRINK_LEVEL == 0) {
-    // The minor factors are POW10_FLOAT_HI[44..17] in reverse order.
-    m = load<u64>(POW10_FLOAT_HI + (<usize>(44 - minor) << 3));
-  } else {
-    m = load<u64>(POW10_MINOR + (<usize>minor << 3));
-  }
+  // The minor factors are POW10_SHARED[44..17] in reverse order.
+  let m = load<u64>(POW10_SHARED + (<usize>(44 - minor) << 3));
   let hoff = POW10_MAJOR + (<usize>major << 4);
   let hHi = load<u64>(hoff);
   let hLo = load<u64>(hoff, 8);
@@ -980,7 +956,7 @@ export function dtoa_buffered(buffer: usize, value: f64): u32 {
     k = (expBin * 1233 - 512) >> 12;
     h = 37 + expBin + ((k * -1701 + (-1701)) >> 9);
   }
-  let pow10Hi = load<u64>(POW10_FLOAT_HI + ((45 + k) << 3));
+  let pow10Hi = load<u64>(POW10_SHARED + ((45 + k) << 3));
 
   // hi64 = (binSig * pow10Hi) >> (64 - h), split as >> 24 (folded into the
   // partial-product combine; exact since 64 - h >= 24) then >> (40 - h).
